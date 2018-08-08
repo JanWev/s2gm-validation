@@ -10,12 +10,20 @@ from datetime import datetime
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-def main(tests):
-    print(tests)
+def log(tests):
     logging.basicConfig(filename='execution.log', filemode='a',level=logging.DEBUG)
     logging.info('ValidationOp executed: %s', str(datetime.now()))
     logging.debug('Requested tests by the user: %s', str(tests))
     logging.info('\n')
+
+def main(tests):
+    log(tests)
+
+    # Tests to be executed here:
+    ## L0
+    ## L1
+    ## L2
+
 
 if __name__ == "__main__":
     #input_one = sys.argv[1]
