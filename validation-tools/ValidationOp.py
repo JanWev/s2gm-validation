@@ -14,7 +14,7 @@ def log(tests):
     logging.basicConfig(filename='execution.log', filemode='a',level=logging.DEBUG)
     logging.info('ValidationOp executed: %s', str(datetime.now()))
     logging.debug('Requested tests by the user: %s', str(tests))
-    logging.info('\n')
+
 
 def main(tests):
     log(tests)
