@@ -36,25 +36,69 @@ def define_request_parameters():
                 pickle.dump(id, f)
 
 def log():
-    logging.basicConfig(filename='execution.log', filemode='a',level=logging.DEBUG)
+    logging.basicConfig(filename='..\execution.log', filemode='a',level=logging.DEBUG)
     logging.info('Request : %s', str(datetime.now()))
     logging.debug('Requested tests by the user: %s', str(tests))
     logging.info('\n')
 
 def make_request():
+    ## old version uwe
+    # headers = {
+    #     'Cache-Control': 'no-cache',
+    #     'Content-Type': 'application/json',
+    # }
+    #
+    # data = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
+    #
+    # response = requests.post('http://services-s2gm.sentinel-hub.com/mosaic/add', headers=headers, data=data)
+
+
+    ## new version from rok
     headers = {
-        'Cache-Control': 'no-cache',
-        'Content-Type': 'application/json',
+        'Origin': 'https://apps.sentinel-hub.com',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-GB,en;q=0.9,sl;q=0.8',
+        'Authorization': 'Bearer <bearer_token>',
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Accept': 'application/json, text/plain, */*',
+        'Referer': 'https://apps.sentinel-hub.com/mosaic-hub/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+        'Connection': 'keep-alive',
     }
 
-    data = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
+    name = '"Lux_JP2"'
+    status = '"ORDER_PLACED"'
+    created = '"'+str(datetime.now())+'"'
+    imageFormat = '"JP2"'
 
-    response = requests.post('http://services-s2gm.sentinel-hub.com/mosaic/add', headers=headers, data=data)
+    data = '{"name":' + name + ',' + '"status":'+ status +',"created":' + created + ',"imageFormat":' + imageFormat + ',"resolution":"R60m","coordinateSystem":"UTM","additionalData":{"bands":["B02","B03","B04","B08","B01","B05","B8A","B06","B07","B12","B11","AOT","CLOUD","SNOW","INDEX","SCENE","MEDOID_MOS","SUN_ZENITH","SUN_AZIMUTH","VIEW_ZENITH_MEAN","VIEW_AZIMUTH_MEAN"]},"userId":"74c81436-8b56-4005-9ba3-32d7897d0769","areaOfInterest":{"crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::4326"}},"type":"MultiPolygon","coordinates":[[[[6.043073,50.128052],[6.242751,49.902226],[6.18632,49.463803],[5.897759,49.442667],[5.674052,49.529484],[5.782417,50.090328],[6.043073,50.128052]]]]},"startDate":"2018-06-01T00:00:00Z","temporalPeriod":"MONTH"}'
+
+    response = requests.post(
+        'https://services-s2gm.sentinel-hub.com/order/orders', headers=headers,
+        data=data)
+
     #response.raise_for_status()
     log(response.status_code)
 
+def check_processing_status():
+    '''
+    This module monitors the processing status and defines a trigger variable
+    for the next processing steps
+    '''
+
+    ## write code for status monitoring and define a trigger value for later download
+
+def downloader():
+    '''
+    This module downloads all requested data
+    :return:
+    '''
+    # write data downloader
+
 def main():
     make_request()
+    check_processing_status()
+    downloader()
 
 if __name__ == '__main__':
     main()
