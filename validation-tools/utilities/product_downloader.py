@@ -10,6 +10,7 @@ import random
 import pickle
 import time
 import shutil
+import json
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -173,6 +174,9 @@ def downloader(start, running, finished, download_folder, request_id, token):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
         'Connection': 'keep-alive',
     }
+
+    order_list = requests.get('https://services-s2gm.sentinel-hub.com/mosaic/index/v1/mosaic/', headers=headers).json()
+    order_list_data = json.loads(order_list)[0]
 
     mosaic_id = '321'
     url=''
