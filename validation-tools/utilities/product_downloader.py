@@ -96,10 +96,10 @@ def make_request(token, userid):
     imageFormat = '"JP2"'
     resolution = '"R60m"'
     coordsys = '"UTM"'
-    bands = {"bands":["B02","B03","B04","B08","B01","B05","B8A","B06","B07",
-                      "B12","B11","AOT","CLOUD","SNOW","INDEX","SCENE",
-                      "MEDOID_MOS","SUN_ZENITH","SUN_AZIMUTH",
-                      "VIEW_ZENITH_MEAN","VIEW_AZIMUTH_MEAN"]}
+    bands = '{"bands":["B02","B03","B04","B08","B01","B05","B8A","B06","B07", ' \
+            '"B12","B11","AOT","CLOUD","SNOW","INDEX","SCENE", "MEDOID_MOS",' \
+            '"SUN_ZENITH","SUN_AZIMUTH", "VIEW_ZENITH_MEAN",' \
+            '"VIEW_AZIMUTH_MEAN"]}'
     # + created.replace(' ','T') +
 
     data = '{"name":' + name + ',' + '"status":"ORDER_PLACED","created":' + \

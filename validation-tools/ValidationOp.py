@@ -7,17 +7,20 @@ import sys
 import argparse
 import logging
 from datetime import datetime
+from .utilities import parameter_definition
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-def log(tests):
+def log_inputs(tests):
     logging.basicConfig(filename='execution.log', filemode='a',level=logging.DEBUG)
     logging.info('ValidationOp executed: %s', str(datetime.now()))
     logging.debug('Requested tests by the user: %s', str(tests))
 
 
 def main(tests):
-    log(tests)
+    log_inputs(tests)
+    request_parameters = parameter_definition.main()
+
 
     # Tests to be executed here:
     ## L0
