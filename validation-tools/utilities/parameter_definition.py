@@ -3,7 +3,7 @@ import random
 import pickle
 from .static_parameters import static_granule_list, static_granule_dict, \
     random_granule_number, random_granule_list, random_granule_dict, \
-    static_granule_format, image_formats, resolution_list, \
+    static_granule_format, image_formats, resolution_list, static_resolution,\
     coordinate_system_list, band_list
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
@@ -36,13 +36,22 @@ def define_names(static_granule_list, random_granule_number, random_ids):
                          str(static_granule_list[i])})
 
     for k in range(random_granule_number):
-        names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_validation_request_'
-                                        + str(
-            datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                        '_random_0' + str(k + 1) + '_' +
-                                        str(random_ids[k])})
+        if k + len(static_granule_list) + 1 < 10:
+            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_validation_request_'
+                                            + str(
+                datetime.now().strftime("%Y%m%dT%H%M%S")) +
+                                            '_random_0' + str(k + 1) + '_' +
+                                            str(random_ids[k])})
+        else:
+            names.update({str(
+                k + len(static_granule_list) + 1): 'S2GM_validation_request_'
+                                                   + str(
+                datetime.now().strftime("%Y%m%dT%H%M%S")) +
+                                                   '_random_' + str(
+                k + 1) + '_' +
+                                                   str(random_ids[k])})
 
-        return names
+    return names
 
 
 def format_randomizer(randomize, random_granule_number,
@@ -74,17 +83,55 @@ def define_format(randomize, static_granule_format, random_granule_number,
     formats = {}
     formats.update(static_granule_format)
     for k in range(random_granule_number):
-        formats.update({'0' + str(k + len(static_granule_format) + 1): random_granule_format[k]})
-
+        if k + len(static_granule_format) + 1 < 10:
+            formats.update({'0' + str(k + len(static_granule_format) + 1): random_granule_format[k]})
+        else:
+            formats.update({str(k + len(static_granule_format) + 1):
+                                random_granule_format[k]})
     return formats
 
-# def parameter_randomizer(random_ids):
-#     x = 1 # test
+
+def resolution_randomizer(randomize, random_granule_number, resolution_list):
+    if randomize:
+        random_resolution_list = [''] * random_granule_number
+        for i in range(random_granule_number):
+            random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
+            with open('resolutions.pkl', 'wb') as f:
+                pickle.dump(random_resolution_list, f)
+    else:
+        try:
+            with open('resolutions.pkl', 'rb') as f:
+                random_resolution_list = pickle.load(f)
+        except FileNotFoundError:
+            print('Formats do not exist, start randomizing')
+            random_resolution_list = [''] * random_granule_number
+            for i in range(random_granule_number):
+                random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
+                with open('resolutions.pkl', 'wb') as f:
+                    pickle.dump(random_resolution_list, f)
+
+    return random_resolution_list
+
+def define_resolutions(randomize, random_granule_number, resolution_list,
+                       static_resolution):
+    random_granule_resolution = resolution_randomizer(randomize,
+                                                      random_granule_number,
+                                                      resolution_list)
+    resolutions = {}
+    resolutions.update(static_resolution)
+    for k in range(random_granule_number):
+        if k + len(static_granule_format) + 1 < 10:
+            resolutions.update({'0' + str(k + len(static_granule_format) + 1): random_granule_resolution[k]})
+        else:
+            resolutions.update({str(k + len(static_granule_format) + 1):
+                                    random_granule_resolution[k]})
+    return resolutions
 
 
 def define_request_parameters(randomize, static_granule_list,
                               random_granule_number, random_ids,
-                              static_granule_format, image_formats):
+                              static_granule_format, image_formats,
+                              resolution_list, static_resolution):
     # 4 fix requests
     data_01 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
     data_02 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "YEAR", "resolution": 20}'
@@ -94,9 +141,15 @@ def define_request_parameters(randomize, static_granule_list,
     names = define_names(static_granule_list, random_granule_number, random_ids)
     format = define_format(randomize, static_granule_format,
                            random_granule_number, image_formats)
-    resolutions = define_resolutions()
+    resolutions = define_resolutions(randomize,
+                                     random_granule_number, resolution_list,
+                                     static_resolution)
 
-    request_parameters = [names, format]
+    ## add projection
+    ## add coordinates/AOI
+    ## startdate & period
+
+    request_parameters = [names, format, resolutions]
     return request_parameters
 
 
@@ -108,7 +161,9 @@ def main():
                                                    random_granule_number,
                                                    random_ids,
                                                    static_granule_format,
-                                                   image_formats)
+                                                   image_formats,
+                                                   resolution_list,
+                                                   static_resolution)
 
     # test:
     # i = 1

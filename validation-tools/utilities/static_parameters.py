@@ -22,8 +22,9 @@ static_granule_dict = {
     '33TXN-UXP': '[16.3606001900861,48.7445933765736],[17.8517205647445,48.7173231309949],[17.7490928466505,46.8349371832247],[16.3121382574838,46.8583909822211],[16.3606001900861,48.7445933765736]'
 }
 static_granule_format = {'01': 'JP2', '02': 'GEOTIFF', '03': 'NETCDF', '04': 'GEOTIFF'}
+static_resolution = {'01': '10', '02': '20', '03': '60', '04': '20'}
 
-random_granule_number = 2
+random_granule_number = 10
 random_granule_list = ['T34UFB', 'T34UFA', 'T35TNN', 'T35TNM', 'T35TNL', 'T34UFV',
                 'T35TQM', 'T35TPN', 'T35TPM', 'T35TPL', 'T35ULV', 'T35ULB',
                 'T35ULA', 'T34UGE', 'T34UEV', 'T34UDV', 'T35UMV', 'T35UMA',
