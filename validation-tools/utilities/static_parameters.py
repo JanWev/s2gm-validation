@@ -5,11 +5,14 @@ This file holds variables provided to parameter_definition.py
 
 coordinate_system_list = ['UTM', 'WGS84']
 resolution_list = ['10', '20', '60']
-band_list = ['"B02"', '"B03"', '"B04"', '"B08"', '"B01"', '"B05"', '"B8A"',
-             '"B11"', '"B06"', '"B07"', '"B12"', '"AOT"', '"CLOUD"', '"SNOW"',
+basic_ref_band_list = ['"B02"', '"B03"', '"B04"']
+ext_ref_band_list = ['"B08"', '"B01"', '"B05"', '"B8A"',
+             '"B11"', '"B06"', '"B07"', '"B12"']
+aux_band_list = ['"AOT"', '"CLOUD"', '"SNOW"',
              '"SCENE"', '"INDEX"', '"MEDOID_MOS"', '"SUN_ZENITH"',
              '"SUN_AZIMUTH"', '"VIEW_ZENITH_MEAN"', '"VIEW_AZIMUTH_MEAN"',
-             '"VALID_OBS"']  #22bands
+             '"VALID_OBS"']
+#22bands
 static_granule_list =['T33TXN-UXP', 'T30VWJ', 'T29SQB', 'T34WDA']
 # QGIS Select by Expression on
 # \\bcserver2\fs1\projects\ongoing\S2_GlobalMosaic\auxiliary_data\
@@ -24,8 +27,13 @@ static_granule_dict = {
 static_granule_format = {'01': 'JP2', '02': 'GEOTIFF', '03': 'NETCDF', '04': 'GEOTIFF'}
 static_resolution = {'01': '10', '02': '20', '03': '60', '04': '20'}
 static_projection = {'01': 'UTM', '02': 'WGS84', '03': 'WGS84', '04': 'UTM'}
+static_band = {'01': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
+               '02': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
+               '03': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
+               '04': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}'}
 
-random_granule_number = 10
+
+random_granule_number = 11 # Allowed minimum = 6
 random_granule_list = ['T34UFB', 'T34UFA', 'T35TNN', 'T35TNM', 'T35TNL', 'T34UFV',
                 'T35TQM', 'T35TPN', 'T35TPM', 'T35TPL', 'T35ULV', 'T35ULB',
                 'T35ULA', 'T34UGE', 'T34UEV', 'T34UDV', 'T35UMV', 'T35UMA',
