@@ -1,11 +1,13 @@
 from datetime import datetime
 import random
 import pickle
+import time
 from .static_parameters import static_granule_list, static_granule_dict, \
     random_granule_number, random_granule_list, random_granule_dict, \
     static_granule_format, image_formats, resolution_list, static_resolution,\
     coordinate_system_list, static_projection, basic_ref_band_list, \
-    ext_ref_band_list, aux_band_list, static_band
+    ext_ref_band_list, aux_band_list, static_band, period_list, static_periods, \
+    static_dates
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -122,10 +124,10 @@ def define_resolutions(randomize, random_granule_number, resolution_list,
     resolutions = {}
     resolutions.update(static_resolution)
     for k in range(random_granule_number):
-        if k + len(static_granule_format) + 1 < 10:
-            resolutions.update({'0' + str(k + len(static_granule_format) + 1): random_granule_resolution[k]})
+        if k + len(static_resolution) + 1 < 10:
+            resolutions.update({'0' + str(k + len(static_resolution) + 1): random_granule_resolution[k]})
         else:
-            resolutions.update({str(k + len(static_granule_format) + 1):
+            resolutions.update({str(k + len(static_resolution) + 1):
                                     random_granule_resolution[k]})
     return resolutions
 
@@ -160,11 +162,11 @@ def define_projections(randomize, random_granule_number, coordinate_system_list,
     projections = {}
     projections.update(static_projection)
     for k in range(random_granule_number):
-        if k + len(static_granule_format) + 1 < 10:
-            projections.update({'0' + str(k + len(static_granule_format) + 1):
+        if k + len(static_projection) + 1 < 10:
+            projections.update({'0' + str(k + len(static_projection) + 1):
                                     random_granule_projection[k]})
         else:
-            projections.update({str(k + len(static_granule_format) + 1):
+            projections.update({str(k + len(static_projection) + 1):
                                     random_granule_projection[k]})
     return projections
 
@@ -313,13 +315,123 @@ def define_bands(randomize, random_granule_number, basic_ref_band_list,
     bands = {}
     bands.update(static_band)
     for k in range(random_granule_number):
-        if k + len(static_granule_format) + 1 < 10:
-            bands.update({'0' + str(k + len(static_granule_format) + 1):
+        if k + len(static_band) + 1 < 10:
+            bands.update({'0' + str(k + len(static_band) + 1):
                               random_granule_bands[k]})
         else:
-            bands.update({str(k + len(static_granule_format) + 1):
+            bands.update({str(k + len(static_band) + 1):
                               random_granule_bands[k]})
     return bands
+
+
+def define_coordinates(static_granule_list, random_ids, static_granule_dict,
+                       random_granule_dict):
+    ids = static_granule_list + random_ids
+    count = len(ids)
+    coordinates={}
+    for i in range(count):
+        if i < 4:
+            coordinates.update({'0' + str(i+1): static_granule_dict[ids[i][1:]]})
+        elif i < 9:
+            coordinates.update({'0' + str(i + 1): random_granule_dict[ids[i][1:]]})
+        else:
+            coordinates.update({str(i + 1): random_granule_dict[ids[i][1:]]})
+    return coordinates
+
+
+def period_randomizer(randomize, random_granule_number, period_list):
+    if randomize:
+        random_period_list = [''] * random_granule_number
+        for i in range(random_granule_number):
+            random_period_list[i] = (random.sample(period_list, 1))[0]
+        with open('periods.pkl', 'wb') as f:
+            pickle.dump(random_period_list, f)
+    else:
+        try:
+            with open('periods.pkl', 'rb') as f:
+                random_period_list = pickle.load(f)
+        except FileNotFoundError:
+            print('Periods do not exist, start randomizing')
+            random_period_list = [''] * random_granule_number
+            for i in range(random_granule_number):
+                random_period_list[i] = (random.sample(period_list, 1))[0]
+            with open('periods.pkl', 'wb') as f:
+                pickle.dump(random_period_list, f)
+
+    return random_period_list
+
+
+def define_periods(randomize, random_granule_number, period_list, static_periods):
+    random_granule_period = period_randomizer(randomize, random_granule_number, period_list)
+    periods = {}
+    periods.update(static_periods)
+    for k in range(random_granule_number):
+        if k + len(static_periods) + 1 < 10:
+            periods.update({'0' + str(k + len(static_periods) + 1):
+                                    random_granule_period[k]})
+        else:
+            periods.update({str(k + len(static_periods) + 1):
+                                    random_granule_period[k]})
+    return periods
+
+def strTimeProp(start, end, format, prop):
+    """Get a time at a proportion of a range of two formatted times.
+
+    start and end should be strings specifying times formated in the
+    given format (strftime-style), giving an interval [start, end].
+    prop specifies how a proportion of the interval to be taken after
+    start.  The returned time will be in the specified format.
+    """
+
+    stime = time.mktime(time.strptime(start, format))
+    etime = time.mktime(time.strptime(end, format))
+
+    ptime = stime + prop * (etime - stime)
+
+    return time.strftime(format, time.localtime(ptime))
+
+def randomDate(start, end, prop):
+    return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
+
+def date_randomizer(randomize, random_granule_number):
+
+    if randomize:
+        random_date_list = [''] * random_granule_number
+        for i in range(random_granule_number):
+            random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
+               random.random())
+        with open('dates.pkl', 'wb') as f:
+            pickle.dump(random_date_list, f)
+    else:
+        try:
+            with open('dates.pkl', 'rb') as f:
+                random_date_list = pickle.load(f)
+        except FileNotFoundError:
+            print('dates do not exist, start randomizing')
+            random_date_list = [''] * random_granule_number
+            for i in range(random_granule_number):
+                random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
+               random.random())
+            with open('dates.pkl', 'wb') as f:
+                pickle.dump(random_date_list, f)
+
+    return random_date_list
+
+
+def define_dates(randomize, random_granule_number, static_dates):
+    randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
+                     random.random())
+    random_granule_date = date_randomizer(randomize, random_granule_number)
+    dates = {}
+    dates.update(static_dates)
+    for k in range(random_granule_number):
+        if k + len(static_dates) + 1 < 10:
+            dates.update({'0' + str(k + len(static_dates) + 1):
+                                    random_granule_date[k]})
+        else:
+            dates.update({str(k + len(static_dates) + 1):
+                                    random_granule_date[k]})
+    return dates
 
 
 def define_request_parameters(randomize, static_granule_list,
@@ -328,12 +440,10 @@ def define_request_parameters(randomize, static_granule_list,
                               resolution_list, static_resolution, 
                               coordinate_system_list, static_projection,
                               basic_ref_band_list, ext_ref_band_list, 
-                              aux_band_list, static_band):
+                              aux_band_list, static_band, period_list, 
+                              static_periods, static_dates):
     # 4 fix requests
     data_01 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
-    data_02 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "YEAR", "resolution": 20}'
-    data_03 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "QUARTER", "resolution": 10}'
-    data_04 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 60}'
 
     names = define_names(static_granule_list, random_granule_number, random_ids)
     format = define_format(randomize, static_granule_format,
@@ -347,12 +457,15 @@ def define_request_parameters(randomize, static_granule_list,
     bands = define_bands(randomize, random_granule_number,
                          basic_ref_band_list, ext_ref_band_list, aux_band_list,
                          static_band)
+    coordinates = define_coordinates(static_granule_list, random_ids,
+                                     static_granule_dict, random_granule_dict)
+    periods = define_periods(randomize, random_granule_number, period_list, static_periods)
 
-    ## bands
-    ## add coordinates/AOI
+    dates = define_dates(randomize, random_granule_number, static_dates)
+
     ## startdate & period
 
-    request_parameters = [names, format, resolutions, projections, bands]
+    request_parameters = [names, format, resolutions, projections, bands, coordinates, periods]
     return request_parameters
 
 
@@ -371,8 +484,9 @@ def main():
                                                    static_projection,
                                                    basic_ref_band_list,
                                                    ext_ref_band_list,
-                                                   aux_band_list,
-                                                   static_band)
+                                                   aux_band_list, static_band, 
+                                                   period_list, static_periods, 
+                                                   static_dates)
 
     # test:
     # i = 1
