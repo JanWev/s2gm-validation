@@ -4,7 +4,7 @@ import pickle
 from .static_parameters import static_granule_list, static_granule_dict, \
     random_granule_number, random_granule_list, random_granule_dict, \
     static_granule_format, image_formats, resolution_list, static_resolution,\
-    coordinate_system_list, band_list
+    coordinate_system_list, static_projection, band_list
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -103,7 +103,7 @@ def resolution_randomizer(randomize, random_granule_number, resolution_list):
             with open('resolutions.pkl', 'rb') as f:
                 random_resolution_list = pickle.load(f)
         except FileNotFoundError:
-            print('Formats do not exist, start randomizing')
+            print('Resolutions do not exist, start randomizing')
             random_resolution_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
@@ -111,6 +111,7 @@ def resolution_randomizer(randomize, random_granule_number, resolution_list):
                     pickle.dump(random_resolution_list, f)
 
     return random_resolution_list
+
 
 def define_resolutions(randomize, random_granule_number, resolution_list,
                        static_resolution):
@@ -128,10 +129,50 @@ def define_resolutions(randomize, random_granule_number, resolution_list,
     return resolutions
 
 
+def projection_randomizer(randomize, random_granule_number, coordinate_system_list):
+    if randomize:
+        random_projection_list = [''] * random_granule_number
+        for i in range(random_granule_number):
+            random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
+            with open('projections.pkl', 'wb') as f:
+                pickle.dump(random_projection_list, f)
+    else:
+        try:
+            with open('projections.pkl', 'rb') as f:
+                random_projection_list = pickle.load(f)
+        except FileNotFoundError:
+            print('Projections do not exist, start randomizing')
+            random_projection_list = [''] * random_granule_number
+            for i in range(random_granule_number):
+                random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
+                with open('projections.pkl', 'wb') as f:
+                    pickle.dump(random_projection_list, f)
+
+    return random_projection_list
+
+
+def define_projections(randomize, random_granule_number, coordinate_system_list,
+                       static_projection):
+    random_granule_projection = projection_randomizer(randomize,
+                                                      random_granule_number,
+                                                      coordinate_system_list)
+    projections = {}
+    projections.update(static_projection)
+    for k in range(random_granule_number):
+        if k + len(static_granule_format) + 1 < 10:
+            projections.update({'0' + str(k + len(static_granule_format) + 1):
+                                    random_granule_projection[k]})
+        else:
+            projections.update({str(k + len(static_granule_format) + 1):
+                                    random_granule_projection[k]})
+    return projections
+
+
 def define_request_parameters(randomize, static_granule_list,
                               random_granule_number, random_ids,
                               static_granule_format, image_formats,
-                              resolution_list, static_resolution):
+                              resolution_list, static_resolution, 
+                              coordinate_system_list, static_projection):
     # 4 fix requests
     data_01 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
     data_02 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "YEAR", "resolution": 20}'
@@ -144,12 +185,15 @@ def define_request_parameters(randomize, static_granule_list,
     resolutions = define_resolutions(randomize,
                                      random_granule_number, resolution_list,
                                      static_resolution)
+    projections = define_projections(randomize,
+                                     random_granule_number, coordinate_system_list,
+                                     static_projection)
 
-    ## add projection
+    ## bands
     ## add coordinates/AOI
     ## startdate & period
 
-    request_parameters = [names, format, resolutions]
+    request_parameters = [names, format, resolutions, projections]
     return request_parameters
 
 
@@ -163,7 +207,9 @@ def main():
                                                    static_granule_format,
                                                    image_formats,
                                                    resolution_list,
-                                                   static_resolution)
+                                                   static_resolution, 
+                                                   coordinate_system_list,
+                                                   static_projection)
 
     # test:
     # i = 1

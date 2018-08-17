@@ -23,6 +23,7 @@ static_granule_dict = {
 }
 static_granule_format = {'01': 'JP2', '02': 'GEOTIFF', '03': 'NETCDF', '04': 'GEOTIFF'}
 static_resolution = {'01': '10', '02': '20', '03': '60', '04': '20'}
+static_projection = {'01': 'UTM', '02': 'WGS84', '03': 'WGS84', '04': 'UTM'}
 
 random_granule_number = 10
 random_granule_list = ['T34UFB', 'T34UFA', 'T35TNN', 'T35TNM', 'T35TNL', 'T34UFV',
