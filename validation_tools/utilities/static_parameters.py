@@ -24,14 +24,14 @@ static_granule_dict = {
     '30VWJ': '[-3.00033594699994,57.742298152],[-1.15653465299994,57.7288832340001],[-1.20509396399996,56.7430307750001],[-3.00032709199996,56.755950467],[-3.00033594699994,57.742298152]',
     '33TXN-UXP': '[16.3606001900861,48.7445933765736],[17.8517205647445,48.7173231309949],[17.7490928466505,46.8349371832247],[16.3121382574838,46.8583909822211],[16.3606001900861,48.7445933765736]'
 }
-static_granule_format = {'01': 'JP2', '02': 'GEOTIFF', '03': 'NETCDF', '04': 'GEOTIFF'}
+static_granule_format = {'01': 'JP2', '02': 'GEO_TIFF', '03': 'NETCDF', '04': 'GEO_TIFF'}
 static_resolution = {'01': '10', '02': '20', '03': '60', '04': '20'}
 static_projection = {'01': 'UTM', '02': 'WGS84', '03': 'WGS84', '04': 'UTM'}
-static_band = {'01': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
-               '02': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
-               '03': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}',
-               '04': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"}'}
-static_periods = {'01': 'TENDAY', '02': 'MONTH', '03': 'YEAR', '04': 'QUARTER'}
+static_band = {'01': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}',
+               '02': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}',
+               '03': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}',
+               '04': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}'}
+static_periods = {'01': 'TENDAYS', '02': 'MONTH', '03': 'YEAR', '04': 'QUARTER'}
 static_dates = {'01': '2017-06-17T00:00:00', '02': '2017-09-03T00:00:00', '03': '2018-03-01T00:00:00', '04': '2018-04-15T00:00:00'}
 
 
@@ -904,5 +904,5 @@ random_granule_dict = {
 '30UUE': '[-6.05959368299995,54.1092064470001],[-4.38074327899994,54.1401867750001],[-4.34887922899998,53.1535350930001],[-5.98908922299995,53.123645036],[-6.05959368299995,54.1092064470001]'
 }
 
-image_formats = ['JP2', 'GEOTIFF', 'NETCDF']
-period_list = ['DAY', 'TENDAY', 'MONTH', 'QUARTER', 'YEAR']
+image_formats = ['JP2', 'GEO_TIFF', 'NETCDF']
+period_list = ['DAY', 'TENDAYS', 'MONTH', 'QUARTER', 'YEAR']

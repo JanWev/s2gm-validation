@@ -16,16 +16,16 @@ RANDOMIZE = False  # This can be set to True if you like to create a new set of 
 def granule_randomizer(randomize, random_granule_number, random_granule_list):
     if randomize:
         random_ids = random.sample(random_granule_list, random_granule_number)
-        with open('ids.pkl', 'wb') as f:
+        with open('variables/ids.pkl', 'wb') as f:
             pickle.dump(random_ids, f)
     else:
         try:
-            with open('ids.pkl', 'rb') as f:
+            with open('variables/ids.pkl', 'rb') as f:
                 random_ids = pickle.load(f)
         except FileNotFoundError:
             print('IDs do not exist, start randomizing')
             random_ids = random.sample(random_granule_list, random_granule_number)
-            with open('ids.pkl', 'wb') as f:
+            with open('variables/ids.pkl', 'wb') as f:
                 pickle.dump(random_ids, f)
 
     return random_ids
@@ -33,24 +33,24 @@ def granule_randomizer(randomize, random_granule_number, random_granule_list):
 def define_names(static_granule_list, random_granule_number, random_ids):
     names = {}
     for i in range(len(static_granule_list)):
-        names.update({'0' + str(i + 1): 'S2GM_validation_request_'
+        names.update({'0' + str(i + 1): 'S2GM_val_req_'
                          + str(datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                         '_static_0' + str(i + 1) + '_' +
+                         '_stat_0' + str(i + 1) + '_' +
                          str(static_granule_list[i])})
 
     for k in range(random_granule_number):
         if k + len(static_granule_list) + 1 < 10:
-            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_validation_request_'
+            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_val_req_'
                                             + str(
                 datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                            '_random_0' + str(k + 1) + '_' +
+                                            '_rand_0' + str(k + 1) + '_' +
                                             str(random_ids[k])})
         else:
             names.update({str(
-                k + len(static_granule_list) + 1): 'S2GM_validation_request_'
+                k + len(static_granule_list) + 1): 'S2GM_val_req_'
                                                    + str(
                 datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                                   '_random_' + str(
+                                                   '_rand_' + str(
                 k + 1) + '_' +
                                                    str(random_ids[k])})
 
@@ -63,18 +63,18 @@ def format_randomizer(randomize, random_granule_number,
         format_list = ['']*random_granule_number
         for i in range(random_granule_number):
             format_list[i] = (random.sample(image_formats, 1))[0]
-        with open('formats.pkl', 'wb') as f:
+        with open('./variables/formats.pkl', 'wb') as f:
             pickle.dump(format_list, f)
     else:
         try:
-            with open('formats.pkl', 'rb') as f:
+            with open('./variables/formats.pkl', 'rb') as f:
                 format_list = pickle.load(f)
         except FileNotFoundError:
             print('Formats do not exist, start randomizing')
             format_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 format_list[i] = (random.sample(image_formats, 1))[0]
-            with open('formats.pkl', 'wb') as f:
+            with open('./variables/formats.pkl', 'wb') as f:
                 pickle.dump(format_list, f)
 
     return format_list
@@ -99,18 +99,18 @@ def resolution_randomizer(randomize, random_granule_number, resolution_list):
         random_resolution_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
-        with open('resolutions.pkl', 'wb') as f:
+        with open('./variables/resolutions.pkl', 'wb') as f:
             pickle.dump(random_resolution_list, f)
     else:
         try:
-            with open('resolutions.pkl', 'rb') as f:
+            with open('./variables/resolutions.pkl', 'rb') as f:
                 random_resolution_list = pickle.load(f)
         except FileNotFoundError:
             print('Resolutions do not exist, start randomizing')
             random_resolution_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
-            with open('resolutions.pkl', 'wb') as f:
+            with open('./variables/resolutions.pkl', 'wb') as f:
                 pickle.dump(random_resolution_list, f)
 
     return random_resolution_list
@@ -137,18 +137,18 @@ def projection_randomizer(randomize, random_granule_number, coordinate_system_li
         random_projection_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
-        with open('projections.pkl', 'wb') as f:
+        with open('./variables/projections.pkl', 'wb') as f:
             pickle.dump(random_projection_list, f)
     else:
         try:
-            with open('projections.pkl', 'rb') as f:
+            with open('./variables/projections.pkl', 'rb') as f:
                 random_projection_list = pickle.load(f)
         except FileNotFoundError:
             print('Projections do not exist, start randomizing')
             random_projection_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
-            with open('projections.pkl', 'wb') as f:
+            with open('./variables/projections.pkl', 'wb') as f:
                 pickle.dump(random_projection_list, f)
 
     return random_projection_list
@@ -227,11 +227,11 @@ def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
                 else:
                     band_str += ',' + (temp_complete_band_list)[k] + ']}'
             random_band_list[complete_random_number + less_random_number + i] = band_str
-        with open('bands.pkl', 'wb') as f:
+        with open('./variables/bands.pkl', 'wb') as f:
             pickle.dump(random_band_list, f)
     else:
         try:
-            with open('bands.pkl', 'rb') as f:
+            with open('./variables/bands.pkl', 'rb') as f:
                 random_band_list = pickle.load(f)
         except FileNotFoundError:
             print('bands do not exist, start randomizing')
@@ -301,7 +301,7 @@ def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
                         band_str += ',' + (temp_complete_band_list)[k] + ']}'
                 random_band_list[
                     complete_random_number + less_random_number + i] = band_str
-            with open('bands.pkl', 'wb') as f:
+            with open('./variables/bands.pkl', 'wb') as f:
                 pickle.dump(random_band_list, f)
 
     return random_band_list
@@ -344,18 +344,18 @@ def period_randomizer(randomize, random_granule_number, period_list):
         random_period_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_period_list[i] = (random.sample(period_list, 1))[0]
-        with open('periods.pkl', 'wb') as f:
+        with open('./variables/periods.pkl', 'wb') as f:
             pickle.dump(random_period_list, f)
     else:
         try:
-            with open('periods.pkl', 'rb') as f:
+            with open('./variables/periods.pkl', 'rb') as f:
                 random_period_list = pickle.load(f)
         except FileNotFoundError:
             print('Periods do not exist, start randomizing')
             random_period_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_period_list[i] = (random.sample(period_list, 1))[0]
-            with open('periods.pkl', 'wb') as f:
+            with open('./variables/periods.pkl', 'wb') as f:
                 pickle.dump(random_period_list, f)
 
     return random_period_list
@@ -398,29 +398,27 @@ def date_randomizer(randomize, random_granule_number):
     if randomize:
         random_date_list = [''] * random_granule_number
         for i in range(random_granule_number):
-            random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
+            random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
                random.random())
-        with open('dates.pkl', 'wb') as f:
+        with open('./variables/dates.pkl', 'wb') as f:
             pickle.dump(random_date_list, f)
     else:
         try:
-            with open('dates.pkl', 'rb') as f:
+            with open('./variables/dates.pkl', 'rb') as f:
                 random_date_list = pickle.load(f)
         except FileNotFoundError:
             print('dates do not exist, start randomizing')
             random_date_list = [''] * random_granule_number
             for i in range(random_granule_number):
-                random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
+                random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
                random.random())
-            with open('dates.pkl', 'wb') as f:
+            with open('./variables/dates.pkl', 'wb') as f:
                 pickle.dump(random_date_list, f)
 
     return random_date_list
 
 
 def define_dates(randomize, random_granule_number, static_dates):
-    randomDate("2017-04-01T00:00:00", "2018-08-01T00:00:00",
-                     random.random())
     random_granule_date = date_randomizer(randomize, random_granule_number)
     dates = {}
     dates.update(static_dates)
@@ -442,9 +440,8 @@ def define_request_parameters(randomize, static_granule_list,
                               basic_ref_band_list, ext_ref_band_list, 
                               aux_band_list, static_band, period_list, 
                               static_periods, static_dates):
-    # 4 fix requests
-    data_01 = '{"tileId": "30VWJ", "startDate":"2018-03-01T00:00:00", "temporalPeriod": "MONTH", "resolution": 10}'
 
+    num_products = 4 + len(random_ids)
     names = define_names(static_granule_list, random_granule_number, random_ids)
     format = define_format(randomize, static_granule_format,
                            random_granule_number, image_formats)
@@ -463,16 +460,14 @@ def define_request_parameters(randomize, static_granule_list,
 
     dates = define_dates(randomize, random_granule_number, static_dates)
 
-    ## startdate & period
-
-    request_parameters = [names, format, resolutions, projections, bands, coordinates, periods]
-    return request_parameters
+    request_parameters = [names, format, resolutions, projections, bands, coordinates, periods, dates]
+    return request_parameters, num_products
 
 
-def main():
+def get_parameters():
     random_ids = granule_randomizer(RANDOMIZE, random_granule_number,
                                     random_granule_list)
-    request_parameters = define_request_parameters(RANDOMIZE,
+    request_parameters, num_products = define_request_parameters(RANDOMIZE,
                                                    static_granule_list,
                                                    random_granule_number,
                                                    random_ids,
@@ -493,7 +488,7 @@ def main():
     # print(request_parameters[0]["{0:0=2d}".format(i)])
     # print(request_parameters[1]["{0:0=2d}".format(i)])
 
-    return request_parameters
+    return request_parameters, num_products
 
 if __name__ == '__main__':
-    main()
+    get_parameters()
