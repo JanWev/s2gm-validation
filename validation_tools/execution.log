@@ -1639,3 +1639,53 @@ DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/3
 INFO:root:Download finished 2018-08-20 17:18:10.796659
 INFO:root:End of processing 2018-08-20 17:18:10.796659 
 
+INFO:root:ValidationOp executed: 2018-08-21 09:16:59.678017
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"POST /order/orders HTTP/1.1" 201 877
+INFO:root:Request data at mosaic hub  : 2018-08-21 09:17:00.330840
+DEBUG:root:HTML status: 201
+INFO:root:ValidationOp executed: 2018-08-21 09:30:22.451827
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /order/orders/1089d9de-5a6d-4191-a76c-3c8e4179f062 HTTP/1.1" 200 910
+INFO:root:Processing has started  : 2018-08-21 09:30:22.927019
+INFO:root:Processing of request 1089d9de-5a6d-4191-a76c-3c8e4179f062 in S2GM hub is finished: 2018-08-21 09:30:22.928041
+INFO:root:Ready for download 2018-08-21 09:30:22.928041
+INFO:root:ValidationOp executed: 2018-08-21 09:47:29.230045
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /order/orders/1089d9de-5a6d-4191-a76c-3c8e4179f062 HTTP/1.1" 200 910
+INFO:root:Processing has started  : 2018-08-21 09:47:29.736742
+INFO:root:Processing of request 1089d9de-5a6d-4191-a76c-3c8e4179f062 in S2GM hub is finished: 2018-08-21 09:47:29.736742
+INFO:root:Ready for download 2018-08-21 09:47:29.736742
+INFO:root:ValidationOp executed: 2018-08-21 10:01:13.259357
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/index/v1/mosaic/ HTTP/1.1" 200 None
+INFO:root:Download started  : 2018-08-21 10:01:13.925670
+INFO:root:Download started  : 2018-08-21 10:01:13.925670
+DEBUG:root:Downloading : 2018-08-21 10:01:13.925670
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/maxDownloadSequence HTTP/1.1" 200 1
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/sequence/1/metadata HTTP/1.1" 200 4818
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/sequence/1?filename=quality_cloud_confidence.jp2 HTTP/1.1" 200 4139
+INFO:root:ValidationOp executed: 2018-08-21 10:06:08.584912
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/index/v1/mosaic/ HTTP/1.1" 200 None
+INFO:root:ValidationOp executed: 2018-08-21 10:12:59.238531
+DEBUG:root:Requested tests by the user: [1, 2, 3, 5, 7]
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/index/v1/mosaic/ HTTP/1.1" 200 None
+INFO:root:Download started  : 2018-08-21 10:12:59.909623
+INFO:root:Download started  : 2018-08-21 10:12:59.909623
+DEBUG:root:Downloading : 2018-08-21 10:12:59.910623
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/maxDownloadSequence HTTP/1.1" 200 1
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/sequence/1/metadata HTTP/1.1" 200 4818
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): services-s2gm.sentinel-hub.com
+DEBUG:requests.packages.urllib3.connectionpool:"GET /mosaic/download/v1/mosaic/386/sequence/1?filename=quality_cloud_confidence.jp2 HTTP/1.1" 200 4139
