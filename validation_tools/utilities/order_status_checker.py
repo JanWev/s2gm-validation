@@ -26,7 +26,7 @@ def log_processing(request_id, done, count):
                       request_id, str(datetime.now()))
 
 
-def check_processing_status(token, request_id):
+def check_processing_status(token, request_id, prod_id):
     '''
     This module monitors the processing status and defines a trigger variable
     for the next processing steps
@@ -51,25 +51,40 @@ def check_processing_status(token, request_id):
         response_status = requests.get(
             'https://services-s2gm.sentinel-hub.com/order/orders/' + request_id,
             headers=headers)
-        # request_id = response_status.json()['id']
-        status = response_status.json()['status']
-        if status == 'FINISHED':
+        if response_status.status_code == 401:
+            print('Login not possible. Get new bearer token from Mosaic Hub')
             done = True
-            log_processing(request_id, done, count)
         else:
-            time.sleep(10)
-            log_processing(request_id, done, count)
-            count += 1
+            status = response_status.json()['status']
+            if status == 'FINISHED':
+                done = True
+                log_processing(request_id, done, count)
+            else:
+                time.sleep(120)
+                log_processing(request_id, done, count)
+                count += 1
 
-    with open('variables/order_status_variables.pkl', 'wb') as f:
+    if prod_id < 10:
+        file = 'variables/order_status_variables_0' + str(prod_id) + '.pkl'
+    else:
+        file = 'variables/order_status_variables_' + str(prod_id) + '.pkl'
+    with open(file, 'wb') as f:
         pickle.dump(done, f)
+    return response_status.status_code
 
-def run(TOKEN):
-    with open('./variables/request_variables.pkl', 'rb') as f:
+def run(TOKEN, prod_id):
+    if prod_id < 10:
+        file = './variables/request_variables_0' + str(prod_id) + '.pkl'
+    else:
+        file = './variables/request_variables_' + str(prod_id) + '.pkl'
+    with open(file, 'rb') as f:
         request_id = pickle.load(f)[0]
-    check_processing_status(TOKEN, request_id)
-
+    if request_id == '':
+        pass
+    else:
+        status_code = check_processing_status(TOKEN, request_id, prod_id)
+        return status_code
 
 
 if __name__ == '__main__':
-    run(TOKEN)
+    status_code = run(TOKEN, prod_id)

@@ -1,2 +1,2 @@
-with open('..\execution.log', 'w'):
+with open('..\logs\execution.log', 'w'):
     pass

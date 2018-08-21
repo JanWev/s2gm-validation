@@ -15,9 +15,7 @@ __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 def log_download(start, running, finished, url):
     logging.basicConfig(filename='./logs/execution.log', filemode='a',
                         level=logging.DEBUG)
-    print('Start value: %s \n', str(start))
-    print('Stop value: %s \n', str(finished))
-    if start and not finished:
+    if start and not finished and not running:
         logging.info('Download started  : %s', str(datetime.now()))
         # logging.debug('Requested tests by the user: %s', str(''))
 
@@ -98,16 +96,24 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
     log_download(start, running, finished, url)
 
 
-def run(TOKEN, DOWNLOAD_FOLDER):
-    with open('./variables/request_variables.pkl', 'rb') as f:
+def run(TOKEN, DOWNLOAD_FOLDER, prod_id):
+    if prod_id < 10:
+        file = './variables/request_variables_0' + str(prod_id) + '.pkl'
+    else:
+        file = './variables/request_variables_' + str(prod_id) + '.pkl'
+    with open(file, 'rb') as f:
         [request_id, order_name, start_date, end_date, temporal_period,
          resolution] = pickle.load(f)
     start = False
     running = False
     finished = False
-    downloader(start, running, finished, DOWNLOAD_FOLDER, request_id, TOKEN,
-               start_date, end_date, temporal_period, resolution, order_name)
+    if request_id == '':
+        pass
+    else:
+        downloader(start, running, finished, DOWNLOAD_FOLDER, request_id,
+                   TOKEN, start_date, end_date, temporal_period, resolution,
+                   order_name)
 
 
 if __name__ == '__main__':
-    run(TOKEN, DOWNLOAD_FOLDER)
+    run(TOKEN, DOWNLOAD_FOLDER, prod_id)

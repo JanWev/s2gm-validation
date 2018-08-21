@@ -18,7 +18,7 @@ def log_request(html_status):
     logging.debug('HTML status: %s', str(html_status))
 
 
-def make_request(token, data):
+def make_request(token, data, prod_id):
     headers = {
         'Origin': 'https://apps.sentinel-hub.com',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -36,39 +36,51 @@ def make_request(token, data):
         data=data)
 
     log_request(response.status_code)
-    request_id = response.json()['id']
-    order_name = response.json()['name']
-    temporal_period = response.json()['temporalPeriod']
-    resolution = response.json()['resolution']
-
-    start_date = datetime.strptime(response.json()['startDate'][0:10], "%Y-%m-%d").date()
-
-    if temporal_period == 'DAY':
-        end_date = start_date
-    elif temporal_period == 'TENDAYS':
-        end_date = start_date + timedelta(days=10)
-    elif temporal_period == 'MONTH':
-        end_date = datetime.strptime(str(start_date.year) + str(start_date.month) + str(calendar.monthrange(start_date.year, start_date.month)[1]), "%Y%m%d").date()
-    elif temporal_period == 'QUARTER':
-        end_date = datetime.strptime(
-            str(start_date.year) + str(start_date.month + 2) + str(
-                calendar.monthrange(start_date.year, start_date.month)[1]),
-            "%Y%m%d").date()
+    if response.status_code == 404:
+        request_id = ''
+        order_name = ''
+        start_date = ''
+        end_date = ''
+        temporal_period = ''
+        resolution = ''
     else:
-        if start_date.month + 11 > 12:
-            end_date = datetime.strptime(str(start_date.year + 1) + str(start_date.month -1 ) + str(calendar.monthrange(start_date.year + 1, start_date.month - 1)[1]),"%Y%m%d").date()
-        else:
+        request_id = response.json()['id']
+        order_name = response.json()['name']
+        temporal_period = response.json()['temporalPeriod']
+        resolution = response.json()['resolution']
+
+        start_date = datetime.strptime(response.json()['startDate'][0:10], "%Y-%m-%d").date()
+
+        if temporal_period == 'DAY':
+            end_date = start_date
+        elif temporal_period == 'TENDAYS':
+            end_date = start_date + timedelta(days=10)
+        elif temporal_period == 'MONTH':
+            end_date = datetime.strptime(str(start_date.year) + str(start_date.month) + str(calendar.monthrange(start_date.year, start_date.month)[1]), "%Y%m%d").date()
+        elif temporal_period == 'QUARTER':
             end_date = datetime.strptime(
-                str(start_date.year) + str(start_date.month + 11) + str(
+                str(start_date.year) + str(start_date.month + 2) + str(
                     calendar.monthrange(start_date.year, start_date.month)[1]),
                 "%Y%m%d").date()
-
-    with open('variables/request_variables.pkl', 'wb') as f:
+        else:
+            if start_date.month + 11 > 12:
+                end_date = datetime.strptime(str(start_date.year + 1) + str(start_date.month -1 ) + str(calendar.monthrange(start_date.year + 1, start_date.month - 1)[1]),"%Y%m%d").date()
+            else:
+                end_date = datetime.strptime(
+                    str(start_date.year) + str(start_date.month + 11) + str(
+                        calendar.monthrange(start_date.year, start_date.month)[1]),
+                    "%Y%m%d").date()
+    if prod_id < 10:
+        file = 'variables/request_variables_0' + str(prod_id) + '.pkl'
+    else:
+        file = 'variables/request_variables_' + str(prod_id) + '.pkl'
+    with open(file, 'wb') as f:
         pickle.dump([request_id, order_name, start_date, end_date, temporal_period, resolution], f)
+    return response.status_code
 
-def run(TOKEN, data):
-    make_request(TOKEN, data)
-
+def run(TOKEN, data, prod_id):
+    status_code = make_request(TOKEN, data, prod_id)
+    return status_code
 
 if __name__ == '__main__':
-    run(TOKEN, data)
+    run(TOKEN, data,prod_id)
