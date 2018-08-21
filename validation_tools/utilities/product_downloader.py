@@ -63,11 +63,8 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
             my_order = entry
     mosaic_id = my_order.split('"id":')[1].split(',', 1)[0]
 
-    parent_dir = download_folder + 'S2GM_' + temporal_period[0].upper() + resolution[1:3] + '_' + start_date.strftime('%Y%m%d') + '_'  + end_date.strftime('%Y%m%d') + '_' + order_name + '_STD_v0.1.0_' + mosaic_id + '/'
-    child_dir = download_folder + 'S2GM_' + temporal_period[0].upper() + resolution[
-                                                                 1:3] + '_' + start_date.strftime(
-            '%Y%m%d') + '_' + end_date.strftime(
-            '%Y%m%d') + '_' + order_name + '_STD_v0.1.0_' + mosaic_id + '/' + order_name + '/'
+    parent_dir = download_folder + 'Val_' + start_date.strftime('%Y%m%d') + '_' + temporal_period[0].upper() + resolution[1:3] + '_'  + order_name + '_STD_v0.1.0_' + mosaic_id + '/'
+    child_dir = download_folder + 'Val_' + start_date.strftime('%Y%m%d') + '_'   + temporal_period[0].upper() + resolution[1:3] + '_'  + order_name + '_STD_v0.1.0_' + mosaic_id + '/' + order_name + '/'
     if not os.path.exists(parent_dir):
         os.mkdir(parent_dir)
     if not os.path.exists(child_dir):
