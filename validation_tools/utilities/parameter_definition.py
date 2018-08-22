@@ -464,7 +464,7 @@ def define_request_parameters(randomize, static_granule_list,
     return request_parameters, num_products
 
 
-def get_parameters():
+def get_parameters(RANDOMIZE):
     random_ids = granule_randomizer(RANDOMIZE, random_granule_number,
                                     random_granule_list)
     request_parameters, num_products = define_request_parameters(RANDOMIZE,
@@ -491,4 +491,4 @@ def get_parameters():
     return request_parameters, num_products
 
 if __name__ == '__main__':
-    get_parameters()
+    get_parameters(RANDOMIZE)
