@@ -3,8 +3,11 @@
 """ Purpose: Orchestrate download and the validation of s2gm products.
 
 example commands:
-1. python ValidationOp.py --operators 1 --test 1 2 3 5 7 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --DOWNLOAD_FOLDER K:/S2GM/S2GM_mosaics/v0.7.2/Python_downloads/ --TOKEN eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4MjBhYjE5ZS0xMjFhLTQ3ZWMtYWQ3ZS0yOTMwNmE0YzIyMzkiLCJhdWQiOiJjNTI1NDQ0Yy02YmQ0LTQyOTAtYjU2Zi0xMWI3OTI0OTE0NjUiLCJqdGkiOiI5OWJkNWNkMzA3NjM0YjQ0MmU2ZmQ3MmM2ZGUzYWU3YyIsImV4cCI6MTUzNDkzMDgxOSwibmFtZSI6IkphbiBXZXZlcnMiLCJlbWFpbCI6Imphbi53ZXZlcnNAYnJvY2ttYW5uLWNvbnN1bHQuZGUiLCJnaXZlbl9uYW1lIjoiSmFuIiwiZmFtaWx5X25hbWUiOiJXZXZlcnMiLCJhY2NvdW50Ijp7InR5cGUiOjEwMDB9fQ.KKuFf3_PbHmMRsT8ATZ5y23jQchAnt9yKKlxo3HcSYFqlVi3f6LqJOTtynnMJr0W_F3_LCJMLDdMLC0mHYrX2varjE5lbKiyctcHjdZ2p_1ytJ3yykvN5BwndvrkDFyAewM-AVX_qT279-hmhn89IEHrjEURX7tf7XVtWc_-Hc7JsbH2HnjL0raOEpl_L-7F2lxNda7DbuaTkx4kFRmiHtDgWo3EsH-hy299apmcMDhsrNHy4flSKap5hGn1G3ZTEGbQaor6-bnOrIjganZfquO9pKxtlZxyNa0tk0Esy5ldArv6Hx8EpGI_NJWIH4IHZp12cNtfI7_KSoT8HxfBmw
-2. first time use (incl randomization): python ValidationOp.py -r --operators 1 --test 1 2 3 5 7 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --DOWNLOAD_FOLDER K:/S2GM/S2GM_mosaics/v0.7.2/Python_downloads/ --TOKEN eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4MjBhYjE5ZS0xMjFhLTQ3ZWMtYWQ3ZS0yOTMwNmE0YzIyMzkiLCJhdWQiOiJjNTI1NDQ0Yy02YmQ0LTQyOTAtYjU2Zi0xMWI3OTI0OTE0NjUiLCJqdGkiOiI5OWJkNWNkMzA3NjM0YjQ0MmU2ZmQ3MmM2ZGUzYWU3YyIsImV4cCI6MTUzNDkzMDgxOSwibmFtZSI6IkphbiBXZXZlcnMiLCJlbWFpbCI6Imphbi53ZXZlcnNAYnJvY2ttYW5uLWNvbnN1bHQuZGUiLCJnaXZlbl9uYW1lIjoiSmFuIiwiZmFtaWx5X25hbWUiOiJXZXZlcnMiLCJhY2NvdW50Ijp7InR5cGUiOjEwMDB9fQ.KKuFf3_PbHmMRsT8ATZ5y23jQchAnt9yKKlxo3HcSYFqlVi3f6LqJOTtynnMJr0W_F3_LCJMLDdMLC0mHYrX2varjE5lbKiyctcHjdZ2p_1ytJ3yykvN5BwndvrkDFyAewM-AVX_qT279-hmhn89IEHrjEURX7tf7XVtWc_-Hc7JsbH2HnjL0raOEpl_L-7F2lxNda7DbuaTkx4kFRmiHtDgWo3EsH-hy299apmcMDhsrNHy4flSKap5hGn1G3ZTEGbQaor6-bnOrIjganZfquO9pKxtlZxyNa0tk0Esy5ldArv6Hx8EpGI_NJWIH4IHZp12cNtfI7_KSoT8HxfBmw
+1. python ValidationOp.py --operators 1 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --TOKEN eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4MjBhYjE5ZS0xMjFhLTQ3ZWMtYWQ3ZS0yOTMwNmE0YzIyMzkiLCJhdWQiOiJjNTI1NDQ0Yy02YmQ0LTQyOTAtYjU2Zi0xMWI3OTI0OTE0NjUiLCJqdGkiOiI5OWJkNWNkMzA3NjM0YjQ0MmU2ZmQ3MmM2ZGUzYWU3YyIsImV4cCI6MTUzNDkzMDgxOSwibmFtZSI6IkphbiBXZXZlcnMiLCJlbWFpbCI6Imphbi53ZXZlcnNAYnJvY2ttYW5uLWNvbnN1bHQuZGUiLCJnaXZlbl9uYW1lIjoiSmFuIiwiZmFtaWx5X25hbWUiOiJXZXZlcnMiLCJhY2NvdW50Ijp7InR5cGUiOjEwMDB9fQ.KKuFf3_PbHmMRsT8ATZ5y23jQchAnt9yKKlxo3HcSYFqlVi3f6LqJOTtynnMJr0W_F3_LCJMLDdMLC0mHYrX2varjE5lbKiyctcHjdZ2p_1ytJ3yykvN5BwndvrkDFyAewM-AVX_qT279-hmhn89IEHrjEURX7tf7XVtWc_-Hc7JsbH2HnjL0raOEpl_L-7F2lxNda7DbuaTkx4kFRmiHtDgWo3EsH-hy299apmcMDhsrNHy4flSKap5hGn1G3ZTEGbQaor6-bnOrIjganZfquO9pKxtlZxyNa0tk0Esy5ldArv6Hx8EpGI_NJWIH4IHZp12cNtfI7_KSoT8HxfBmw
+2. first time use (incl randomization): python ValidationOp.py -r --operators 1  --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --TOKEN eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4MjBhYjE5ZS0xMjFhLTQ3ZWMtYWQ3ZS0yOTMwNmE0YzIyMzkiLCJhdWQiOiJjNTI1NDQ0Yy02YmQ0LTQyOTAtYjU2Zi0xMWI3OTI0OTE0NjUiLCJqdGkiOiI5OWJkNWNkMzA3NjM0YjQ0MmU2ZmQ3MmM2ZGUzYWU3YyIsImV4cCI6MTUzNDkzMDgxOSwibmFtZSI6IkphbiBXZXZlcnMiLCJlbWFpbCI6Imphbi53ZXZlcnNAYnJvY2ttYW5uLWNvbnN1bHQuZGUiLCJnaXZlbl9uYW1lIjoiSmFuIiwiZmFtaWx5X25hbWUiOiJXZXZlcnMiLCJhY2NvdW50Ijp7InR5cGUiOjEwMDB9fQ.KKuFf3_PbHmMRsT8ATZ5y23jQchAnt9yKKlxo3HcSYFqlVi3f6LqJOTtynnMJr0W_F3_LCJMLDdMLC0mHYrX2varjE5lbKiyctcHjdZ2p_1ytJ3yykvN5BwndvrkDFyAewM-AVX_qT279-hmhn89IEHrjEURX7tf7XVtWc_-Hc7JsbH2HnjL0raOEpl_L-7F2lxNda7DbuaTkx4kFRmiHtDgWo3EsH-hy299apmcMDhsrNHy4flSKap5hGn1G3ZTEGbQaor6-bnOrIjganZfquO9pKxtlZxyNa0tk0Esy5ldArv6Hx8EpGI_NJWIH4IHZp12cNtfI7_KSoT8HxfBmw
+
+!IMPORTANT!
+Set the DOWNLOAD_FOLDER variable in static_parameters.py to a local folder on your computer!
 
 PARAMETERS:
 -r: set -r flag to randomize parameters: Don't randomize parameters(default)
@@ -37,12 +40,13 @@ In the second you will find under "Request Headers" an entry called
 below under token. The token will be active for 2 hours.
 """
 
+import os
 import json
 import argparse
 import logging
-from datetime import datetime
+from datetime import datetime, date
 from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, product_downloader
-#from utilities import parameter_definition, product_requester, order_status_checker, product_downloader
+from validation_tools.utilities.static_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -95,8 +99,13 @@ def parameter_writer(counter, request_parameters, userid):
     return data
 
 
-def main(RANDOMIZE, operators, tests, USERID, DOWNLOAD_FOLDER, TOKEN):
-    log_inputs(tests)
+def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
+
+    current_download_folder = DOWNLOAD_FOLDER + date.today().strftime(
+        '%Y%m%d') + '/'
+    if not os.path.exists(current_download_folder):
+        os.mkdir(DOWNLOAD_FOLDER + date.today().strftime('%Y%m%d') + '/')
+
     if operators == 0:
         request_parameters, num_products = parameter_definition.get_parameters(RANDOMIZE)
     else:
@@ -123,7 +132,7 @@ def main(RANDOMIZE, operators, tests, USERID, DOWNLOAD_FOLDER, TOKEN):
         if operators == 3: # download only
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
+                status_code = product_downloader.run(TOKEN, current_download_folder, prod_id)
                 if status_code == 900:
                     pass
                 elif status_code == 404:
@@ -149,7 +158,7 @@ def main(RANDOMIZE, operators, tests, USERID, DOWNLOAD_FOLDER, TOKEN):
                     print(json.loads(data)['name'] + ' ready for download')
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
+                status_code = product_downloader.run(TOKEN, current_download_folder, prod_id)
                 if status_code == 900:
                     pass
                 elif status_code == 404:
@@ -157,21 +166,9 @@ def main(RANDOMIZE, operators, tests, USERID, DOWNLOAD_FOLDER, TOKEN):
                 else:
                     print('Download complete: ' + json.loads(data)['name'])
 
-        # Tests to be executed here:
-        ## L0
-        ## L1
-        ## L2
-
 
 if __name__ == "__main__":
     CLI = argparse.ArgumentParser()
-    # CLI.add_argument(
-    #     "--RANDOMIZE",
-    #     nargs="*",
-    #     type=bool,
-    #     default=False,
-    #     help="True=randomize parameters, False=don't randomize parameters"
-    # )
     CLI.add_argument(
         "-r",
         action="store_true",
@@ -186,25 +183,11 @@ if __name__ == "__main__":
         help='0=create only parameters, 1=request only, 2=status check only, 3=download only, 4=request, status and download'
     )
     CLI.add_argument(
-        "--tests",
-        nargs="*",
-        type=int,
-        default=[1, 2, 3],
-        help='index numbers of wanted tests. usage: --tests 1 2 5 6. default --tests 1 2 3'
-    )
-    CLI.add_argument(
         "--USERID",
         nargs="*",
         type=str,
         default='',
         help='user ID needed'
-    )
-    CLI.add_argument(
-        "--DOWNLOAD_FOLDER",
-        nargs="*",
-        type=str,
-        default='',
-        help='indicate download folder with / (e.g. K:/S2GM/S2GM_mosaics/v0.6.5/Python_downloads/) '
     )
     CLI.add_argument(
         "--TOKEN",
@@ -215,4 +198,4 @@ if __name__ == "__main__":
     )
     # parse the command line
     args = CLI.parse_args()
-    main(args.r, args.operators[0], args.tests, args.USERID, args.DOWNLOAD_FOLDER[0], args.TOKEN[0])
+    main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, args.TOKEN[0])
