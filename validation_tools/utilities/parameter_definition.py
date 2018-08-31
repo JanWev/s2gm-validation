@@ -33,24 +33,24 @@ def granule_randomizer(randomize, random_granule_number, random_granule_list):
 def define_names(static_granule_list, random_granule_number, random_ids):
     names = {}
     for i in range(len(static_granule_list)):
-        names.update({'0' + str(i + 1): 'S2GM_val_req_'
+        names.update({'0' + str(i + 1): 'S2GM_valreq_'
                          + str(datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                         '_stat_0' + str(i + 1) + '_' +
+                         '_stat0' + str(i + 1) + '_' +
                          str(static_granule_list[i])})
 
     for k in range(random_granule_number):
         if k + len(static_granule_list) + 1 < 10:
-            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_val_req_'
+            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_valreq_'
                                             + str(
                 datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                            '_rand_0' + str(k + 1) + '_' +
+                                            '_rand0' + str(k + 1) + '_' +
                                             str(random_ids[k])})
         else:
             names.update({str(
-                k + len(static_granule_list) + 1): 'S2GM_val_req_'
+                k + len(static_granule_list) + 1): 'S2GM_valreq_'
                                                    + str(
                 datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                                   '_rand_' + str(
+                                                   '_rand' + str(
                 k + 1) + '_' +
                                                    str(random_ids[k])})
 
