@@ -103,6 +103,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
 
     current_download_folder = DOWNLOAD_FOLDER + date.today().strftime(
         '%Y%m%d') + '/'
+    current_download_folder = DOWNLOAD_FOLDER
     if not os.path.exists(current_download_folder):
         os.mkdir(DOWNLOAD_FOLDER + date.today().strftime('%Y%m%d') + '/')
 
