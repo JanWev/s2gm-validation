@@ -100,13 +100,6 @@ def parameter_writer(counter, request_parameters, userid):
 
 
 def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
-
-    current_download_folder = DOWNLOAD_FOLDER + date.today().strftime(
-        '%Y%m%d') + '/'
-    current_download_folder = DOWNLOAD_FOLDER
-    if not os.path.exists(current_download_folder):
-        os.mkdir(DOWNLOAD_FOLDER + date.today().strftime('%Y%m%d') + '/')
-
     if operators == 0:
         request_parameters, num_products = parameter_definition.get_parameters(RANDOMIZE)
     else:
@@ -133,7 +126,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
         if operators == 3: # download only
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_downloader.run(TOKEN, current_download_folder, prod_id)
+                status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
                 if status_code == 900:
                     pass
                 elif status_code == 404:
@@ -159,7 +152,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                     print(json.loads(data)['name'] + ' ready for download')
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_downloader.run(TOKEN, current_download_folder, prod_id)
+                status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
                 if status_code == 900:
                     pass
                 elif status_code == 404:
