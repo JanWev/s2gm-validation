@@ -1,6 +1,6 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
-""" Purpose: Orchestrate download and the validation of s2gm products.
+""" Purpose: Orchestrate request and download of s2gm products.
 
 example commands:
 1. python ValidationOp.py --operators 1 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --TOKEN eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI4MjBhYjE5ZS0xMjFhLTQ3ZWMtYWQ3ZS0yOTMwNmE0YzIyMzkiLCJhdWQiOiJjNTI1NDQ0Yy02YmQ0LTQyOTAtYjU2Zi0xMWI3OTI0OTE0NjUiLCJqdGkiOiI5OWJkNWNkMzA3NjM0YjQ0MmU2ZmQ3MmM2ZGUzYWU3YyIsImV4cCI6MTUzNDkzMDgxOSwibmFtZSI6IkphbiBXZXZlcnMiLCJlbWFpbCI6Imphbi53ZXZlcnNAYnJvY2ttYW5uLWNvbnN1bHQuZGUiLCJnaXZlbl9uYW1lIjoiSmFuIiwiZmFtaWx5X25hbWUiOiJXZXZlcnMiLCJhY2NvdW50Ijp7InR5cGUiOjEwMDB9fQ.KKuFf3_PbHmMRsT8ATZ5y23jQchAnt9yKKlxo3HcSYFqlVi3f6LqJOTtynnMJr0W_F3_LCJMLDdMLC0mHYrX2varjE5lbKiyctcHjdZ2p_1ytJ3yykvN5BwndvrkDFyAewM-AVX_qT279-hmhn89IEHrjEURX7tf7XVtWc_-Hc7JsbH2HnjL0raOEpl_L-7F2lxNda7DbuaTkx4kFRmiHtDgWo3EsH-hy299apmcMDhsrNHy4flSKap5hGn1G3ZTEGbQaor6-bnOrIjganZfquO9pKxtlZxyNa0tk0Esy5ldArv6Hx8EpGI_NJWIH4IHZp12cNtfI7_KSoT8HxfBmw
@@ -50,10 +50,6 @@ from validation_tools.utilities.static_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-def log_inputs(tests):
-    logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
-    logging.info('ValidationOp executed: %s', str(datetime.now()))
-    logging.debug('Requested tests by the user: %s', str(tests))
 
 def parameter_writer(counter, request_parameters, userid):
     if counter < 10:
