@@ -8,6 +8,7 @@ import logging
 from datetime import datetime, timedelta
 import calendar
 import pickle
+from .static_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -18,7 +19,7 @@ def log_request(html_status):
     logging.debug('HTML status: %s', str(html_status))
 
 
-def make_request(token, data, prod_id):
+def make_request(DOWNLOAD_FOLDER, token, data, prod_id):
     headers = {
         'Origin': 'https://apps.sentinel-hub.com',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -71,16 +72,16 @@ def make_request(token, data, prod_id):
                         calendar.monthrange(start_date.year, start_date.month)[1]),
                     "%Y%m%d").date()
     if prod_id < 10:
-        file = 'variables/request_variables_0' + str(prod_id) + '.pkl'
+        file = DOWNLOAD_FOLDER + 'variables/request_variables_0' + str(prod_id) + '.pkl'
     else:
-        file = 'variables/request_variables_' + str(prod_id) + '.pkl'
+        file = DOWNLOAD_FOLDER + 'variables/request_variables_' + str(prod_id) + '.pkl'
     with open(file, 'wb') as f:
         pickle.dump([request_id, order_name, start_date, end_date, temporal_period, resolution], f)
     return response.status_code
 
-def run(TOKEN, data, prod_id):
-    status_code = make_request(TOKEN, data, prod_id)
+def run(DOWNLOAD_FOLDER, TOKEN, data, prod_id):
+    status_code = make_request(DOWNLOAD_FOLDER, TOKEN, data, prod_id)
     return status_code
 
 if __name__ == '__main__':
-    run(TOKEN, data,prod_id)
+    run(DOWNLOAD_FOLDER, TOKEN, data,prod_id)

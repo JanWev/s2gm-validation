@@ -2,7 +2,8 @@ from datetime import datetime
 import random
 import pickle
 import time
-from .static_parameters import static_granule_list, static_granule_dict, \
+import os
+from .static_parameters import DOWNLOAD_FOLDER, static_granule_list, static_granule_dict, \
     random_granule_number, random_granule_list, random_granule_dict, \
     static_granule_format, image_formats, resolution_list, static_resolution,\
     coordinate_system_list, static_projection, basic_ref_band_list, \
@@ -13,19 +14,19 @@ __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
 RANDOMIZE = False  # This can be set to True if you like to create a new set of random Granules
 
-def granule_randomizer(randomize, random_granule_number, random_granule_list):
+def granule_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, random_granule_list):
     if randomize:
         random_ids = random.sample(random_granule_list, random_granule_number)
-        with open('variables/ids.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/ids.pkl', 'wb') as f:
             pickle.dump(random_ids, f)
     else:
         try:
-            with open('variables/ids.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/ids.pkl', 'rb') as f:
                 random_ids = pickle.load(f)
         except FileNotFoundError:
             print('IDs do not exist, start randomizing')
             random_ids = random.sample(random_granule_list, random_granule_number)
-            with open('variables/ids.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/ids.pkl', 'wb') as f:
                 pickle.dump(random_ids, f)
 
     return random_ids
@@ -57,31 +58,31 @@ def define_names(static_granule_list, random_granule_number, random_ids):
     return names
 
 
-def format_randomizer(randomize, random_granule_number,
+def format_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number,
                       image_formats):
     if randomize:
         format_list = ['']*random_granule_number
         for i in range(random_granule_number):
             format_list[i] = (random.sample(image_formats, 1))[0]
-        with open('./variables/formats.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/formats.pkl', 'wb') as f:
             pickle.dump(format_list, f)
     else:
         try:
-            with open('./variables/formats.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/formats.pkl', 'rb') as f:
                 format_list = pickle.load(f)
         except FileNotFoundError:
             print('Formats do not exist, start randomizing')
             format_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 format_list[i] = (random.sample(image_formats, 1))[0]
-            with open('./variables/formats.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/formats.pkl', 'wb') as f:
                 pickle.dump(format_list, f)
 
     return format_list
 
-def define_format(randomize, static_granule_format, random_granule_number,
+def define_format(DOWNLOAD_FOLDER, randomize, static_granule_format, random_granule_number,
                       image_formats):
-    random_granule_format = format_randomizer(randomize, random_granule_number,
+    random_granule_format = format_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number,
                       image_formats)
     formats = {}
     formats.update(static_granule_format)
@@ -94,31 +95,31 @@ def define_format(randomize, static_granule_format, random_granule_number,
     return formats
 
 
-def resolution_randomizer(randomize, random_granule_number, resolution_list):
+def resolution_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, resolution_list):
     if randomize:
         random_resolution_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
-        with open('./variables/resolutions.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/resolutions.pkl', 'wb') as f:
             pickle.dump(random_resolution_list, f)
     else:
         try:
-            with open('./variables/resolutions.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/resolutions.pkl', 'rb') as f:
                 random_resolution_list = pickle.load(f)
         except FileNotFoundError:
             print('Resolutions do not exist, start randomizing')
             random_resolution_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_resolution_list[i] = (random.sample(resolution_list, 1))[0]
-            with open('./variables/resolutions.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/resolutions.pkl', 'wb') as f:
                 pickle.dump(random_resolution_list, f)
 
     return random_resolution_list
 
 
-def define_resolutions(randomize, random_granule_number, resolution_list,
+def define_resolutions(DOWNLOAD_FOLDER, randomize, random_granule_number, resolution_list,
                        static_resolution):
-    random_granule_resolution = resolution_randomizer(randomize,
+    random_granule_resolution = resolution_randomizer(DOWNLOAD_FOLDER, randomize,
                                                       random_granule_number,
                                                       resolution_list)
     resolutions = {}
@@ -132,31 +133,31 @@ def define_resolutions(randomize, random_granule_number, resolution_list,
     return resolutions
 
 
-def projection_randomizer(randomize, random_granule_number, coordinate_system_list):
+def projection_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, coordinate_system_list):
     if randomize:
         random_projection_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
-        with open('./variables/projections.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/projections.pkl', 'wb') as f:
             pickle.dump(random_projection_list, f)
     else:
         try:
-            with open('./variables/projections.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/projections.pkl', 'rb') as f:
                 random_projection_list = pickle.load(f)
         except FileNotFoundError:
             print('Projections do not exist, start randomizing')
             random_projection_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_projection_list[i] = (random.sample(coordinate_system_list, 1))[0]
-            with open('./variables/projections.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/projections.pkl', 'wb') as f:
                 pickle.dump(random_projection_list, f)
 
     return random_projection_list
 
 
-def define_projections(randomize, random_granule_number, coordinate_system_list,
+def define_projections(DOWNLOAD_FOLDER, randomize, random_granule_number, coordinate_system_list,
                        static_projection):
-    random_granule_projection = projection_randomizer(randomize,
+    random_granule_projection = projection_randomizer(DOWNLOAD_FOLDER, randomize,
                                                       random_granule_number,
                                                       coordinate_system_list)
     projections = {}
@@ -171,7 +172,7 @@ def define_projections(randomize, random_granule_number, coordinate_system_list,
     return projections
 
 
-def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
+def band_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, basic_ref_band_list,
                     ext_ref_band_list, aux_band_list):
     if randomize:
         random_band_list = [''] * random_granule_number
@@ -227,11 +228,11 @@ def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
                 else:
                     band_str += ',' + (temp_complete_band_list)[k] + ']}'
             random_band_list[complete_random_number + less_random_number + i] = band_str
-        with open('./variables/bands.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/bands.pkl', 'wb') as f:
             pickle.dump(random_band_list, f)
     else:
         try:
-            with open('./variables/bands.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/bands.pkl', 'rb') as f:
                 random_band_list = pickle.load(f)
         except FileNotFoundError:
             print('bands do not exist, start randomizing')
@@ -280,17 +281,14 @@ def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
 
             for i in range(least_random_number):
                 num_bands = random.randrange(1, 19, 1)
-                if num_bands // 2 > len(ext_ref_band_list):
+                if num_bands // 2 >= len(ext_ref_band_list):
                     num_ext_bands = len(ext_ref_band_list)
                     num_aux_bands = num_bands - num_ext_bands
                 else:
                     num_aux_bands = num_bands // 2
                     num_ext_bands = num_bands - num_aux_bands
-
-                temp_ext_band_list = random.sample(ext_ref_band_list,
-                                                   num_basic_bands)
-                temp_aux_band_list = random.sample(aux_band_list,
-                                                   num_aux_bands)
+                temp_ext_band_list = random.sample(ext_ref_band_list, num_ext_bands)
+                temp_aux_band_list = random.sample(aux_band_list, num_aux_bands)
                 temp_complete_band_list = basic_ref_band_list + temp_ext_band_list + temp_aux_band_list
                 for k in range(len(temp_complete_band_list)):
                     if k == 0:
@@ -301,15 +299,15 @@ def band_randomizer(randomize, random_granule_number, basic_ref_band_list,
                         band_str += ',' + (temp_complete_band_list)[k] + ']}'
                 random_band_list[
                     complete_random_number + less_random_number + i] = band_str
-            with open('./variables/bands.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/bands.pkl', 'wb') as f:
                 pickle.dump(random_band_list, f)
 
     return random_band_list
 
 
-def define_bands(randomize, random_granule_number, basic_ref_band_list, 
+def define_bands(DOWNLOAD_FOLDER, randomize, random_granule_number, basic_ref_band_list,
                  ext_ref_band_list, aux_band_list, static_band):
-    random_granule_bands = band_randomizer(randomize, random_granule_number,
+    random_granule_bands = band_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number,
                                            basic_ref_band_list, 
                                            ext_ref_band_list, aux_band_list)
     bands = {}
@@ -339,30 +337,30 @@ def define_coordinates(static_granule_list, random_ids, static_granule_dict,
     return coordinates
 
 
-def period_randomizer(randomize, random_granule_number, period_list):
+def period_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, period_list):
     if randomize:
         random_period_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_period_list[i] = (random.sample(period_list, 1))[0]
-        with open('./variables/periods.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/periods.pkl', 'wb') as f:
             pickle.dump(random_period_list, f)
     else:
         try:
-            with open('./variables/periods.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/periods.pkl', 'rb') as f:
                 random_period_list = pickle.load(f)
         except FileNotFoundError:
             print('Periods do not exist, start randomizing')
             random_period_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_period_list[i] = (random.sample(period_list, 1))[0]
-            with open('./variables/periods.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/periods.pkl', 'wb') as f:
                 pickle.dump(random_period_list, f)
 
     return random_period_list
 
 
-def define_periods(randomize, random_granule_number, period_list, static_periods):
-    random_granule_period = period_randomizer(randomize, random_granule_number, period_list)
+def define_periods(DOWNLOAD_FOLDER, randomize, random_granule_number, period_list, static_periods):
+    random_granule_period = period_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, period_list)
     periods = {}
     periods.update(static_periods)
     for k in range(random_granule_number):
@@ -393,18 +391,18 @@ def strTimeProp(start, end, format, prop):
 def randomDate(start, end, prop):
     return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
 
-def date_randomizer(randomize, random_granule_number):
+def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
 
     if randomize:
         random_date_list = [''] * random_granule_number
         for i in range(random_granule_number):
             random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
                random.random())
-        with open('./variables/dates.pkl', 'wb') as f:
+        with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'wb') as f:
             pickle.dump(random_date_list, f)
     else:
         try:
-            with open('./variables/dates.pkl', 'rb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'rb') as f:
                 random_date_list = pickle.load(f)
         except FileNotFoundError:
             print('dates do not exist, start randomizing')
@@ -412,14 +410,14 @@ def date_randomizer(randomize, random_granule_number):
             for i in range(random_granule_number):
                 random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
                random.random())
-            with open('./variables/dates.pkl', 'wb') as f:
+            with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'wb') as f:
                 pickle.dump(random_date_list, f)
 
     return random_date_list
 
 
-def define_dates(randomize, random_granule_number, static_dates):
-    random_granule_date = date_randomizer(randomize, random_granule_number)
+def define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates):
+    random_granule_date = date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number)
     dates = {}
     dates.update(static_dates)
     for k in range(random_granule_number):
@@ -432,7 +430,7 @@ def define_dates(randomize, random_granule_number, static_dates):
     return dates
 
 
-def define_request_parameters(randomize, static_granule_list,
+def define_request_parameters(DOWNLOAD_FOLDER, randomize, static_granule_list,
                               random_granule_number, random_ids,
                               static_granule_format, image_formats,
                               resolution_list, static_resolution, 
@@ -443,31 +441,33 @@ def define_request_parameters(randomize, static_granule_list,
 
     num_products = 4 + len(random_ids)
     names = define_names(static_granule_list, random_granule_number, random_ids)
-    format = define_format(randomize, static_granule_format,
+    format = define_format(DOWNLOAD_FOLDER, randomize, static_granule_format,
                            random_granule_number, image_formats)
-    resolutions = define_resolutions(randomize,
+    resolutions = define_resolutions(DOWNLOAD_FOLDER, randomize,
                                      random_granule_number, resolution_list,
                                      static_resolution)
-    projections = define_projections(randomize,
+    projections = define_projections(DOWNLOAD_FOLDER, randomize,
                                      random_granule_number, coordinate_system_list,
                                      static_projection)
-    bands = define_bands(randomize, random_granule_number,
+    bands = define_bands(DOWNLOAD_FOLDER, randomize, random_granule_number,
                          basic_ref_band_list, ext_ref_band_list, aux_band_list,
                          static_band)
     coordinates = define_coordinates(static_granule_list, random_ids,
                                      static_granule_dict, random_granule_dict)
-    periods = define_periods(randomize, random_granule_number, period_list, static_periods)
+    periods = define_periods(DOWNLOAD_FOLDER, randomize, random_granule_number, period_list, static_periods)
 
-    dates = define_dates(randomize, random_granule_number, static_dates)
+    dates = define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates)
 
     request_parameters = [names, format, resolutions, projections, bands, coordinates, periods, dates]
     return request_parameters, num_products
 
 
-def get_parameters(RANDOMIZE):
-    random_ids = granule_randomizer(RANDOMIZE, random_granule_number,
+def get_parameters(DOWNLOAD_FOLDER, RANDOMIZE):
+    if not os.path.exists(DOWNLOAD_FOLDER + 'variables/'):
+        os.makedirs(DOWNLOAD_FOLDER + 'variables/')
+    random_ids = granule_randomizer(DOWNLOAD_FOLDER, RANDOMIZE, random_granule_number,
                                     random_granule_list)
-    request_parameters, num_products = define_request_parameters(RANDOMIZE,
+    request_parameters, num_products = define_request_parameters(DOWNLOAD_FOLDER, RANDOMIZE,
                                                    static_granule_list,
                                                    random_granule_number,
                                                    random_ids,
@@ -491,4 +491,4 @@ def get_parameters(RANDOMIZE):
     return request_parameters, num_products
 
 if __name__ == '__main__':
-    get_parameters(RANDOMIZE)
+    get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)

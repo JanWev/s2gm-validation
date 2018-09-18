@@ -112,9 +112,9 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
 
 def run(TOKEN, DOWNLOAD_FOLDER, prod_id):
     if prod_id < 10:
-        file = './variables/request_variables_0' + str(prod_id) + '.pkl'
+        file = DOWNLOAD_FOLDER + 'variables/request_variables_0' + str(prod_id) + '.pkl'
     else:
-        file = './variables/request_variables_' + str(prod_id) + '.pkl'
+        file = DOWNLOAD_FOLDER + 'variables/request_variables_' + str(prod_id) + '.pkl'
     with open(file, 'rb') as f:
         [request_id, order_name, start_date, end_date, temporal_period,
          resolution] = pickle.load(f)

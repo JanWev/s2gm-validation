@@ -2,7 +2,7 @@
 This file holds variables provided to parameter_definition.py
 '''
 
-DOWNLOAD_FOLDER = 'K:/S2GM/S2GM_mosaics/v0.7.2/Python_downloads/'
+DOWNLOAD_FOLDER = 'K:/S2GM/S2GM_mosaics/v0.8.7/Python_downloads/0819_1156/'
 
 coordinate_system_list = ['UTM', 'WGS84']
 resolution_list = ['10', '20', '60']
@@ -36,7 +36,7 @@ static_periods = {'01': 'TENDAYS', '02': 'MONTH', '03': 'YEAR', '04': 'QUARTER'}
 static_dates = {'01': '2017-06-17T00:00:00', '02': '2017-09-03T00:00:00', '03': '2018-03-01T00:00:00', '04': '2018-04-15T00:00:00'}
 
 
-random_granule_number = 11 # Allowed minimum = 6
+random_granule_number = 6 # Allowed minimum = 6
 random_granule_list = ['T34UFB', 'T34UFA', 'T35TNN', 'T35TNM', 'T35TNL', 'T34UFV',
                 'T35TQM', 'T35TPN', 'T35TPM', 'T35TPL', 'T35ULV', 'T35ULB',
                 'T35ULA', 'T34UGE', 'T34UEV', 'T34UDV', 'T35UMV', 'T35UMA',
