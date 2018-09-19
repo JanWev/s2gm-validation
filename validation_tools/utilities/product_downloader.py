@@ -95,7 +95,8 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                     'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
                         count) + '/metadata', headers=headers).json()
                 for file in data_list['files']:
-                    url = 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/1?filename=' + file
+                    url = 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
+                        count) + '?filename=' + file
                     file_response = requests.get(url, headers=headers, stream=True)
                     out_filename_long = data_list['namingMap'][file]
                     out_filename = out_filename_long.split('/')[len(out_filename_long.split('/'))-1]
