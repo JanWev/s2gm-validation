@@ -1,4 +1,5 @@
 .idea/
 __pycache__/
-logs/
-variables/
+validation_tools/logs/
+validation_tools/variables/
+validation_tools/utilities/static_parameters.py
