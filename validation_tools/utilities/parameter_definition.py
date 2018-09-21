@@ -14,6 +14,28 @@ __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
 RANDOMIZE = False  # This can be set to True if you like to create a new set of random Granules
 
+with open(DOWNLOAD_FOLDER + 'variables/static_parameters_variables.pkl', 'wb') as f:
+    pickle.dump(DOWNLOAD_FOLDER, f)
+    pickle.dump(static_granule_list, f)
+    pickle.dump(static_granule_dict, f)
+    pickle.dump(random_granule_number, f)
+    pickle.dump(random_granule_list, f)
+    pickle.dump(random_granule_dict, f)
+    pickle.dump(static_granule_format, f)
+    pickle.dump(image_formats, f)
+    pickle.dump(resolution_list, f)
+    pickle.dump(static_resolution, f)
+    pickle.dump(coordinate_system_list, f)
+    pickle.dump(static_projection, f)
+    pickle.dump(basic_ref_band_list, f)
+    pickle.dump(ext_ref_band_list, f)
+    pickle.dump(aux_band_list, f)
+    pickle.dump(static_band, f)
+    pickle.dump(period_list, f)
+    pickle.dump(static_periods, f)
+    pickle.dump(static_dates, f)
+
+
 def granule_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, random_granule_list):
     if randomize:
         random_ids = random.sample(random_granule_list, random_granule_number)
