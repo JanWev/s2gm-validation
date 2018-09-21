@@ -96,6 +96,18 @@ def parameter_writer(counter, request_parameters, userid):
 
 
 def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
+    try:
+        logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
+        logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
+        logging.debug('Operator executed by the user: %s', str(operators))
+    except FileNotFoundError:
+        print('log file does not exist and will be created')
+        f = open('./logs/execution.log')
+        f.close()
+        logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
+        logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
+        logging.debug('Operator executed by the user: %s', str(operators))
+
     if operators == 0:
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
     else:

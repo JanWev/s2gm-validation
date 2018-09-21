@@ -10,9 +10,18 @@ from datetime import datetime, date
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
 def log_inputs(tests):
-    logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
-    logging.info('ValidationOp executed: %s', str(datetime.now()))
-    logging.debug('Requested tests by the user: %s', str(tests))
+    try:
+        logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
+        logging.info('ValidationOp executed: %s', str(datetime.now()))
+        logging.debug('Requested tests by the user: %s', str(tests))
+    except FileNotFoundError:
+        print('log file does not exist and will be created')
+        f = open('./logs/execution.log')
+        f.close()
+        logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
+        logging.info('ValidationOp executed: %s', str(datetime.now()))
+        logging.debug('Requested tests by the user: %s', str(tests))
+
 
 def main(tests):
     log_inputs(tests)
