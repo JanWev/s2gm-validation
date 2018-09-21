@@ -96,6 +96,8 @@ def parameter_writer(counter, request_parameters, userid):
 
 
 def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
+    if not os.path.isdir('./logs'):
+        os.makedirs('./logs')
     try:
         logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
         logging.info('RequestDownloadOp executed: %s', str(datetime.now()))

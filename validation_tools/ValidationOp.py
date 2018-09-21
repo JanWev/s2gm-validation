@@ -3,6 +3,7 @@
 """ Purpose: Orchestrate validation of s2gm products.
 """
 
+import os
 import logging
 import argparse
 from datetime import datetime, date
@@ -10,6 +11,8 @@ from datetime import datetime, date
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
 def log_inputs(tests):
+    if not os.path.isdir('./logs'):
+        os.makedirs('./logs')
     try:
         logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
         logging.info('ValidationOp executed: %s', str(datetime.now()))
