@@ -57,7 +57,7 @@ def check_processing_status(DOWNLOAD_FOLDER, token, request_id, prod_id):
             done = True
         else:
             status = response_status.json()['status']
-            if status == 'FINISHED':
+            if status == 'FINISHED' or status == 'PARTIALLY_FINISHED':
                 done = True
                 log_processing(request_id, done, count)
             else:
