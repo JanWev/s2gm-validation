@@ -2,6 +2,9 @@
 This file holds variables provided to parameter_definition.py
 '''
 
+username = ''
+password = ''
+
 DOWNLOAD_FOLDER = 'K:/S2GM/S2GM_mosaics/v0.8.7/Python_downloads/0819_1156/'
 
 coordinate_system_list = ['UTM', 'WGS84']

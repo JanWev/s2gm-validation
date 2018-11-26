@@ -44,9 +44,11 @@ import os
 import json
 import argparse
 import logging
+import pickle
 from datetime import datetime, date
 from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, product_downloader
-from validation_tools.utilities.static_parameters import DOWNLOAD_FOLDER
+from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER
+from validation_tools.utilities.get_token import get_token
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -112,8 +114,13 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
 
     if operators == 0:
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
+        with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
+            pickle.dump(request_parameters, f)
+        print(request_parameters)
     else:
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
+        with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
+            pickle.dump(request_parameters, f)
         if operators == 1: # request only
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
@@ -199,6 +206,9 @@ if __name__ == "__main__":
         default='',
         help='insert bearer token from MosaicHub'
     )
+
+    TOKEN = get_token(username, password)
     # parse the command line
     args = CLI.parse_args()
-    main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, args.TOKEN[0])
+    # main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, args.TOKEN[0])
+    main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, TOKEN)

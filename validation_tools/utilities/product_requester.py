@@ -84,4 +84,4 @@ def run(DOWNLOAD_FOLDER, TOKEN, data, prod_id):
     return status_code
 
 if __name__ == '__main__':
-    run(DOWNLOAD_FOLDER, TOKEN, data,prod_id)
+    run(DOWNLOAD_FOLDER, TOKEN, data, prod_id)

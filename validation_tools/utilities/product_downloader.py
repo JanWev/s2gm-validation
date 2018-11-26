@@ -26,7 +26,7 @@ def log_download(start, running, finished, url):
         logging.info('Download finished %s', str(datetime.now()))
         logging.info('End of processing %s \n', str(datetime.now()))
 
-def downloader(start, running, finished, download_folder, request_id, token, start_date, end_date, temporal_period, resolution, order_name):
+def downloader(start, running, finished, download_folder, request_id, token, start_date, end_date, temporal_period, resolution, order_name, prod_id):
     '''
     This module downloads all requested data
     :return:
@@ -66,6 +66,12 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
         return status_code
     else:
         mosaic_id = my_order.split('"id":')[1].split(',', 1)[0]
+        if prod_id < 10:
+            file = download_folder + 'variables/request_variables_0' + str(prod_id) + '.pkl'
+        else:
+            file = download_folder + 'variables/request_variables_' + str(prod_id) + '.pkl'
+        with open(file, 'wb') as f:
+            pickle.dump([request_id, order_name, start_date, end_date, temporal_period, resolution, mosaic_id], f)
 
         parent_dir = download_folder + 'R' + start_date.strftime('%Y%m%d') + temporal_period[0].upper() + resolution[1:3] + '_'  + order_name + '_STD_v0.1.0_' + mosaic_id + '/'
         child_dir = download_folder + 'R' + start_date.strftime('%Y%m%d') + temporal_period[0].upper() + resolution[1:3] + '_'  + order_name + '_STD_v0.1.0_' + mosaic_id + '/' + order_name + '/'
@@ -128,7 +134,7 @@ def run(TOKEN, DOWNLOAD_FOLDER, prod_id):
     else:
         status_code = downloader(start, running, finished, DOWNLOAD_FOLDER,
                                  request_id,TOKEN, start_date, end_date,
-                                 temporal_period, resolution, order_name)
+                                 temporal_period, resolution, order_name, prod_id)
         return status_code
 
 
