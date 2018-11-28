@@ -7,15 +7,14 @@ import os
 import sys
 import logging
 import argparse
-import traceback
 from datetime import datetime, date
-
-import pickle
 import json
 from pathlib import Path
-import pprint
 
 from validation_tools.tests import level_0, level_1, level_2, level_3
+
+import pprint
+import traceback
 
 
 
@@ -77,6 +76,8 @@ def run_tests(tests, test_metadata):
         #result = run_L0_test(validate_path)
 
         test_results.append(level_0.level_0_1(test_metadata))
+
+        test_results.append(level_0.level_0_2(test_metadata))
 
     # TODO: run the remaining tests
     if 'L1' in tests:
