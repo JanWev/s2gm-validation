@@ -4,9 +4,20 @@
 """
 
 import os
+import sys
 import logging
 import argparse
+import traceback
 from datetime import datetime, date
+
+import pickle
+import json
+from pathlib import Path
+import pprint
+
+from validation_tools.tests import level_0, level_1, level_2, level_3
+
+
 
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
@@ -24,30 +35,54 @@ def log_inputs(tests, reference_path, validate_path):
     logging.debug('Requested tests by the user: %s', str(tests))
     logging.debug('Reference: {}, to validate: {}'.format(reference_path, validate_path))
 
+"""
+TODO: describe the json file and the obligatory/optional parameters
+"""
+def prepare_tests(tests, validate_path, reference_path = None):
+    log_inputs(tests, validate_path, reference_path)
 
-def check_input(reference_path, validate_path):
-    #TODO: see if all pkl files exist for both reference and to-validate directory
-    #TODO: check if data are valid (e.g. reference is older than to-validate)
-    return True
+    test_metadata = {
+        'validate_path': validate_path,
+        'reference_path': reference_path,
+    }
+
+    # extract all metadata from the order_data.json file
+    # these data are required to do the validation
+    try:
+        order_data_file = Path(validate_path) / 'order_data.json'
+        with open(order_data_file, 'rb') as odf:
+            order_data = json.load(odf)
+
+    except Exception as ex:
+        logging.error('Reading of order data from JSON file failed: {}'.format(ex))
+        raise Exception('Reading of order data from JSON file failed: {}'.format(ex))
+
+    for key, value in order_data.items():
+        test_metadata[key] = value
+
+    # TODO: possibly see if all metadata exist for mosaic to validate (and reference if provided): json file
+
+    return test_metadata
 
 
-def prepare_tests(tests, reference_path, validate_path):
-    log_inputs(tests, reference_path, validate_path)
+def run_tests(tests, test_metadata):
 
-    #TODO: check integrity of reference and validation folder
-    if (not check_input(reference_path, validate_path)):
-        logging.error('Input data are not valid, check log for more information.')
-        return
-    #TODO: run the different checks
+    test_results = []
+
+    #run the different validation tests
+
     if 'L0' in tests:
-        print('running test L0 for {}'.format(validate_path))
+        logging.info('running test L0 for {}'.format(test_metadata['validate_path']))
         # L0: check file integrity of validate folder
         #result = run_L0_test(validate_path)
+
+        test_results.append(level_0.level_0_1(test_metadata))
+
+    # TODO: run the remaining tests
     if 'L1' in tests:
-        print('running test L1 for {}'.format(validate_path))
+        logging.info('running test L1 for {}'.format(test_metadata))
 
-
-    #TODO: create validation report
+    return test_results
 
 
 
@@ -67,20 +102,33 @@ if __name__ == "__main__":
     CLI.add_argument(
         "-r",
         "--reference",
-        nargs=1,
         type=str,
-        required=True,
+        required=False,
         metavar="path",
         help='Path to the directory of the validation reference data'
     )
     CLI.add_argument(
         "-v",
         "--validate",
-        nargs=1,
         type=str,
         required=True,
         metavar="path",
         help='Path to the directory of the data to be validated'
     )
     args = CLI.parse_args()
-    prepare_tests(args.tests, args.reference, args.validate)
+
+    # check integrity of data to be validated
+    try:
+        test_metadata = prepare_tests(args.tests, args.validate, args.reference)
+    except Exception as ex:
+        logging.error('Preparing of test failed: {}'.format(ex))
+        print('Preparing of test failed: {}'.format(ex))
+        sys.exit(1)
+
+    test_results = run_tests(args.tests, test_metadata)
+
+
+    # TODO: create better validation report
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(test_results)
+
