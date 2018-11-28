@@ -2,6 +2,37 @@ from validation_tools.utilities import validation_metadata
 from pathlib import Path
 
 """
+Level 0 test no. 2: Checking the integrity of files
+"""
+def level_0_2(test_metadata):
+    test_result = {
+        'test_id': 'level_0_2',
+        'test_name': 'Check integrity of files',
+    }
+
+    try:
+        # TODO: do test
+
+        # fill test result
+        test_passed = True
+        # TODO: check if test was passed
+
+        test_result['result'] = {
+            'finished': True,
+            'passed': test_passed
+        }
+
+    except Exception as ex:
+        test_result['result'] = {
+            'finished': False,
+            'passed': False,
+            'error': ex,
+        }
+
+    return test_result
+
+
+"""
 Level 0 test no. 1: Checking if all required files are there
 """
 def level_0_1(test_metadata):
