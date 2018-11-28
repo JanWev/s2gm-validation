@@ -17,19 +17,19 @@ import pprint
 import traceback
 
 
-
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
+
 def log_inputs(tests, reference_path, validate_path):
-    if not os.path.isdir('./logs'):
-        os.makedirs('./logs')
+    if not os.path.isdir('./validation_tools/logs'):
+        os.makedirs('./validation_tools/logs')
     try:
-        logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
+        logging.basicConfig(filename='./validation_tools/logs/execution.log', filemode='a',level=logging.DEBUG)
     except FileNotFoundError:
         print('log file does not exist and will be created')
-        f = open('./logs/execution.log')
+        f = open('./validation_tools/logs/execution.log')
         f.close()
-        logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
+        logging.basicConfig(filename='./validation_tools/logs/execution.log', filemode='a', level=logging.DEBUG)
     logging.info('ValidationOp executed: %s', str(datetime.now()))
     logging.debug('Requested tests by the user: %s', str(tests))
     logging.debug('Reference: {}, to validate: {}'.format(reference_path, validate_path))
