@@ -35,7 +35,13 @@ def log_inputs(tests, reference_path, validate_path):
     logging.debug('Reference: {}, to validate: {}'.format(reference_path, validate_path))
 
 """
-TODO: describe the json file and the obligatory/optional parameters
+This function tries to read the metadata required for the validation. 
+The main source for these data is the file 'order_data.json' that has
+to be available in the root directory of the product that should be 
+validated.
+
+If the file was not generated, it can be created manually according to
+the example in the README.
 """
 def prepare_tests(tests, validate_path, reference_path = None):
     log_inputs(tests, validate_path, reference_path)

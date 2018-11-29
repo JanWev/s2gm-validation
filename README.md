@@ -20,3 +20,31 @@ The validation of S2GM products comprises 4 levels from L0 to L3
     - Compare number of input products to mosaicking
     - Compare applied algorithm 
     - Compare selected date
+
+
+## Validation metadata
+
+To do the validation certain metadata are required. The main source for these data is 
+the file 'order_data.json' that has to be available in the root path of the product 
+that should be validated.
+
+If the file was not generated, it can be created manually according to the following 
+example. Keep in mind that the text '#optional' is not supposed to be in the JSON file.
+
+```
+{
+	"bands":[
+		"B02","B03","B04","B06","B01","B8A","B08","B12","B05","B07","B11","AOT","SCENE","INDEX","SNOW","SUN_ZENITH","VALID_OBS"
+	],
+	"order_name": "S2GM_valreq_20181119T170905_rand04_T32TNM",      #optional
+	"order_id": "4b6a3385-cc0c-4272-aabc-aed9b345fce4",             #optional
+	"order_issue_date": "2018-11-19",
+	"mosaic_start_date": "2018-01-14",
+	"compositing_period": "MONTH",	
+	"image_format":	"JP2",
+	"resolution": "R20m",
+	"projection": "UTM", 
+	"tile_ids": [ "T32TNM" ],           #optional
+	"mosaic_end_date": "2018-01-31"     #optional
+}
+```

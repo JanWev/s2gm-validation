@@ -1,5 +1,13 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+""" Purpose: Orchestrate validation of s2gm products.
+"""
+
 from validation_tools.utilities import validation_metadata
 from pathlib import Path
+import gdal
+
+__author__ = 'florian girtler - girtler@geoville.com'
 
 """
 Level 0 test no. 2: Checking the integrity of files
