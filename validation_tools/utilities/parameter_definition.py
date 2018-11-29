@@ -42,19 +42,9 @@ def define_names(static_granule_list, random_granule_number, random_ids):
 
     for k in range(random_granule_number):
         if k + len(static_granule_list) + 1 < 10:
-            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_valreq_'
-                                            + str(
-                datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                            '_rand0' + str(k + 1) + '_' +
-                                            str(random_ids[k])})
+            names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_valreq_' + str(datetime.now().strftime("%Y%m%dT%H%M%S")) + '_rand0' + str(k + 1) + '_' + str(random_ids[k])})
         else:
-            names.update({str(
-                k + len(static_granule_list) + 1): 'S2GM_valreq_'
-                                                   + str(
-                datetime.now().strftime("%Y%m%dT%H%M%S")) +
-                                                   '_rand' + str(
-                k + 1) + '_' +
-                                                   str(random_ids[k])})
+            names.update({str(k + len(static_granule_list) + 1): 'S2GM_valreq_' + str(datetime.now().strftime("%Y%m%dT%H%M%S")) + '_rand' + str(k + 1) + '_' + str(random_ids[k])})
 
     return names
 
@@ -217,8 +207,11 @@ def band_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, basic_ref
             else:
                 num_aux_bands = num_bands//2
                 num_ext_bands = num_bands-num_aux_bands
-
-            temp_ext_band_list = random.sample(ext_ref_band_list, num_basic_bands)
+            if num_basic_bands > 8:
+                num_refl_bands = 8
+            else:
+                num_refl_bands = num_basic_bands
+            temp_ext_band_list = random.sample(ext_ref_band_list, num_refl_bands)
             temp_aux_band_list = random.sample(aux_band_list, num_aux_bands)
             temp_complete_band_list =  basic_ref_band_list + temp_ext_band_list + temp_aux_band_list
             for k in range(len(temp_complete_band_list)):
