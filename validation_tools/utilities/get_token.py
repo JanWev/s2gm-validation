@@ -9,6 +9,7 @@ IDENTITY_PATH = ("https://services.sentinel-hub.com/oauth/auth?client_id=c525444
 LOGIN_PATH = "https://services.sentinel-hub.com/oauth/auth/login"
 SESSION_NAME = "session"
 CSRT_PATTERN = re.compile("value=\"(.*)\" name=\"csrt\">")
+LOCATION_HEADER = "Location"
 
 
 def get_token(username, password):
@@ -21,5 +22,8 @@ def get_token(username, password):
     payload = {"csrt": csrt[0], "username": username, "password": password}
     resp = session.post(LOGIN_PATH, data=payload, allow_redirects=False)
 
-    url = urlparse(resp.headers['Location'])
-    return url.fragment.split("&")[0].split("=")[1]
+    if LOCATION_HEADER in resp.headers:
+        url = urlparse(resp.headers[LOCATION_HEADER])
+        return url.fragment.split("&")[0].split("=")[1]
+    else:
+        raise ValueError("Wrong username or password")
