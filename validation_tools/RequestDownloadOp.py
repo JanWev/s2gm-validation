@@ -199,16 +199,16 @@ if __name__ == "__main__":
         default='',
         help='user ID needed'
     )
-    CLI.add_argument(
-        "--TOKEN",
-        nargs="*",
-        type=str,
-        default='',
-        help='insert bearer token from MosaicHub'
-    )
+    # CLI.add_argument(
+    #     "--TOKEN",
+    #     nargs="*",
+    #     type=str,
+    #     default='',
+    #     help='insert bearer token from MosaicHub'
+    # )
 
-    # TOKEN = get_token(username, password)
+    TOKEN = get_token(username, password)
     # parse the command line
     args = CLI.parse_args()
-    main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, args.TOKEN[0])
-    # main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, TOKEN)
+    # main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, args.TOKEN[0])
+    main(args.r, args.operators[0], args.USERID, DOWNLOAD_FOLDER, TOKEN)
