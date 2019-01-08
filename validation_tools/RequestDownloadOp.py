@@ -149,32 +149,32 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                     pass
                 else:
                     print('Download complete: ' + json.loads(data)['name'])
-        if operators == 4: # request, status check and download
-            for prod_id in range(1,num_products+1):
-                data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_requester.run(DOWNLOAD_FOLDER, TOKEN, data, prod_id)
-                if status_code == 404:
-                    print(json.loads(data)['name'] + ' not available')
-                else:
-                    print(json.loads(data)['name'] + ' ordered')
-            for prod_id in range(1, num_products + 1):
-                data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = order_status_checker.run(DOWNLOAD_FOLDER, TOKEN, prod_id)
-                if status_code == 401:
-                    continue
-                elif status_code == None:
-                    continue
-                else:
-                    print(json.loads(data)['name'] + ' ready for download')
-            for prod_id in range(1,num_products+1):
-                data = parameter_writer(prod_id, request_parameters, USERID[0])
-                status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
-                if status_code == 900:
-                    pass
-                elif status_code == 404:
-                    pass
-                else:
-                    print('Download complete: ' + json.loads(data)['name'])
+        # if operators == 4: # request, status check and download
+        #     for prod_id in range(1,num_products+1):
+        #         data = parameter_writer(prod_id, request_parameters, USERID[0])
+        #         status_code = product_requester.run(DOWNLOAD_FOLDER, TOKEN, data, prod_id)
+        #         if status_code == 404:
+        #             print(json.loads(data)['name'] + ' not available')
+        #         else:
+        #             print(json.loads(data)['name'] + ' ordered')
+        #     for prod_id in range(1, num_products + 1):
+        #         data = parameter_writer(prod_id, request_parameters, USERID[0])
+        #         status_code = order_status_checker.run(DOWNLOAD_FOLDER, TOKEN, prod_id)
+        #         if status_code == 401:
+        #             continue
+        #         elif status_code == None:
+        #             continue
+        #         else:
+        #             print(json.loads(data)['name'] + ' ready for download')
+        #     for prod_id in range(1,num_products+1):
+        #         data = parameter_writer(prod_id, request_parameters, USERID[0])
+        #         status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id)
+        #         if status_code == 900:
+        #             pass
+        #         elif status_code == 404:
+        #             pass
+        #         else:
+        #             print('Download complete: ' + json.loads(data)['name'])
 
 
 if __name__ == "__main__":
