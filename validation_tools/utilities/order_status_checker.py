@@ -60,6 +60,8 @@ def check_processing_status(DOWNLOAD_FOLDER, token, request_id, prod_id):
             if status == 'FINISHED' or status == 'PARTIALLY_FINISHED':
                 done = True
                 log_processing(request_id, done, count)
+            elif status == 'PROCESSING':
+                done = True # Todo report status PROCESSING
             else:
                 time.sleep(120)
                 log_processing(request_id, done, count)

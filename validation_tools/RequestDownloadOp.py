@@ -134,8 +134,10 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 status_code = order_status_checker.run(DOWNLOAD_FOLDER, TOKEN, prod_id)
                 if status_code == 401:
+                    print('status code' + str(status_code))
                     continue
                 elif status_code == None:
+                    print('status code' + str(status_code))
                     continue
                 else:
                     print(json.loads(data)['name'] + ' ready for download')
