@@ -33,7 +33,7 @@ import argparse
 import logging
 import pickle
 from datetime import datetime, date
-from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, product_downloader
+from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, product_downloader, pickel_to_json_converter
 from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER
 from validation_tools.utilities.get_token import get_token
 
@@ -158,6 +158,9 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                         pass
                     else:
                         print('Download complete: ' + json.loads(data)['name'])
+        elif operators == 4:  # convert pickl to json
+            for prod_id in range(1, num_products + 1):
+                pickel_to_json_converter.run(DOWNLOAD_FOLDER, prod_id)
         else:
             print('The operator number ' + str(operators) + ' you have chosen is not defined')
 
