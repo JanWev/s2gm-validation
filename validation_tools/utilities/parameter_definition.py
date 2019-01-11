@@ -386,7 +386,7 @@ def randomDate(start, end, prop):
     return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
 
 def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
-
+    #ToDo include dependency on period
     if randomize:
         random_date_list = [''] * random_granule_number
         for i in range(random_granule_number):
@@ -411,6 +411,7 @@ def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
 
 
 def define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates):
+    #Todo include period dependency
     random_granule_date = date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number)
     dates = {}
     dates.update(static_dates)
