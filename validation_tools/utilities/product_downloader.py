@@ -26,7 +26,7 @@ def log_download(start, running, finished, url):
         logging.info('Download finished %s', str(datetime.now()))
         logging.info('End of processing %s \n', str(datetime.now()))
 
-def downloader(start, running, finished, download_folder, request_id, token, start_date, end_date, temporal_period, resolution, order_name, prod_id):
+def downloader(start, running, finished, download_folder, request_id, token, start_date, end_date, temporal_period, resolution, order_name, prod_id, list_number):
     '''
     This module downloads all requested data
     :return:
@@ -46,7 +46,7 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
     }
 
     order_list = requests.get(
-        'https://services-s2gm.sentinel-hub.com/mosaic/index/v1/mosaic/',
+        'https://services-s2gm.sentinel-hub.com/mosaic/index/v1/mosaic/?viewtoken=' + str(list_number),
         headers=headers)
     order_list_text = order_list.text
     split_order_list_text = order_list_text.split(',{"@id"')
@@ -61,7 +61,7 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
         if entry.find(request_id) != -1:
             my_order = entry
     if my_order == '':
-        print(order_name + ' not ready for download')
+        print(order_name + ' product not found in current list')
         status_code = 900
         return status_code
     else:
@@ -117,14 +117,19 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
             return status_code
 
 
-def run(TOKEN, DOWNLOAD_FOLDER, prod_id):
+def run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number):
     if prod_id < 10:
         file = DOWNLOAD_FOLDER + 'variables/request_variables_0' + str(prod_id) + '.pkl'
     else:
         file = DOWNLOAD_FOLDER + 'variables/request_variables_' + str(prod_id) + '.pkl'
     with open(file, 'rb') as f:
-        [request_id, order_name, start_date, end_date, temporal_period,
-         resolution] = pickle.load(f)
+        size = len(pickle.load(f))
+        if size == 6:
+            with open(file, 'rb') as f:
+                [request_id, order_name, start_date, end_date, temporal_period, resolution] = pickle.load(f)
+        else:
+            with open(file, 'rb') as f:
+                [request_id, order_name, start_date, end_date, temporal_period, resolution, order_number] = pickle.load(f)
     start = False
     running = False
     finished = False
@@ -132,11 +137,12 @@ def run(TOKEN, DOWNLOAD_FOLDER, prod_id):
         status_code = 900
         return status_code
     else:
+
         status_code = downloader(start, running, finished, DOWNLOAD_FOLDER,
-                                 request_id,TOKEN, start_date, end_date,
-                                 temporal_period, resolution, order_name, prod_id)
+                             request_id,TOKEN, start_date, end_date,
+                             temporal_period, resolution, order_name, prod_id, list_number)
         return status_code
 
 
 if __name__ == '__main__':
-    run(TOKEN, DOWNLOAD_FOLDER, prod_id)
+    run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number)

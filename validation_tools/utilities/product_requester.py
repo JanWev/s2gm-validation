@@ -37,14 +37,7 @@ def make_request(DOWNLOAD_FOLDER, token, data, prod_id):
         data=data)
 
     log_request(response.status_code)
-    if response.status_code == 404:
-        request_id = ''
-        order_name = ''
-        start_date = ''
-        end_date = ''
-        temporal_period = ''
-        resolution = ''
-    else:
+    if response.status_code == 201:
         request_id = response.json()['id']
         order_name = response.json()['name']
         temporal_period = response.json()['temporalPeriod']
@@ -71,6 +64,14 @@ def make_request(DOWNLOAD_FOLDER, token, data, prod_id):
                     str(start_date.year) + str(start_date.month + 11) + str(
                         calendar.monthrange(start_date.year, start_date.month)[1]),
                     "%Y%m%d").date()
+    else:
+        request_id = ''
+        order_name = ''
+        start_date = ''
+        end_date = ''
+        temporal_period = ''
+        resolution = ''
+
     if prod_id < 10:
         file = DOWNLOAD_FOLDER + 'variables/request_variables_0' + str(prod_id) + '.pkl'
     else:
