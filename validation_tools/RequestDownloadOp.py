@@ -14,7 +14,7 @@ Also set DOWNLOAD_FOLDER variable in static_parameters.py to a local folder on y
 PARAMETERS:
 -r: set -r flag to randomize parameters: Don't randomize parameters(default)
 
---operators: 0=create only parameters, 1(default)=request only, 2=status check only, 3=download only
+--operators: 0=create only parameters, 1(default)=request only, 2=status check only, 3=download only, 4=convert pickel to json
 
 --USERID: your uder ID from MosaicHub. description see below or ask Jan Wevers
 The user id also needs to be acquired from the mosic hub web site.
