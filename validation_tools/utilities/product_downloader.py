@@ -8,6 +8,7 @@ import requests
 import logging
 from datetime import datetime
 import shutil
+import filecmp
 import pickle
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
@@ -33,7 +34,7 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
     :return:
     '''
     # write data downloader
-
+    #ToDo: Access inspire.xml and download
     headers = {
         'Origin': 'https://apps.sentinel-hub.com',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -74,16 +75,16 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
         with open(file, 'wb') as f:
             pickle.dump([request_id, order_name, start_date, end_date, temporal_period, resolution, mosaic_id], f)
 
-        parent_dir = download_folder + 'R' + start_date.strftime('%Y%m%d') + temporal_period[0].upper() + \
-                     resolution[1:3] + '_'  + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/'
-        child_dir = download_folder + 'R' + start_date.strftime('%Y%m%d') + temporal_period[0].upper() + \
-                    resolution[1:3] + '_'  + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/' + \
+        parent_dir = download_folder + 'S2GM_' + temporal_period[0].upper() + \
+                     resolution[1:3] + '_' + start_date.strftime('%Y%m%d') + '_' + end_date.strftime('%Y%m%d') + '_' + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/'
+        # parent_dir = download_folder + 'R' + start_date.strftime('%Y%m%d') + temporal_period[0].upper() + \
+        #              resolution[1:3] + '_'  + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/'
+        child_dir = download_folder + 'S2GM_' + temporal_period[0].upper() + \
+                     resolution[1:3] + '_' + start_date.strftime('%Y%m%d') + '_' + end_date.strftime('%Y%m%d') + '_' + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/' + \
                     order_name + '/'
         if not os.path.exists(parent_dir):
             os.mkdir(parent_dir)
-        if not os.path.exists(child_dir):
-            os.mkdir(child_dir)
-        download_folder = child_dir
+
 
         url = ''
         start = True
@@ -100,25 +101,61 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
             tile_number = int(requests.get(
                 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/maxDownloadSequence',
                 headers=headers).json())
-            for count in range(1, tile_number + 1):
-                data_list = requests.get(
-                    'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
-                        count) + '/metadata', headers=headers).json()
-                for file in data_list['files']:
-                    url = 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
-                        count) + '?filename=' + file
-                    file_response = requests.get(url, headers=headers, stream=True)
-                    out_filename_long = data_list['namingMap'][file]
-                    out_filename = out_filename_long.split('/')[len(out_filename_long.split('/'))-1]
-                    with open(download_folder + out_filename, 'wb') as out_file:
-                        shutil.copyfileobj(file_response.raw, out_file)
-                    del file_response
-                    print(file + ' - ' + out_filename)
+            if tile_number == 1:
+                if not os.path.exists(child_dir):
+                    os.mkdir(child_dir)
+                download_path = child_dir
 
-            running = False
-            finished = True
-            log_download(start, running, finished, url)
-            return status_code
+                for count in range(1, tile_number + 1):
+                    data_list = requests.get(
+                        'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
+                            count) + '/metadata', headers=headers).json()
+                    for file in data_list['files']:
+                        url = 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
+                            count) + '?filename=' + file
+                        file_response = requests.get(url, headers=headers, stream=True)
+                        out_filename_long = data_list['namingMap'][file]
+                        out_filename = out_filename_long.split('/')[len(out_filename_long.split('/')) - 1]
+                        with open(download_path + out_filename, 'wb') as out_file:
+                            if not os.path.isfile(download_path + out_filename):
+                                shutil.copyfileobj(file_response.raw, out_file)
+                        del file_response
+                        print(file + ' - ' + out_filename)
+
+                running = False
+                finished = True
+                log_download(start, running, finished, url)
+                return status_code
+            else:
+                for count in range(1, tile_number + 1):
+                    data_list = requests.get(
+                        'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
+                            count) + '/metadata', headers=headers).json()
+                    tile_name = next(iter(data_list['namingMap'].values())).split('/')[1]
+                    child_dir = download_folder + 'S2GM_' + temporal_period[0].upper() + \
+                                resolution[1:3] + '_' + start_date.strftime('%Y%m%d') + '_' + end_date.strftime(
+                        '%Y%m%d') + '_' + order_name + '_STD_v' + version_number + '_' + mosaic_id + '/' + \
+                                tile_name + '/'
+                    if not os.path.exists(child_dir):
+                        os.mkdir(child_dir)
+                    download_path = child_dir
+
+                    for file in data_list['files']:
+                        url = 'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/sequence/' + str(
+                            count) + '?filename=' + file
+                        file_response = requests.get(url, headers=headers, stream=True)
+                        out_filename_long = data_list['namingMap'][file]
+                        out_filename = out_filename_long.split('/')[len(out_filename_long.split('/'))-1]
+                        with open(download_path + out_filename, 'wb') as out_file:
+                            if not os.path.isfile(download_path + out_filename):
+                                shutil.copyfileobj(file_response.raw, out_file)
+                        del file_response
+                        print(file + ' - ' + out_filename)
+
+                running = False
+                finished = True
+                log_download(start, running, finished, url)
+                return status_code
 
 
 def run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number, version_number):
