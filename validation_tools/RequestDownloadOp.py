@@ -33,8 +33,9 @@ import argparse
 import logging
 import pickle
 from datetime import datetime, date
-from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, product_downloader, pickel_to_json_converter
-from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER
+from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, \
+    product_downloader, pickel_to_json_converter
+from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER, version_number
 from validation_tools.utilities.get_token import get_token
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
@@ -151,7 +152,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                 # Todo: find a clever way to to make this variable. Now the upper limit is set to 10000 products in order list
                 for list_number in range(0, 11000, 100):
                     print(list_number)
-                    status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number)
+                    status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number, version_number)
                     if status_code == 900:
                         pass
                     elif status_code == 404:

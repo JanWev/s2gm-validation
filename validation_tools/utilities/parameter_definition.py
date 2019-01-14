@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import random
 import pickle
 import time
@@ -382,16 +383,46 @@ def strTimeProp(start, end, format, prop):
 
     return time.strftime(format, time.localtime(ptime))
 
-def randomDate(start, end, prop):
-    return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
+def randomDate(start, end, prop, periods, counter_int):
+    if counter_int + 4 < 10:
+        counter = '0' + str(counter_int + 4)
+    else:
+        counter = str(counter_int + 4)
+    random_date_string = strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
+    random_date = datetime.strptime(random_date_string, '%Y-%m-%dT%H:%M:%S')
+    if periods[counter] == 'YEAR':
+        selected_random_date = random_date.strftime("%Y-01-01T00:00:01")
+    elif periods[counter] == 'QUARTER':
+        if int(random_date_string[5:7]) < 4:
+            selected_random_date = random_date.strftime("%Y-01-01T00:00:01")
+        elif int(random_date_string[5:7]) < 7:
+            selected_random_date = random_date.strftime("%Y-04-01T00:00:01")
+        elif int(random_date_string[5:7]) < 10:
+            selected_random_date = random_date.strftime("%Y-07-01T00:00:01")
+        else:
+            selected_random_date = random_date.strftime("%Y-10-01T00:00:01")
+    elif periods[counter] == 'MONTH':
+        selected_random_date = random_date.strftime("%Y-%m-01T00:00:01")
+    elif periods[counter] == 'TENDAYS':
+        if int(random_date_string[8:10]) < 11:
+            selected_random_date = random_date.strftime("%Y-%m-01T00:00:01")
+        elif int(random_date_string[8:10]) < 21:
+            selected_random_date = random_date.strftime("%Y-%m-11T00:00:01")
+        else:
+            selected_random_date = random_date.strftime("%Y-%m-21T00:00:01")
+    else:
+        selected_random_date = random_date.strftime("%Y-%m-%dT00:00:01")
 
-def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
-    #ToDo include dependency on period
+    return selected_random_date
+
+def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, periods):
+    today = datetime.now()
+    today_minus_month = (today - relativedelta(months=+1)).strftime("%Y-%m-%dT%H:%M:%S")
     if randomize:
         random_date_list = [''] * random_granule_number
         for i in range(random_granule_number):
-            random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
-               random.random())
+            random_date_list[i] = randomDate("2017-04-01T00:00:00", today_minus_month,
+               random.random(), periods, i)
         with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'wb') as f:
             pickle.dump(random_date_list, f)
     else:
@@ -402,7 +433,7 @@ def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
             print('dates do not exist, start randomizing')
             random_date_list = [''] * random_granule_number
             for i in range(random_granule_number):
-                random_date_list[i] = randomDate("2017-04-01T00:00:00", "2018-04-15T00:00:00",
+                random_date_list[i] = randomDate("2017-04-01T00:00:00", today_minus_month,
                random.random())
             with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'wb') as f:
                 pickle.dump(random_date_list, f)
@@ -410,9 +441,8 @@ def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number):
     return random_date_list
 
 
-def define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates):
-    #Todo include period dependency
-    random_granule_date = date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number)
+def define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates, periods):
+    random_granule_date = date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, periods)
     dates = {}
     dates.update(static_dates)
     for k in range(random_granule_number):
@@ -451,7 +481,7 @@ def define_request_parameters(DOWNLOAD_FOLDER, randomize, static_granule_list,
                                      static_granule_dict, random_granule_dict)
     periods = define_periods(DOWNLOAD_FOLDER, randomize, random_granule_number, period_list, static_periods)
 
-    dates = define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates)
+    dates = define_dates(DOWNLOAD_FOLDER, randomize, random_granule_number, static_dates, periods)
 
     request_parameters = [names, format, resolutions, projections, bands, coordinates, periods, dates]
     return request_parameters, num_products
