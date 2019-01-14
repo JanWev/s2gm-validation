@@ -384,10 +384,10 @@ def strTimeProp(start, end, format, prop):
     return time.strftime(format, time.localtime(ptime))
 
 def randomDate(start, end, prop, periods, counter_int):
-    if counter_int + 4 < 10:
-        counter = '0' + str(counter_int + 4)
+    if counter_int + 5 < 10:
+        counter = '0' + str(counter_int + 5)
     else:
-        counter = str(counter_int + 4)
+        counter = str(counter_int + 5)
     random_date_string = strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S', prop)
     random_date = datetime.strptime(random_date_string, '%Y-%m-%dT%H:%M:%S')
     if periods[counter] == 'YEAR':
@@ -434,7 +434,7 @@ def date_randomizer(DOWNLOAD_FOLDER, randomize, random_granule_number, periods):
             random_date_list = [''] * random_granule_number
             for i in range(random_granule_number):
                 random_date_list[i] = randomDate("2017-04-01T00:00:00", today_minus_month,
-               random.random())
+               random.random(), periods, i)
             with open(DOWNLOAD_FOLDER + 'variables/dates.pkl', 'wb') as f:
                 pickle.dump(random_date_list, f)
 
