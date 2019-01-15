@@ -192,7 +192,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 # Todo: find a clever way to to make this variable. Now the upper limit is set to 10000 products in order list
                 for list_number in range(0, 11000, 100):
-                    print(list_number)
+                    # print(list_number)
                     status_code = product_downloader.run(TOKEN, DOWNLOAD_FOLDER, prod_id, list_number, version_number)
                     if status_code == 900:
                         pass
