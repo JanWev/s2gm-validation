@@ -42,7 +42,7 @@ def define_names(static_granule_list, random_granule_number, random_ids):
                          str(static_granule_list[i])})
 
     for k in range(random_granule_number):
-        if k + len(static_granule_list) + 1 < 10:
+        if k + 1 < 10:
             names.update({'0' + str(k + len(static_granule_list) + 1): 'S2GM_valreq_' + str(datetime.now().strftime("%Y%m%dT%H%M%S")) + '_rand0' + str(k + 1) + '_' + str(random_ids[k])})
         else:
             names.update({str(k + len(static_granule_list) + 1): 'S2GM_valreq_' + str(datetime.now().strftime("%Y%m%dT%H%M%S")) + '_rand' + str(k + 1) + '_' + str(random_ids[k])})
