@@ -13,6 +13,8 @@ import pickle
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
+logging.getLogger("requests").setLevel(logging.WARNING)
+
 def log_download(start, running, finished, url):
     logging.basicConfig(filename='./logs/execution.log', filemode='a',
                         level=logging.DEBUG)
@@ -63,10 +65,11 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
         if entry.find(request_id) != -1:
             my_order = entry
     if my_order == '':
-        print(order_name + ' product not found in current list')
+        # print(order_name + ' product not found in current list')
         status_code = 900
         return status_code
     else:
+        print('start downloading ' + order_name)
         mosaic_id = my_order.split('"id":')[1].split(',', 1)[0]
         if prod_id < 10:
             file = download_folder + 'variables/request_variables_0' + str(prod_id) + '.pkl'
@@ -88,9 +91,9 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
 
         url = ''
         start = True
-        log_download(start, running, finished, url)
+        # log_download(start, running, finished, url)
         running = True
-        log_download(start, running, finished, url)
+        # log_download(start, running, finished, url)
         status_code = requests.get(
             'https://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/' + mosaic_id + '/maxDownloadSequence',
             headers=headers).status_code
@@ -120,11 +123,19 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                             if not os.path.isfile(download_path + out_filename):
                                 shutil.copyfileobj(file_response.raw, out_file)
                         del file_response
-                        print(file + ' - ' + out_filename)
+                        # print(file + ' - ' + out_filename)
+                meta_url = 'http://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/'+ mosaic_id +'/metadata/?filename=inspire.xml'
+                meta_file_response = requests.get(meta_url, headers=headers, stream=True)
+                meta_out_filename = 'inspire.xml'
+                with open(parent_dir + meta_out_filename, 'wb') as out_file:
+                    if not os.path.isfile(parent_dir + meta_out_filename):
+                        shutil.copyfileobj(meta_file_response.raw, meta_out_filename)
+                del meta_file_response
+                # print('inspire.xml' + ' - ' + meta_out_filename)
 
                 running = False
                 finished = True
-                log_download(start, running, finished, url)
+                # log_download(start, running, finished, url)
                 return status_code
             else:
                 for count in range(1, tile_number + 1):
@@ -150,11 +161,20 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                             if not os.path.isfile(download_path + out_filename):
                                 shutil.copyfileobj(file_response.raw, out_file)
                         del file_response
-                        print(file + ' - ' + out_filename)
+                        # print(file + ' - ' + out_filename)
+
+                meta_url = 'http://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/'+ mosaic_id +'/metadata/?filename=inspire.xml'
+                meta_file_response = requests.get(meta_url, headers=headers, stream=True)
+                meta_out_filename = 'inspire.xml'
+                with open(parent_dir + meta_out_filename, 'wb') as out_file:
+                    if not os.path.isfile(parent_dir + meta_out_filename):
+                        shutil.copyfileobj(meta_file_response.raw, meta_out_filename)
+                del meta_file_response
+                # print('inspire.xml' + ' - ' + meta_out_filename)
 
                 running = False
                 finished = True
-                log_download(start, running, finished, url)
+                # log_download(start, running, finished, url)
                 return status_code
 
 
