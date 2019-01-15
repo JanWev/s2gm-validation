@@ -40,7 +40,6 @@ from validation_tools.utilities.get_token import get_token
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-
 def parameter_writer(counter, request_parameters, userid):
     if counter < 10:
         name = '"' + request_parameters[0]['0'+str(counter)] + '"'
@@ -86,6 +85,10 @@ def parameter_writer(counter, request_parameters, userid):
 
 
 def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
+    if len(DOWNLOAD_FOLDER) > 48:
+        exit('Download path too long. Please shorten path! Maximum allowed path length for DOWNLOAD_FOLDER: 48 chracters')
+    else:
+        pass
     if not os.path.isdir('./logs'):
         os.makedirs('./logs')
     if not os.path.isdir(DOWNLOAD_FOLDER):
