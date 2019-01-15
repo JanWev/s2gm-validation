@@ -12,6 +12,7 @@ from .static_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 def log_processing(request_id, done):
     logging.basicConfig(filename='./logs/execution.log', filemode='a',
@@ -54,14 +55,14 @@ def check_processing_status(DOWNLOAD_FOLDER, token, request_id, prod_id):
         status = response_status.json()['status']
         if status == 'FINISHED' or status == 'PARTIALLY_FINISHED':
             done = True
-            log_processing(request_id, done)
+            # log_processing(request_id, done)
         elif status == 'PROCESSING':
             done = False # Todo report status PROCESSING
-            log_processing(request_id, done)
+            # log_processing(request_id, done)
         else:
             status = 'FAILURE'
             done = False  # Todo report status PROCESSING
-            log_processing(request_id, done)
+            # log_processing(request_id, done)
 
 
     if prod_id < 10:

@@ -90,17 +90,17 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
         os.makedirs('./logs')
     if not os.path.isdir(DOWNLOAD_FOLDER):
         os.makedirs(DOWNLOAD_FOLDER)
-    try:
-        logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
-        logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
-        logging.debug('Operator executed by the user: %s', str(operators))
-    except FileNotFoundError:
-        print('log file does not exist and will be created')
-        f = open('./logs/execution.log')
-        f.close()
-        logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
-        logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
-        logging.debug('Operator executed by the user: %s', str(operators))
+    # try:
+    #     logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
+    #     logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
+    #     logging.debug('Operator executed by the user: %s', str(operators))
+    # except FileNotFoundError:
+    #     print('log file does not exist and will be created')
+    #     f = open('./logs/execution.log')
+    #     f.close()
+    #     logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
+    #     logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
+    #     logging.debug('Operator executed by the user: %s', str(operators))
 
     if operators == 0:
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
@@ -112,17 +112,39 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
         with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
             pickle.dump(request_parameters, f)
         if operators == 1: # request only
+            try:
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'request.log', filemode='a', level=logging.DEBUG)
+                logging.info('The following products have been requested on: %s', str(datetime.now()))
+                logging.info('Product name and status:')
+            except FileNotFoundError:
+                print('log file does not exist and will be created')
+                f = open(DOWNLOAD_FOLDER + 'request.log')
+                f.close()
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'request.log', filemode='a', level=logging.DEBUG)
+                logging.info('The following products have been requested on: %s', str(datetime.now()))
+                logging.info('Product name and status:')
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 status_code = product_requester.run(DOWNLOAD_FOLDER, TOKEN, data, prod_id)
                 if status_code == 404:
                     print(json.loads(data)['name'] + ' not available')
+                    logging.info(json.loads(data)['name'] + ' not available')
                 else:
                     print(json.loads(data)['name'] + ' ordered')
+                    logging.info(json.loads(data)['name'] + ' ordered')
+
         elif operators == 2: # status check only
-            # done = False
-            # count = 0
-            # while not done:
+            try:
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'status.log', filemode='a', level=logging.DEBUG)
+                logging.info('Processing status of files: %s', str(datetime.now()))
+                logging.info('Product name and status:')
+            except FileNotFoundError:
+                print('log file does not exist and will be created')
+                f = open(DOWNLOAD_FOLDER + 'status.log')
+                f.close()
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'status.log', filemode='a', level=logging.DEBUG)
+                logging.info('Processing status of files: %s', str(datetime.now()))
+                logging.info('Product name and status:')
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 status_code, status = order_status_checker.run(DOWNLOAD_FOLDER, TOKEN, prod_id)
@@ -135,18 +157,34 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                 else:
                     if status == 'FINISHED':
                         print(json.loads(data)['name'] + ' ready for download')
+                        logging.info(json.loads(data)['name'] + ' ready for download')
                     elif status == 'PARTIALLY_FINISHED':
                         print(json.loads(data)['name'] + ' partially ready for download')
+                        logging.info(json.loads(data)['name'] + ' partially ready for download')
                     elif status == 'UNAVAILABLE':
                         print(json.loads(data)['name'] + ' product rejected during request')
+                        logging.info(json.loads(data)['name'] + ' product rejected during request')
                     elif status == 'FAILURE':
                         print(json.loads(data)['name'] + ' something went wrong - not sure what happend')
+                        logging.info(json.loads(data)['name'] + ' something went wrong - not sure what happend')
                     else:
                         print(json.loads(data)['name'] + ' still processing')
+                        logging.info(json.loads(data)['name'] + ' still processing')
             # time.sleep(120)
             # log_processing(request_id, done, count)
             # count += 1
         elif operators == 3: # download only
+            try:
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'download.log', filemode='a', level=logging.DEBUG)
+                logging.info('Download status of files: %s', str(datetime.now()))
+                logging.info('Product name and status:')
+            except FileNotFoundError:
+                print('log file does not exist and will be created')
+                f = open(DOWNLOAD_FOLDER + 'download.log')
+                f.close()
+                logging.basicConfig(filename=DOWNLOAD_FOLDER + 'download.log', filemode='a', level=logging.DEBUG)
+                logging.info('Download status of files: %s', str(datetime.now()))
+                logging.info('Product name and status:')
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 # Todo: find a clever way to to make this variable. Now the upper limit is set to 10000 products in order list
@@ -159,6 +197,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                         pass
                     else:
                         print('Download complete: ' + json.loads(data)['name'])
+                        logging.info('Download complete: ' + json.loads(data)['name'])
         elif operators == 4:  # convert pickl to json
             for prod_id in range(1, num_products + 1):
                 pickel_to_json_converter.run(DOWNLOAD_FOLDER, prod_id)
