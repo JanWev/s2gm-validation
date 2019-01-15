@@ -12,6 +12,8 @@ from .static_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
+logging.getLogger("requests").setLevel(logging.WARNING)
+
 def log_request(html_status):
     logging.basicConfig(filename='./logs/execution.log', filemode='a',
                         level=logging.DEBUG)
