@@ -38,7 +38,7 @@ def make_request(DOWNLOAD_FOLDER, token, data, prod_id):
         'https://services-s2gm.sentinel-hub.com/order/orders', headers=headers,
         data=data)
 
-    log_request(response.status_code)
+    # log_request(response.status_code)
     if response.status_code == 201:
         request_id = response.json()['id']
         order_name = response.json()['name']

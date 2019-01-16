@@ -106,10 +106,40 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
     #     logging.debug('Operator executed by the user: %s', str(operators))
 
     if operators == 0:
+        try:
+            logging.basicConfig(filename=DOWNLOAD_FOLDER + 'parameter.log', filemode='a', level=logging.DEBUG)
+            logging.info('Parameters for the following products have been created: %s', str(datetime.now()))
+        except FileNotFoundError:
+            print('log file does not exist and will be created')
+            f = open(DOWNLOAD_FOLDER + 'parameter.log')
+            f.close()
+            logging.basicConfig(filename=DOWNLOAD_FOLDER + 'parameter.log', filemode='a', level=logging.DEBUG)
+            logging.info('Parameters for the following products have been created: %s', str(datetime.now()))
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
         with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
             pickle.dump(request_parameters, f)
         print(request_parameters)
+        names = request_parameters[0]
+        formats = request_parameters[1]
+        for i in range(1, num_products+1):
+            if i < 10:
+                logging.info('name: %s', request_parameters[0]['0' + str(i)])
+                logging.info('format: %s', request_parameters[1]['0' + str(i)])
+                logging.info('resolution: %s', request_parameters[2]['0' + str(i)])
+                logging.info('projection: %s', request_parameters[3]['0' + str(i)])
+                logging.info('bands: %s', request_parameters[4]['0' + str(i)])
+                logging.info('coordinates: %s', request_parameters[5]['0' + str(i)])
+                logging.info('period: %s', request_parameters[6]['0' + str(i)])
+                logging.info('date: %s \n', request_parameters[7]['0' + str(i)])
+            else:
+                logging.info('name: %s', request_parameters[0][str(i)])
+                logging.info('format: %s', request_parameters[1][str(i)])
+                logging.info('resolution: %s', request_parameters[2][str(i)])
+                logging.info('projection: %s', request_parameters[3][str(i)])
+                logging.info('bands: %s', request_parameters[4][str(i)])
+                logging.info('coordinates: %s', request_parameters[5][str(i)])
+                logging.info('period: %s', request_parameters[6][str(i)])
+                logging.info('date: %s \n', request_parameters[7][str(i)])
     else:
         request_parameters, num_products = parameter_definition.get_parameters(DOWNLOAD_FOLDER, RANDOMIZE)
         with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
