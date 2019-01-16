@@ -31,7 +31,7 @@ you will find an entry called "userId": Copy the string and use as parameter.
 --FOLDER: subfolder to store your products in. It is recommended to use a date_time construction like 0116_1129
 
 ADDITIONAL HELP:
-by using the -r flag, the randomizable parameters get randomized again. It is recommended to to this only if an
+By using the -r flag, the randomizable parameters get randomized again. It is recommended to to this only if an
 existing randomization should be repeated or randomization failed and thus needs to be redone. In general the -r flag
 is not specifically needed.
 
@@ -45,8 +45,6 @@ When running the RequestDownloaderOp it is recommended to to it in the steps sho
 4.  Run the script with --operator 3 to download the data
 5.  Execute the script with --operator 4 to create validation.json file in each product folder holding the request
     information for validation.
-
-
 """
 
 import os
