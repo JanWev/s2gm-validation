@@ -54,7 +54,7 @@ def prepare_tests(tests, validate_path, reference_path = None):
     # extract all metadata from the order_data.json file
     # these data are required to do the validation
     try:
-        order_data_file = Path(validate_path) / 'order_data.json'
+        order_data_file = Path(validate_path) / 'validation.json'
         with open(order_data_file, 'rb') as odf:
             order_data = json.load(odf)
 
