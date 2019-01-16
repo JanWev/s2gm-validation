@@ -1,6 +1,21 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
 """ Purpose: Convert stored request metadata to json format.
+
+Format example:
+{
+"bands": ["B02", "B03", "B04", "B8A", "B07", "B01", "INDEX", "SNOW"],
+"tile_ids": "T30UVC",
+"compositing_period": "DAY",
+"mosaic_start_date": "2018-04-15",
+"request_status": "processed",
+"order_id": "258c39f1-8e3f-45fd-bb18-a1cbbdc40ef9",
+"resolution": "R60m",
+"image_format": "NETCDF",
+"order_name": "S2GM_valreq_20190115T155053_rand04_T30UVC",
+"projection": "WGS84",
+"mosaic_end_date": "2018-04-15"
+}
 """
 
 import os

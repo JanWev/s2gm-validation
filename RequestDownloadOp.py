@@ -3,8 +3,11 @@
 """ Purpose: Orchestrate request and download of s2gm products.
 
 example commands:
-1. python RequestDownloadOp.py --operators 1 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239
-2. first time use (incl randomization): python ValidationOp.py -r --operators 1  --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239
+1. create parameters: RequestDownloadOp.py --operators 0 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
+2. make request: RequestDownloadOp.py --operators 1 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
+3. check processing status: RequestDownloadOp.py --operators 2 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
+4. download products: RequestDownloadOp.py --operators 3 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
+5. convert pickel to json request information: RequestDownloadOp.py --operators 4 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
 
 !IMPORTANT!
 A few variables need to be set in the static_parameters.py. This script needs to be activated by removing ".dist".
@@ -16,7 +19,7 @@ PARAMETERS:
 
 --operators: 0=create only parameters, 1(default)=request only, 2=status check only, 3=download only, 4=convert pickel to json
 
---USERID: your uder ID from MosaicHub. description see below or ask Jan Wevers
+--USERID: your user ID from MosaicHub. description see below or ask Jan Wevers
 The user id also needs to be acquired from the mosic hub web site.
 Again, login with your credentials and open the developer tools in your
 browser. Make sure to navigate to "Network" inside the developer tools and
@@ -24,6 +27,25 @@ select the "Response" section. Browse to "UserArea" inside The mosaic hub.
 In the developer tools window you will find two entries named 'orders'.
 If you select the second one, you will get a long string. Inside the string
 you will find an entry called "userId": Copy the string and use as parameter.
+
+--FOLDER: subfolder to store your products in. It is recommended to use a date_time construction like 0116_1129
+
+ADDITIONAL HELP:
+by using the -r flag, the randomizable parameters get randomized again. It is recommended to to this only if an
+existing randomization should be repeated or randomization failed and thus needs to be redone. In general the -r flag
+is not specifically needed.
+
+When running the RequestDownloaderOp it is recommended to to it in the steps shown in the examples above.
+1.  Run the script with --operators 0 to create parameters. Randomizable parameters will be randomized by default. If
+    you need to run  it again, for example because you have deleted log files, simply run it again and the randomizer
+    will not be triggered. If randomization is needed use the -r flag.
+2.  Execute the script with --operators 1 to make a request at the S2GM Hub.
+3.  Execute the script with --operator 2 to check the processing status. This can be repeated until all products have
+    reached the status processing finished.
+4.  Run the script with --operator 3 to download the data
+5.  Execute the script with --operator 4 to create validation.json file in each product folder holding the request
+    information for validation.
+
 
 """
 
@@ -93,17 +115,6 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
         os.makedirs('./logs')
     if not os.path.isdir(DOWNLOAD_FOLDER):
         os.makedirs(DOWNLOAD_FOLDER)
-    # try:
-    #     logging.basicConfig(filename='./logs/execution.log', filemode='a',level=logging.DEBUG)
-    #     logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
-    #     logging.debug('Operator executed by the user: %s', str(operators))
-    # except FileNotFoundError:
-    #     print('log file does not exist and will be created')
-    #     f = open('./logs/execution.log')
-    #     f.close()
-    #     logging.basicConfig(filename='./logs/execution.log', filemode='a', level=logging.DEBUG)
-    #     logging.info('RequestDownloadOp executed: %s', str(datetime.now()))
-    #     logging.debug('Operator executed by the user: %s', str(operators))
 
     if operators == 0:
         try:
@@ -119,8 +130,6 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
         with open(DOWNLOAD_FOLDER + 'variables/request_parameters.pkl', 'wb') as f:
             pickle.dump(request_parameters, f)
         print(request_parameters)
-        names = request_parameters[0]
-        formats = request_parameters[1]
         for i in range(1, num_products+1):
             if i < 10:
                 logging.info('name: %s', request_parameters[0]['0' + str(i)])
@@ -203,9 +212,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
                     else:
                         print(json.loads(data)['name'] + ' still processing')
                         logging.info(json.loads(data)['name'] + ' still processing')
-            # time.sleep(120)
-            # log_processing(request_id, done, count)
-            # count += 1
+
         elif operators == 3: # download only
             try:
                 logging.basicConfig(filename=DOWNLOAD_FOLDER + 'download.log', filemode='a', level=logging.DEBUG)
