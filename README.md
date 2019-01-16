@@ -25,7 +25,7 @@ The validation of S2GM products comprises 4 levels from L0 to L3
 ## Validation metadata
 
 To do the validation certain metadata are required. The main source for these data is 
-the file 'order_data.json' that has to be available in the root path of the product 
+the file 'validation.json' that has to be available in the root path of the product 
 that should be validated.
 
 If the file was not generated, it can be created manually according to the following 
