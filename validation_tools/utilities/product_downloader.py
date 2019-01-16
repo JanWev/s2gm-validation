@@ -8,7 +8,6 @@ import requests
 import logging
 from datetime import datetime
 import shutil
-import filecmp
 import pickle
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'

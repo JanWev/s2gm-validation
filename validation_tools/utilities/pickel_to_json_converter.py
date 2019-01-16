@@ -20,7 +20,6 @@ Format example:
 
 import os
 import pickle, json
-from .static_parameters import DOWNLOAD_FOLDER
 from .static_parameters import static_granule_format, static_projection, static_band, static_granule_list
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
@@ -41,11 +40,6 @@ def run(DOWNLOAD_FOLDER, prod_id):
                     f)
 
     prod_folders = os.listdir(path=DOWNLOAD_FOLDER)
-    # outpath = DOWNLOAD_FOLDER + 'variables/json/'
-    # if not os.path.isdir(outpath):
-    #     os.makedirs(outpath)
-
-
 
     # convert static granules metadata
     if prod_id <= 4:

@@ -52,7 +52,7 @@ import json
 import argparse
 import logging
 import pickle
-from datetime import datetime, date
+from datetime import datetime
 from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, \
     product_downloader, pickel_to_json_converter
 from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER, version_number

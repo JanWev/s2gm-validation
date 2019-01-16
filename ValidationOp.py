@@ -89,6 +89,12 @@ def run_tests(tests, test_metadata):
     if 'L1' in tests:
         logging.info('running test L1 for {}'.format(test_metadata))
 
+    if 'L2' in tests:
+        logging.info('running test L2 for {}'.format(test_metadata))
+
+    if 'L3' in tests:
+        logging.info('running test L3 for {}'.format(test_metadata))
+
     return test_results
 
 

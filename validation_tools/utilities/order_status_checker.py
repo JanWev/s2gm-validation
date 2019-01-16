@@ -6,7 +6,6 @@
 import requests
 import logging
 from datetime import datetime
-import time
 import pickle
 from .static_parameters import DOWNLOAD_FOLDER
 
