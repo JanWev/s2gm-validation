@@ -55,7 +55,7 @@ def prepare_tests(tests, validate_path, reference_path = None):
     # these data are required to do the validation
     try:
         order_data_file = Path(validate_path) / 'validation.json'
-        with open(order_data_file, 'rb') as odf:
+        with open(str(order_data_file), 'r') as odf:
             order_data = json.load(odf)
 
     except Exception as ex:
