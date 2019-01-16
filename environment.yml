@@ -1,0 +1,67 @@
+name: s2gm
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - asn1crypto=0.24.0=py27_1003
+  - boost=1.66.0=py27_vc9_1
+  - boost-cpp=1.66.0=vc9_1
+  - ca-certificates=2018.11.29=ha4d7672_0
+  - certifi=2018.11.29=py27_1000
+  - cffi=1.11.5=py27h0c8e037_1001
+  - chardet=3.0.4=py27_1003
+  - cryptography=2.3.1=py27hc64555f_1000
+  - enum34=1.1.6=py27_1001
+  - expat=2.2.5=h2880e7c_1002
+  - freexl=1.0.5=haa51a25_1002
+  - gdal=2.2.4=py27h64536ba_1
+  - geos=3.6.2=h2880e7c_3
+  - geotiff=1.4.2=vc9_1
+  - hdf4=4.2.13=vc9_0
+  - idna=2.8=py27_1000
+  - ipaddress=1.0.22=py_1
+  - kealib=1.4.7=vc9_4
+  - libgdal=2.2.4=vc9_5
+  - libnetcdf=4.4.1.1=vc9_10
+  - libpq=9.5.4=vc9_3
+  - libspatialite=4.3.0a=vc9_19
+  - mkl_fft=1.0.10=py27h0c8e037_1
+  - openjpeg=2.3.0=vc9_2
+  - openssl=1.0.2p=h0c8e037_1002
+  - pip=18.1=py27_1000
+  - proj4=4.9.3=h0c8e037_8
+  - pycparser=2.19=py_0
+  - pyopenssl=18.0.0=py27_1000
+  - pysocks=1.6.8=py27_1002
+  - python=2.7.15=h2880e7c_1006
+  - requests=2.21.0=py27_1000
+  - setuptools=40.6.3=py27_0
+  - six=1.12.0=py27_1000
+  - urllib3=1.24.1=py27_1000
+  - vc=9=0
+  - vs2008_runtime=9.0.30729.6161=0
+  - vs2015_runtime=14.0.25420=0
+  - wheel=0.32.3=py27_0
+  - win_inet_pton=1.0.1=py27_2
+  - wincertstore=0.2=py27_1002
+  - xerces-c=3.2.0=hc56fc5f_2
+  - xz=5.2.4=h3cc03e0_1001
+  - blas=1.0=mkl
+  - curl=7.55.1=vc9h3bcf4df_3
+  - dateutil=2.4.1=py27_0
+  - hdf5=1.10.1=vc9h9d13b45_0
+  - icc_rt=2019.0.0=h0cc432a_1
+  - intel-openmp=2019.1=144
+  - jpeg=9b=vc9hb90d6ad_1
+  - libiconv=1.15=vc9h6e1f958_5
+  - libpng=1.6.32=vc9h2352712_3
+  - libssh2=1.8.0=vc9h457d253_2
+  - libtiff=4.0.8=vc9hf4dca05_10
+  - libxml2=2.9.4=vc9h17753f3_5
+  - mkl=2019.1=144
+  - numpy=1.15.4=py27h5fc8d92_0
+  - numpy-base=1.15.4=py27hb1d0314_0
+  - sqlite=3.20.1=vc9h5ec81ce_1
+  - zlib=1.2.11=vc9ha80f4e8_1
+prefix: C:\Users\jan\Anaconda3\envs\s2gm
+
