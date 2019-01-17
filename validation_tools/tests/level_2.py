@@ -1,10 +1,9 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
-""" Purpose: Make L0 tests.
+""" Purpose: Make L2 tests. L2 checks for similarity of products
 """
 
-from validation_tools.utilities import validation_metadata
-from pathlib import Path
+
 import gdal
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
@@ -22,6 +21,23 @@ def level_2_1(test_metadata, comparable):
 
     try:
         # TODO: do test
+        if test_metadata['image_format'] == 'NETCDF':
+            # TODO: implement xarray analysis
+            driver_name = ''
+        elif test_metadata['image_format'] == 'GEO_TIFF':
+            driver_name = 'GTiff'
+        else:
+            driver_name = 'JP2OpenJPEG'
+        driver = gdal.GetDriverByName('GTiff')
+        driver.Register()
+        # inData = gdal.Open(inFn)
+        # raster = inData.GetRasterBand(1)
+        # rasterAr = raster.ReadAsArray()
+        # rasterAr[rasterAr == nodata] = 0
+        # outraster = inData.GetRasterBand(1)
+        # outrasterAr = outraster.ReadAsArray().astype(np.float)
+        # outrasterAr[outrasterAr == nodata] = 0
+        # inWkt, GeoT, rows, cols, Projection, pixelRes = GetGeoInfo(inData)
 
         # fill test result
         test_passed = True
