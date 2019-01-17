@@ -1,6 +1,6 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
-""" Purpose: Orchestrate validation of s2gm products.
+""" Purpose: Make L0 tests.
 """
 
 from validation_tools.utilities import validation_metadata
