@@ -51,26 +51,57 @@ def prepare_tests(tests, validate_path, reference_path = None):
         'reference_path': reference_path,
     }
 
-    # extract all metadata from the order_data.json file
+    # extract all metadata from the validation.json file from validation dataset
     # these data are required to do the validation
     try:
-        order_data_file = Path(validate_path) / 'validation.json'
-        with open(str(order_data_file), 'r') as odf:
-            order_data = json.load(odf)
+        val_order_data_file = Path(validate_path) / 'validation.json'
+        with open(str(val_order_data_file), 'r') as odf:
+            val_order_data = json.load(odf)
 
     except Exception as ex:
-        logging.error('Reading of order data from JSON file failed: {}'.format(ex))
-        raise Exception('Reading of order data from JSON file failed: {}'.format(ex))
+        logging.error('Reading of validation order data from JSON file failed: {}'.format(ex))
+        raise Exception('Reading of validation order data from JSON file failed: {}'.format(ex))
 
-    for key, value in order_data.items():
+    for key, value in val_order_data.items():
         test_metadata[key] = value
 
-    # TODO: possibly see if all metadata exist for mosaic to validate (and reference if provided): json file
+    # extract all metadata from the validation.json file from reference dataset
+    # these data are required to check equality of validation and reference data
+    try:
+        ref_order_data_file = Path(reference_path) / 'validation.json'
+        with open(str(ref_order_data_file), 'r') as odf:
+            ref_order_data = json.load(odf)
 
-    return test_metadata
+    except Exception as ex:
+        logging.error('Reading of validation order data from JSON file failed: {}'.format(ex))
+        raise Exception('Reading of validation order data from JSON file failed: {}'.format(ex))
+
+    # Todo: compare order data of validation and ref dataset
+
+    if not len(val_order_data) == len(ref_order_data):
+        logging.error('Reference and validation validation.json have different length. One of two files must be corrupt')
+        raise Exception('Reference and validation validation.json have different length. One of two files must be corrupt')
+    else: #compare the two files
+        if val_order_data == ref_order_data:
+            comparable = True
+        else:
+            comparable = False
+            for item in ref_order_data:
+                if not isinstance(ref_order_data[item], str):
+                    ref_item = str(ref_order_data[item])
+                    val_item = str(val_order_data[item])
+                else:
+                    ref_item = ref_order_data[item]
+                    val_item = val_order_data[item]
+                if ref_item != val_item:
+                    print('DIFFERENCE - ' + item + ':' + ref_item + ' != ' + val_item)
+        # logging.debug('Reference data and validation data have different ')
+
+    # TODO: possibly see if all metadata exist for mosaic to validate (and reference if provided): json file @flo: what do you mean? (jan)
+    return test_metadata, comparable
 
 
-def run_tests(tests, test_metadata):
+def run_tests(tests, test_metadata, comparable):
 
     test_results = []
 
@@ -91,6 +122,7 @@ def run_tests(tests, test_metadata):
 
     if 'L2' in tests:
         logging.info('running test L2 for {}'.format(test_metadata))
+        test_results.append(level_2.level_2_1(test_metadata, comparable))
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
@@ -132,13 +164,13 @@ if __name__ == "__main__":
 
     # check integrity of data to be validated
     try:
-        test_metadata = prepare_tests(args.tests, args.validate, args.reference)
+        test_metadata, comparable = prepare_tests(args.tests, args.validate, args.reference)
     except Exception as ex:
         logging.error('Preparing of test failed: {}'.format(ex))
         print('Preparing of test failed: {}'.format(ex))
         sys.exit(1)
 
-    test_results = run_tests(args.tests, test_metadata)
+    test_results = run_tests(args.tests, test_metadata, comparable)
 
 
     # TODO: create better validation report
