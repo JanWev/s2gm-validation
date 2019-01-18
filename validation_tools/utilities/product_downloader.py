@@ -119,16 +119,15 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                         out_filename_long = data_list['namingMap'][file]
                         out_filename = out_filename_long.split('/')[len(out_filename_long.split('/')) - 1]
                         with open(download_path + out_filename, 'wb') as out_file:
-                            if not os.path.isfile(download_path + out_filename):
-                                shutil.copyfileobj(file_response.raw, out_file)
+                            # Todo: Find a way to unly download files that are different
+                            shutil.copyfileobj(file_response.raw, out_file)
                         del file_response
                         # print(file + ' - ' + out_filename)
                 meta_url = 'http://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/'+ mosaic_id +'/metadata/?filename=inspire.xml'
                 meta_file_response = requests.get(meta_url, headers=headers, stream=True)
                 meta_out_filename = 'inspire.xml'
-                with open(parent_dir + meta_out_filename, 'wb') as out_file:
-                    if not os.path.isfile(parent_dir + meta_out_filename):
-                        shutil.copyfileobj(meta_file_response.raw, meta_out_filename)
+                with open(parent_dir + meta_out_filename, 'wb') as meta_out_file:
+                    shutil.copyfileobj(meta_file_response.raw, meta_out_file)
                 del meta_file_response
                 # print('inspire.xml' + ' - ' + meta_out_filename)
 
@@ -157,7 +156,7 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                         out_filename_long = data_list['namingMap'][file]
                         out_filename = out_filename_long.split('/')[len(out_filename_long.split('/'))-1]
                         with open(download_path + out_filename, 'wb') as out_file:
-                            if not os.path.isfile(download_path + out_filename):
+                                #Todo: Find a way to unly download files that are different
                                 shutil.copyfileobj(file_response.raw, out_file)
                         del file_response
                         # print(file + ' - ' + out_filename)
@@ -165,10 +164,9 @@ def downloader(start, running, finished, download_folder, request_id, token, sta
                 meta_url = 'http://services-s2gm.sentinel-hub.com/mosaic/download/v1/mosaic/'+ mosaic_id +'/metadata/?filename=inspire.xml'
                 meta_file_response = requests.get(meta_url, headers=headers, stream=True)
                 meta_out_filename = 'inspire.xml'
-                with open(parent_dir + meta_out_filename, 'wb') as out_file:
-                    if not os.path.isfile(parent_dir + meta_out_filename):
-                        shutil.copyfileobj(meta_file_response.raw, meta_out_filename)
-                del meta_file_response
+                with open(parent_dir + meta_out_filename, 'wb') as meta_out_file:
+                    shutil.copyfileobj(meta_file_response.raw, meta_out_file)
+                # del meta_file_response
                 # print('inspire.xml' + ' - ' + meta_out_filename)
 
                 running = False
