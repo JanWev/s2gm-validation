@@ -27,6 +27,7 @@ def level_2_1(test_metadata, comparable, band_dict):
             if test_metadata['image_format'] == 'NETCDF':
                 # TODO: implement xarray analysis
                 driver_name = ''
+                file_ext = 'nc'
             elif test_metadata['image_format'] == 'GEO_TIFF':
                 driver_name = 'GTiff'
                 file_ext = 'tiff'
