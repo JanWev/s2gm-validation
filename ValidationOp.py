@@ -19,6 +19,10 @@ import traceback
 
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
+band_dict = {'AOT': 'quality_aot', 'CLOUD': 'quality_cloud_confidence', 'SNOW': 'quality_snow_confidence',
+             'SCENE': 'quality_scene_classification', 'INDEX': 'source_index', 'MEDOID_MOS': 'medoid_mos', 'SUN_ZENITH': 'sun_zenith',
+             'SUN_AZIMUTH': 'sun_azimuth', 'VIEW_ZENITH_MEAN': 'view_zenith_mean', 'VIEW_AZIMUTH_MEAN': 'view_azimuth_mean',
+             'VALID_OBS': 'valid_obs'}
 
 def log_inputs(tests, reference_path, validate_path):
     if not os.path.isdir('./validation_tools/logs'):
@@ -101,7 +105,7 @@ def prepare_tests(tests, validate_path, reference_path = None):
     return test_metadata, comparable
 
 
-def run_tests(tests, test_metadata, comparable):
+def run_tests(tests, test_metadata, comparable, band_dict):
 
     test_results = []
 
@@ -122,7 +126,7 @@ def run_tests(tests, test_metadata, comparable):
 
     if 'L2' in tests:
         logging.info('running test L2 for {}'.format(test_metadata))
-        test_results.append(level_2.level_2_1(test_metadata, comparable))
+        test_results.append(level_2.level_2_1(test_metadata, comparable, band_dict))
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
@@ -170,7 +174,7 @@ if __name__ == "__main__":
         print('Preparing of test failed: {}'.format(ex))
         sys.exit(1)
 
-    test_results = run_tests(args.tests, test_metadata, comparable)
+    test_results = run_tests(args.tests, test_metadata, comparable, band_dict)
 
 
     # TODO: create better validation report
