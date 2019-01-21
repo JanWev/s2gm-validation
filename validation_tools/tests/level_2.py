@@ -12,7 +12,7 @@ from pathlib import Path
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict):
+def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string):
     """
     Level 2 test no. 1: Spatial difference of SR for all bands
     """
@@ -51,20 +51,24 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict):
                 for i in range(len(valSubPaths)):
                     valSubPath = valSubPaths[i]
                     refSubPath = refSubPaths[i]
-                    valBands = glob.glob(valSubPath + '\*.' + file_ext)
-                    refBands = glob.glob(refSubPath + '\*.' + file_ext)
 
-                    #loop over bands
-                    for k in range(len(valBands)):
-                        valData = gdal.Open(valBands[k])
-                        refData = gdal.Open(refBands[k])
-                        valRaster = valData.GetRasterBand(1)
-                        refRaster = refData.GetRasterBand(1)
-                        valRasterAr = valRaster.ReadAsArray()
-                        refRasterAr = refRaster.ReadAsArray()
-                        difRasterAr = valRasterAr - refRasterAr
-                        test_sum =+ np.sum(difRasterAr)
-                        print(np.sum(difRasterAr))
+                    #loop over refl bands listed in validation.json
+                    for band in test_metadata['bands']:
+                        if band in list(refl_bands_dict.keys()):
+                            valBand = valSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + file_ext
+                            refBand = refSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + file_ext
+                            valData = gdal.Open(valBand)
+                            refData = gdal.Open(refBand)
+                            valRaster = valData.GetRasterBand(1)
+                            refRaster = refData.GetRasterBand(1)
+                            valRasterAr = valRaster.ReadAsArray()
+                            refRasterAr = refRaster.ReadAsArray()
+                            difRasterAr = valRasterAr - refRasterAr
+                            test_sum = + np.sum(difRasterAr)
+                            print(np.sum(difRasterAr))
+
+                print('End of reflectance tests.')
+
             else:
                 #Todo: implement tests for NetCDF
                 print('Started implementation for NetCDF')
