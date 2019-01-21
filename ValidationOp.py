@@ -25,6 +25,8 @@ aux_band_dict = {'AOT': 'quality_aot', 'CLOUD': 'quality_cloud_confidence', 'SNO
                  'SCENE': 'quality_scene_classification', 'INDEX': 'source_index', 'MEDOID_MOS': 'medoid_mos',
                  'SUN_ZENITH': 'sun_zenith', 'SUN_AZIMUTH': 'sun_azimuth', 'VIEW_ZENITH_MEAN': 'view_zenith_mean',
                  'VIEW_AZIMUTH_MEAN': 'view_azimuth_mean', 'VALID_OBS': 'valid_obs'}
+period_dict = {'DAY': 'D', 'TENDAYS': 'T', 'MONTH': 'M', 'QUARTER': 'Q', 'YEAR': 'Y'}
+res_dict = {'R10m': '10','R20m': '20','R60m': '60'}
 
 def log_inputs(tests, reference_path, validate_path):
     if not os.path.isdir('./validation_tools/logs'):
@@ -127,8 +129,13 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         logging.info('running test L1 for {}'.format(test_metadata))
 
     if 'L2' in tests:
+        #create name substring
+        name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
+                          res_dict[test_metadata['resolution']] + '_' + \
+                          test_metadata['mosaic_start_date'].replace('-','') + '_'
         logging.info('running test L2 for {}'.format(test_metadata))
-        test_results.append(level_2.level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict))
+        test_results.append(level_2.level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict,
+                                              name_sub_string))
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
