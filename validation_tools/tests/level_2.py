@@ -7,11 +7,12 @@ import os
 import glob
 import gdal
 import numpy as np
+import xarray as xr
 from pathlib import Path
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
-def level_2_1(test_metadata, comparable, band_dict):
+def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict):
     """
     Level 2 test no. 1: Spatial difference of SR for all bands
     """
@@ -35,6 +36,7 @@ def level_2_1(test_metadata, comparable, band_dict):
                 driver_name = 'JP2OpenJPEG'
                 file_ext = 'jp2'
             if test_metadata['image_format'] == 'GEO_TIFF' or test_metadata['image_format'] == 'JP2':
+                test_sum = 0
                 driver = gdal.GetDriverByName(driver_name)
                 driver.Register()
 
@@ -65,7 +67,27 @@ def level_2_1(test_metadata, comparable, band_dict):
                         print(np.sum(difRasterAr))
             else:
                 #Todo: implement tests for NetCDF
-                print('Implementation for NetCDF still missing')
+                print('Started implementation for NetCDF')
+                test_sum = 0
+                valPath = test_metadata['validate_path']
+                refPath = test_metadata['reference_path']
+
+                # get subdirs names
+                valSubPaths = [f.path for f in os.scandir(valPath) if f.is_dir()]
+                refSubPaths = [f.path for f in os.scandir(refPath) if f.is_dir()]
+
+                # loop over tiles if any
+                for i in range(len(valSubPaths)):
+                    valSubPath = valSubPaths[i]
+                    refSubPath = refSubPaths[i]
+                    valNetcdf = glob.glob(valSubPath + '\*.' + file_ext)
+                    refNetcdf = glob.glob(refSubPath + '\*.' + file_ext)
+
+                    valDataset = xr.open_dataset(valNetcdf[0])
+                    refDataset = xr.open_dataset(refNetcdf[0])
+
+
+
                 test_sum = -1
             if test_sum == 0:
                 # fill test result
