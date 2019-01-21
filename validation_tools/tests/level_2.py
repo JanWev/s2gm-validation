@@ -7,10 +7,25 @@ import os
 import glob
 import gdal
 import numpy as np
-import xarray as xr
-from pathlib import Path
+import matplotlib.pyplot as plt
+# import xarray as xr
+import netCDF4
+from collections import Counter
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
+
+def plot_histogram(d):
+    # An "interface" to matplotlib.axes.Axes.hist() method
+    n, bins, patches = plt.hist(x=d, bins='auto', color='#0504aa',
+                                alpha=0.7, rwidth=0.85)
+    plt.grid(axis='y', alpha=0.75)
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title('My Very Own Histogram')
+    plt.text(23, 45, r'$\mu=15, b=3$')
+    maxfreq = n.max()
+    # Set a clean upper y-axis limit.
+    plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)
 
 def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string):
     """
@@ -24,9 +39,7 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
     }
     if comparable:
         try:
-            # TODO: do test
             if test_metadata['image_format'] == 'NETCDF':
-                # TODO: implement xarray analysis
                 driver_name = ''
                 file_ext = 'nc'
             elif test_metadata['image_format'] == 'GEO_TIFF':
@@ -63,14 +76,15 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                             refRaster = refData.GetRasterBand(1)
                             valRasterAr = valRaster.ReadAsArray()
                             refRasterAr = refRaster.ReadAsArray()
-                            difRasterAr = valRasterAr - refRasterAr
-                            test_sum = + np.sum(difRasterAr)
-                            print(np.sum(difRasterAr))
+                            difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+
+                            # Todo: define thresholds and plots for differnces
+                            test_sum += np.sum(difRasterAr)
+                            print(band + ' difference: ' + str(np.sum(difRasterAr)))
 
                 print('End of reflectance tests.')
 
             else:
-                #Todo: implement tests for NetCDF
                 print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
@@ -84,15 +98,30 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                 for i in range(len(valSubPaths)):
                     valSubPath = valSubPaths[i]
                     refSubPath = refSubPaths[i]
-                    valNetcdf = glob.glob(valSubPath + '\*.' + file_ext)
-                    refNetcdf = glob.glob(refSubPath + '\*.' + file_ext)
+                    valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
+                    refNetcdfFile = glob.glob(refSubPath + '\*.' + file_ext)[0]
 
-                    valDataset = xr.open_dataset(valNetcdf[0])
-                    refDataset = xr.open_dataset(refNetcdf[0])
+                    #xarray solution currently not working due to false data type (_Unsigned) in products
+                    # valDataset = xr.open_dataset(valNetcdfFile)
+                    # refDataset = xr.open_dataset(refNetcdfFile)
+                    # valdf = valDataset.to_dataframe()
+                    # refdf = refDataset.to_dataframe()
+
+                    valNetcdf = netCDF4.Dataset(valNetcdfFile, 'r')
+                    refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
+
+                    # loop over refl bands listed in validation.json
+                    for band in test_metadata['bands']:
+                        if band in list(refl_bands_dict.keys()):
+                            valData = valNetcdf.variables[band][:,:]
+                            refData = refNetcdf.variables[band][:,:]
+                            valRasterAr = np.ma.filled(valData)
+                            refRasterAr = np.ma.filled(refData)
+                            difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+                            test_sum += np.sum(difRasterAr)
+                            print(band + ' difference: ' + str(np.sum(difRasterAr)))
 
 
-
-                test_sum = -1
             if test_sum == 0:
                 # fill test result
                 test_passed = True
