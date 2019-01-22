@@ -127,6 +127,7 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
                           res_dict[test_metadata['resolution']] + '_' + \
                           test_metadata['mosaic_start_date'].replace('-','') + '_'
+
         logging.info('running test L2 for {}'.format(test_metadata))
 
         test_results['level_2_1'] = level_2.level_2_1(
@@ -135,7 +136,7 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
 
-    return test_results, test_results
+    return test_results
 
 
 
