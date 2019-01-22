@@ -3,8 +3,12 @@
 """ Purpose: Make L0 tests.
 """
 
-from validation_tools.utilities import validation_metadata
+#from validation_tools.utilities import validation_metadata
 from pathlib import Path
+import json
+from urllib.request import urlopen, Request
+import logging
+
 import gdal
 
 __author__ = 'florian girtler - girtler@geoville.com'
@@ -19,17 +23,41 @@ def level_0_2(test_metadata):
     }
 
     try:
-        # TODO: do test
+        product_path = Path(test_metadata['validate_path'])
+        inspire_file = product_path / 'inspire.xml'
+        metadata = open(inspire_file).read()
+        """validate metadata against INSPIRE metadata validation service"""
+        host = 'http://inspire-geoportal.ec.europa.eu'
+        endpoint = 'GeoportalProxyWebServices/resources/INSPIREResourceTester'
 
-        # fill test result
-        test_passed = True
-        # TODO: check if test was passed
+        url = '{}/{}'.format(host, endpoint)
 
-        test_result['result'] = {
-            'finished': True,
-            'passed': test_passed
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'text/plain'
         }
+        request = Request(url, data=metadata.encode("utf-8"), headers=headers)
+        response = urlopen(request)
 
+        json_data = json.loads(response.read().decode('utf-8'))
+
+        if 'ResourceReportResource' in json_data['value']:
+            test_result['result'] = {
+                'finished': False,
+                'passed': False,
+                'Error': 'Validation failed ResourceReportResource in JSON'
+            }
+        elif 'PullBatchReportResource' in json_data['value']:
+            test_result['result'] = {
+                'finished': False,
+                'passed': False,
+                'Error': 'Summary validation report of multiple resources not yet implemented'
+            }
+        else:
+            test_result['result'] = {
+                'finished': True,
+                'passed': True
+            }
     except Exception as ex:
         test_result['result'] = {
             'finished': False,
@@ -43,6 +71,7 @@ def level_0_2(test_metadata):
 """
 Level 0 test no. 1: Checking if all required files are there
 """
+
 def level_0_1(test_metadata):
 
     test_result = {
