@@ -3,15 +3,16 @@
 """ Purpose: Make L0 tests.
 """
 
-#from validation_tools.utilities import validation_metadata
+from validation_tools.utilities import validation_metadata
 from pathlib import Path
 import json
 from urllib.request import urlopen, Request
+from osgeo import gdal
 import logging
 
 import gdal
 
-__author__ = 'florian girtler - girtler@geoville.com'
+__author__ = 'florian girtler - girtler@geoville.com, rafael reder - reder@geoville.com'
 
 """
 Level 0 test no. 2: Checking the integrity of files
@@ -24,12 +25,11 @@ def level_0_2(test_metadata):
 
     try:
         product_path = Path(test_metadata['validate_path'])
-        inspire_file = product_path / 'inspire.xml'
+        inspire_file = str(product_path / 'inspire.xml')
         metadata = open(inspire_file).read()
         """validate metadata against INSPIRE metadata validation service"""
         host = 'http://inspire-geoportal.ec.europa.eu'
         endpoint = 'GeoportalProxyWebServices/resources/INSPIREResourceTester'
-
         url = '{}/{}'.format(host, endpoint)
 
         headers = {
@@ -163,3 +163,4 @@ def level_0_1(test_metadata):
         }
 
     return test_result
+
