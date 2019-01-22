@@ -10,9 +10,9 @@ example commands:
 5. convert pickel to json request information: RequestDownloadOp.py --operators 4 --USERID 820ab19e-121a-47ec-ad7e-29306a4c2239 --FOLDER 0116_1124
 
 !IMPORTANT!
-A few variables need to be set in the static_parameters.py. This script needs to be activated by removing ".dist".
-Set the username, password variable in static_parameters.py to access the Mosaic Hub.
-Also set DOWNLOAD_FOLDER variable in static_parameters.py to a local folder on your computer!
+A few variables need to be set in the static_download_parameters.py. This script needs to be activated by removing ".dist".
+Set the username, password variable in static_download_parameters.py to access the Mosaic Hub.
+Also set DOWNLOAD_FOLDER variable in static_download_parameters.py to a local folder on your computer!
 
 PARAMETERS:
 -r: set -r flag to randomize parameters: Don't randomize parameters(default)
@@ -55,7 +55,7 @@ import pickle
 from datetime import datetime
 from validation_tools.utilities import parameter_definition, product_requester, order_status_checker, \
     product_downloader, pickel_to_json_converter
-from validation_tools.utilities.static_parameters import username, password, DOWNLOAD_FOLDER, version_number
+from validation_tools.utilities.static_download_parameters import username, password, DOWNLOAD_FOLDER, version_number
 from validation_tools.utilities.get_token import get_token
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'

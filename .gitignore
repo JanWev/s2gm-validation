@@ -2,4 +2,4 @@
 __pycache__/
 validation_tools/logs/
 validation_tools/variables/
-validation_tools/utilities/static_parameters.py
+validation_tools/utilities/static_download_parameters.py

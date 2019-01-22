@@ -20,7 +20,7 @@ Format example:
 
 import os
 import pickle, json
-from .static_parameters import static_granule_format, static_projection, static_band, static_granule_list
+from .static_download_parameters import static_granule_format, static_projection, static_band, static_granule_list
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 

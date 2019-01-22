@@ -4,7 +4,7 @@ import random
 import pickle
 import time
 import os
-from .static_parameters import DOWNLOAD_FOLDER, static_granule_list, static_granule_dict, \
+from .static_download_parameters import DOWNLOAD_FOLDER, static_granule_list, static_granule_dict, \
     random_granule_number, random_granule_list, random_granule_dict, \
     static_granule_format, image_formats, resolution_list, static_resolution,\
     coordinate_system_list, static_projection, basic_ref_band_list, \

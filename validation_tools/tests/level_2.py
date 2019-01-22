@@ -49,6 +49,7 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
             else:
                 driver_name = 'JP2OpenJPEG'
                 file_ext = 'jp2'
+
             if test_metadata['image_format'] == 'GEO_TIFF' or test_metadata['image_format'] == 'JP2':
                 test_sum = 0
                 driver = gdal.GetDriverByName(driver_name)
@@ -83,13 +84,13 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
 
                             # Todo: define thresholds and plots for differnces
                             test_sum += np.sum(difRasterAr)
+
                             if np.sum(difRasterAr) != 0:
                                 test_result_info.append(
-                                    'Test for band ' + band + 'showed difference. Sum of difference: ' + str(
+                                    'Test for band ' + band + ' showed difference. Sum of difference: ' + str(
                                         np.sum(difRasterAr)))
                             else:
-                                test_result_info.append(
-                                    'Test for band ' + band + 'showed no difference. Bands are equal.')
+                                continue
 
                 print('End of reflectance tests.')
 
@@ -128,13 +129,13 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                             refRasterAr = np.ma.filled(refData)
                             difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
                             test_sum += np.sum(difRasterAr)
+
                             if np.sum(difRasterAr) != 0:
                                 test_result_info.append(
-                                    'Test for band ' + band + 'showed difference. Sum of difference: ' + str(
+                                    'Test for band ' + band + ' showed difference. Sum of difference: ' + str(
                                         np.sum(difRasterAr)))
                             else:
-                                test_result_info.append(
-                                    'Test for band ' + band + 'showed no difference. Bands are equal.')
+                                continue
 
 
             if test_sum == 0:

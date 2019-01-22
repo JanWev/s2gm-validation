@@ -7,7 +7,7 @@ import requests
 import logging
 from datetime import datetime
 import pickle
-from .static_parameters import DOWNLOAD_FOLDER
+from .static_download_parameters import DOWNLOAD_FOLDER
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
