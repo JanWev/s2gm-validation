@@ -58,7 +58,7 @@ def level_2_1_evaluation(lev2_1_results, bands):
 
     return affected_bands
 
-def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string):
+def level_2_1(test_metadata, comparable, refl_bands_dict, name_sub_string):
     """
     Level 2 test no. 1: Spatial difference of SR for all bands
     """
@@ -176,39 +176,61 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
 
     return test_result
 
-def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_results, band):
+def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results, aux_band_dict, band):
     # check SR only no NoData values. Mask NoData
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
     difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
     # Todo: define thresholds and plots for differnces
 
-    # calc statistics
-    band_sum = np.ma.sum(difRasterAr)
-    band_median = np.ma.median(difRasterAr)
-    band_mean = np.ma.mean(difRasterAr)
-    band_std = np.ma.std(difRasterAr)
+    # calc difference statistics
+    dif_band_sum = np.ma.sum(difRasterAr)
+    dif_band_median = np.ma.median(difRasterAr)
+    dif_band_mean = np.ma.mean(difRasterAr)
+    dif_band_std = np.ma.std(difRasterAr)
 
-    if band_mean == band_median and band_std == .0:
+    # calc reference dataset statistics
+    ref_band_median = np.ma.median(refRasterAr)
+    ref_band_mean = np.ma.mean(refRasterAr)
+    ref_band_std = np.ma.std(refRasterAr)
+
+    # calc validation dataset statistics
+    val_band_median = np.ma.median(valRasterAr)
+    val_band_mean = np.ma.mean(valRasterAr)
+    val_band_std = np.ma.std(valRasterAr)
+
+    if dif_band_mean == dif_band_median and dif_band_std == .0:
         issue = 'Constant shift in SR'
     else:
         issue = 'Heterogeneous change in SR. Make further checks'
 
-    test_sum += band_sum
+    test_sum += dif_band_sum
 
     if np.sum(difRasterAr) != 0:
-        lev2_1_results[band] = {
+        lev2_2_results[aux_band_dict[band]] = {
             'test_level': 'L2.2',
             'passed': False,
             'summary': 'Statistics for band with differences',
             'issue': issue,
-            'median': str(band_median),
-            'mean': str(band_mean),
-            'std': str(band_std)
+            'difference_statistics': {
+                'median': str(dif_band_median),
+                'mean': str(dif_band_mean),
+                'std': str(dif_band_std)
+            },
+            'ref_dataset_statistics': {
+                'median': str(ref_band_median),
+                'mean': str(ref_band_mean),
+                'std': str(ref_band_std)
+            },
+            'val_dataset_statistics': {
+                'median': str(val_band_median),
+                'mean': str(val_band_mean),
+                'std': str(val_band_std)
+            }
         }
-    return lev2_1_results, test_sum
+    return lev2_2_results, test_sum
 
-def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string):
+def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
     """
     Level 2 test no. 2: Distribution of SR values for both products
     """
@@ -218,7 +240,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
     }
 
     if comparable:
-        lev2_1_results = {}
+        lev2_2_results = {}
         try:
             if test_metadata['image_format'] == 'NETCDF':
                 driver_name = ''
@@ -260,9 +282,9 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                             refRaster = refData.GetRasterBand(1)
                             valRasterAr = valRaster.ReadAsArray()
                             refRasterAr = refRaster.ReadAsArray()
-                            lev2_1_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_results,
+                            lev2_2_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results,
                                                                 band)
-                affected_bands = level_2_1_evaluation(lev2_1_results, test_metadata['bands'])
+                affected_bands = level_2_1_evaluation(lev2_2_results, test_metadata['bands'])
 
             else:
                 print('Started implementation for NetCDF')
@@ -290,9 +312,9 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                             refData = refNetcdf.variables[band][:,:]
                             valRasterAr = np.ma.filled(valData)
                             refRasterAr = np.ma.filled(refData)
-                            lev2_1_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_results,
+                            lev2_2_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results,
                                                                 band)
-                affected_bands = level_2_1_evaluation(lev2_1_results, test_metadata['bands'])
+                affected_bands = level_2_1_evaluation(lev2_2_results, test_metadata['bands'])
 
             if test_sum == 0:
                 # fill test result
@@ -306,7 +328,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                 'passed': test_passed,
             }
             test_result['affected_bands'] = affected_bands
-            test_result['level_2_2_details'] = lev2_1_results
+            test_result['level_2_2_details'] = lev2_2_results
 
         except Exception as ex:
             test_result['result'] = {
@@ -320,7 +342,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
 
     return test_result
 
-def level_2_3(test_metadata):
+def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
     """
     Level 2 test no. 3: Distribution of scene classification
     """
@@ -329,24 +351,106 @@ def level_2_3(test_metadata):
         'test_name': 'Distribution of scene classification',
     }
 
-    try:
-        # TODO: do test
+    if comparable:
+        lev2_3_results = {}
+        try:
+            if test_metadata['image_format'] == 'NETCDF':
+                driver_name = ''
+                file_ext = 'nc'
+            elif test_metadata['image_format'] == 'GEO_TIFF':
+                driver_name = 'GTiff'
+                file_ext = 'tiff'
+            else:
+                driver_name = 'JP2OpenJPEG'
+                file_ext = 'jp2'
 
-        # fill test result
-        test_passed = True
-        # TODO: check if test was passed
+            if test_metadata['image_format'] == 'GEO_TIFF' or test_metadata['image_format'] == 'JP2':
+                test_sum = 0
+                driver = gdal.GetDriverByName(driver_name)
+                driver.Register()
 
-        test_result['result'] = {
-            'finished': True,
-            'passed': test_passed
-        }
+                valPath = test_metadata['validate_path']
+                refPath = test_metadata['reference_path']
 
-    except Exception as ex:
-        test_result['result'] = {
-            'finished': False,
-            'passed': False,
-            'error': ex,
-        }
+                #get subdirs names
+                valSubPaths = [f.path for f in os.scandir(valPath) if f.is_dir()]
+                refSubPaths = [f.path for f in os.scandir(refPath) if f.is_dir()]
+
+                # loop over tiles if any
+                for i in range(len(valSubPaths)):
+                    valSubPath = valSubPaths[i]
+                    refSubPath = refSubPaths[i]
+
+                    #loop over refl bands listed in validation.json
+                    for band in test_metadata['bands']:
+                        if band == 'SCENE':
+                            valBand = valSubPath + '\\' + aux_band_dict[band] + name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + aux_band_dict[band] + name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
+                            valData = gdal.Open(valBand)
+                            refData = gdal.Open(refBand)
+                            valRaster = valData.GetRasterBand(1)
+                            refRaster = refData.GetRasterBand(1)
+                            valRasterAr = valRaster.ReadAsArray()
+                            refRasterAr = refRaster.ReadAsArray()
+                            lev2_3_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                          lev2_3_results,aux_band_dict, band)
+                affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
+
+            else:
+                print('Started implementation for NetCDF')
+                test_sum = 0
+                valPath = test_metadata['validate_path']
+                refPath = test_metadata['reference_path']
+
+                # get subdirs names
+                valSubPaths = [f.path for f in os.scandir(valPath) if f.is_dir()]
+                refSubPaths = [f.path for f in os.scandir(refPath) if f.is_dir()]
+
+                # loop over tiles if any
+                for i in range(len(valSubPaths)):
+                    valSubPath = valSubPaths[i]
+                    refSubPath = refSubPaths[i]
+                    valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
+                    refNetcdfFile = glob.glob(refSubPath + '\*.' + file_ext)[0]
+                    valNetcdf = netCDF4.Dataset(valNetcdfFile, 'r')
+                    refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
+
+                    # loop over refl bands listed in validation.json
+                    for band in test_metadata['bands']:
+                        if band in ['quality_scene_classification']:
+                            valData = valNetcdf.variables[band][:,:]
+                            refData = refNetcdf.variables[band][:,:]
+                            valRasterAr = np.ma.filled(valData)
+                            refRasterAr = np.ma.filled(refData)
+                            lev2_3_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                          lev2_3_results,aux_band_dict, band)
+                affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
+
+            if test_sum == 0:
+                # fill test result
+                test_passed = True
+                # TODO: check if test was passed
+            else:
+                test_passed = False
+
+            test_result['result'] = {
+                'finished': True,
+                'passed': test_passed,
+            }
+            test_result['affected_bands'] = affected_bands
+            test_result['level_2_2_details'] = lev2_3_results
+
+        except Exception as ex:
+            test_result['result'] = {
+                'finished': False,
+                'passed': False,
+                'error': ex,
+            }
+    else:
+        print('L2.1 test could not be executed. Products have different request parameters and thus can not be '
+              'compared')
 
     return test_result
 

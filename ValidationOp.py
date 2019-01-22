@@ -136,13 +136,18 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
         print('Started L2.1 tests')
         test_results['level_2_1'] = level_2.level_2_1(
-            test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string)
+            test_metadata, comparable, refl_bands_dict, name_sub_string)
         print('Finished L2.1 tests')
 
         print('Start L2.2 tests')
         test_results['level_2_2'] = level_2.level_2_2(
-            test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string)
+            test_metadata, comparable, refl_bands_dict, name_sub_string)
         print('Finished L2.2 tests')
+
+        print('Start L2.3 tests')
+        test_results['level_2_3'] = level_2.level_2_3(
+            test_metadata, comparable, aux_band_dict, name_sub_string)
+        print('Finished L2.3 tests')
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
