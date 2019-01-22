@@ -122,7 +122,6 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         test_results['level_0_2'] = level_0.level_0_2(test_metadata)
         print('Finished L0.2 tests')
 
-    # TODO: run the remaining tests
     if 'L1' in tests:
         logging.info('running test L1 for {}'.format(test_metadata))
 
@@ -135,6 +134,7 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         logging.info('running test L2 for {}'.format(test_metadata))
 
         print('Started L2.1 tests')
+        # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
         test_results['level_2_1'] = level_2.level_2_1(
             test_metadata, comparable, refl_bands_dict, name_sub_string)
         print('Finished L2.1 tests')
@@ -145,6 +145,7 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         print('Finished L2.2 tests')
 
         print('Start L2.3 tests')
+        # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
         test_results['level_2_3'] = level_2.level_2_3(
             test_metadata, comparable, aux_band_dict, name_sub_string)
         print('Finished L2.3 tests')

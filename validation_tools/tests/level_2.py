@@ -176,7 +176,7 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, name_sub_string):
 
     return test_result
 
-def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results, aux_band_dict, band):
+def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results, band):
     # check SR only no NoData values. Mask NoData
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
@@ -207,7 +207,7 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_results, aux_b
     test_sum += dif_band_sum
 
     if np.sum(difRasterAr) != 0:
-        lev2_2_results[aux_band_dict[band]] = {
+        lev2_2_results[band] = {
             'test_level': 'L2.2',
             'passed': False,
             'summary': 'Statistics for band with differences',
@@ -342,6 +342,60 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
 
     return test_result
 
+def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_results, aux_band_dict, band):
+    # check SR only no NoData values. Mask NoData
+    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
+    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
+    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+    # Todo: define thresholds and plots for differnces
+
+    # calc difference statistics
+    dif_band_sum = np.ma.sum(difRasterAr)
+    dif_band_median = np.ma.median(difRasterAr)
+    dif_band_mean = np.ma.mean(difRasterAr)
+    dif_band_std = np.ma.std(difRasterAr)
+
+    # calc reference dataset statistics
+    ref_band_median = np.ma.median(refRasterAr)
+    ref_band_mean = np.ma.mean(refRasterAr)
+    ref_band_std = np.ma.std(refRasterAr)
+
+    # calc validation dataset statistics
+    val_band_median = np.ma.median(valRasterAr)
+    val_band_mean = np.ma.mean(valRasterAr)
+    val_band_std = np.ma.std(valRasterAr)
+
+    if dif_band_mean == dif_band_median and dif_band_std == .0:
+        issue = 'Constant shift in scene classification'
+    else:
+        issue = 'Heterogeneous change in scene classification. Make further checks'
+
+    test_sum += dif_band_sum
+
+    if np.sum(difRasterAr) != 0:
+        lev2_3_results[aux_band_dict[band]] = {
+            'test_level': 'L2.3',
+            'passed': False,
+            'summary': 'Statistics for scene classification',
+            'issue': issue,
+            'difference_statistics': {
+                'median': str(dif_band_median),
+                'mean': str(dif_band_mean),
+                'std': str(dif_band_std)
+            },
+            'ref_dataset_statistics': {
+                'median': str(ref_band_median),
+                'mean': str(ref_band_mean),
+                'std': str(ref_band_std)
+            },
+            'val_dataset_statistics': {
+                'median': str(val_band_median),
+                'mean': str(val_band_mean),
+                'std': str(val_band_std)
+            }
+        }
+    return lev2_3_results, test_sum
+
 def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
     """
     Level 2 test no. 3: Distribution of scene classification
@@ -394,7 +448,7 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
                             refRaster = refData.GetRasterBand(1)
                             valRasterAr = valRaster.ReadAsArray()
                             refRasterAr = refRaster.ReadAsArray()
-                            lev2_3_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                            lev2_3_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
                                                                           lev2_3_results,aux_band_dict, band)
                 affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
 
@@ -424,7 +478,7 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
                             refData = refNetcdf.variables[band][:,:]
                             valRasterAr = np.ma.filled(valData)
                             refRasterAr = np.ma.filled(refData)
-                            lev2_3_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                            lev2_3_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
                                                                           lev2_3_results,aux_band_dict, band)
                 affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
 
