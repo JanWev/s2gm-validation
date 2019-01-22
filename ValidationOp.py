@@ -114,9 +114,13 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         # L0: check file integrity of validate folder
         #result = run_L0_test(validate_path)
 
+        print('Started L0.1 tests')
         test_results['level_0_1'] = level_0.level_0_1(test_metadata)
+        print('Finished L0.1 tests')
 
+        print('Started L0.2 tests')
         test_results['level_0_2'] = level_0.level_0_2(test_metadata)
+        print('Finished L0.2 tests')
 
     # TODO: run the remaining tests
     if 'L1' in tests:
@@ -130,8 +134,15 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
         logging.info('running test L2 for {}'.format(test_metadata))
 
+        print('Started L2.1 tests')
         test_results['level_2_1'] = level_2.level_2_1(
             test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string)
+        print('Finished L2.1 tests')
+
+        print('Start L2.2 tests')
+        test_results['level_2_2'] = level_2.level_2_2(
+            test_metadata, comparable, refl_bands_dict, aux_band_dict, name_sub_string)
+        print('Finished L2.2 tests')
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
