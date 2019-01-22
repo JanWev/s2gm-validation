@@ -112,6 +112,7 @@ def prepare_tests(tests, validate_path, reference_path = None):
 def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
     test_results = []
+    test_results_info = []
 
     #run the different validation tests
 
@@ -134,13 +135,15 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
                           res_dict[test_metadata['resolution']] + '_' + \
                           test_metadata['mosaic_start_date'].replace('-','') + '_'
         logging.info('running test L2 for {}'.format(test_metadata))
-        test_results.append(level_2.level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict,
-                                              name_sub_string))
+        test_results_lev2_1, test_results_info_lev2_1 = level_2.level_2_1(test_metadata, comparable, refl_bands_dict,
+                                                                          aux_band_dict, name_sub_string)
+        test_results.append(test_results_lev2_1)
+        test_results_info.append(test_results_info_lev2_1)
 
     if 'L3' in tests:
         logging.info('running test L3 for {}'.format(test_metadata))
 
-    return test_results
+    return test_results, test_results_info
 
 
 
@@ -183,10 +186,11 @@ if __name__ == "__main__":
         print('Preparing of test failed: {}'.format(ex))
         sys.exit(1)
 
-    test_results = run_tests(args.tests, test_metadata, comparable, refl_bands_dict, aux_band_dict)
+    test_results, test_results_info = run_tests(args.tests, test_metadata, comparable, refl_bands_dict, aux_band_dict)
 
 
     # TODO: create better validation report
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(test_results)
+    pp.pprint(test_results_info)
 

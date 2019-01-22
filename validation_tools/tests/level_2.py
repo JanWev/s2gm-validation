@@ -38,6 +38,7 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
         'test_name': 'Spatial difference of SR for all bands',
     }
     if comparable:
+        test_result_info = []
         try:
             if test_metadata['image_format'] == 'NETCDF':
                 driver_name = ''
@@ -68,8 +69,10 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                     #loop over refl bands listed in validation.json
                     for band in test_metadata['bands']:
                         if band in list(refl_bands_dict.keys()):
-                            valBand = valSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + file_ext
-                            refBand = refSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + file_ext
+                            valBand = valSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + band + name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
                             valData = gdal.Open(valBand)
                             refData = gdal.Open(refBand)
                             valRaster = valData.GetRasterBand(1)
@@ -80,7 +83,13 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
 
                             # Todo: define thresholds and plots for differnces
                             test_sum += np.sum(difRasterAr)
-                            print(band + ' difference: ' + str(np.sum(difRasterAr)))
+                            if np.sum(difRasterAr) != 0:
+                                test_result_info.append(
+                                    'Test for band ' + band + 'showed difference. Sum of difference: ' + str(
+                                        np.sum(difRasterAr)))
+                            else:
+                                test_result_info.append(
+                                    'Test for band ' + band + 'showed no difference. Bands are equal.')
 
                 print('End of reflectance tests.')
 
@@ -119,7 +128,13 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                             refRasterAr = np.ma.filled(refData)
                             difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
                             test_sum += np.sum(difRasterAr)
-                            print(band + ' difference: ' + str(np.sum(difRasterAr)))
+                            if np.sum(difRasterAr) != 0:
+                                test_result_info.append(
+                                    'Test for band ' + band + 'showed difference. Sum of difference: ' + str(
+                                        np.sum(difRasterAr)))
+                            else:
+                                test_result_info.append(
+                                    'Test for band ' + band + 'showed no difference. Bands are equal.')
 
 
             if test_sum == 0:
@@ -141,9 +156,10 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, aux_band_dict, name_su
                 'error': ex,
             }
     else:
-        print('L2.1 test could not be executed. Products have different request parameters and thus can not be compared')
+        print('L2.1 test could not be executed. Products have different request parameters and thus can not be '
+              'compared')
 
-    return test_result
+    return test_result, test_result_info
 
 def level_2_2(test_metadata):
     """
