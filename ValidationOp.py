@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 
 from validation_tools.tests import level_0, level_1, level_2, level_3
+from validation_tools.utilities.static_validation_parameters import refl_bands_dict, aux_band_dict, period_dict, \
+    res_dict
 
 import pprint
 import traceback
@@ -19,14 +21,6 @@ import traceback
 
 __author__ = 'jan wevers, tanja gasber & florian girtler - jan.wevers@brockmann-consult.de, gasber@geoville.com, girtler@geoville.com'
 
-refl_bands_dict = {'B01': 'B01','B02': 'B02','B03': 'B03','B04': 'B04','B05': 'B05','B06': 'B06','B07': 'B07',
-                   'B08': 'B08','B8A': 'B8A','B11': 'B11','B12': 'B12'}
-aux_band_dict = {'AOT': 'quality_aot', 'CLOUD': 'quality_cloud_confidence', 'SNOW': 'quality_snow_confidence',
-                 'SCENE': 'quality_scene_classification', 'INDEX': 'source_index', 'MEDOID_MOS': 'medoid_mos',
-                 'SUN_ZENITH': 'sun_zenith', 'SUN_AZIMUTH': 'sun_azimuth', 'VIEW_ZENITH_MEAN': 'view_zenith_mean',
-                 'VIEW_AZIMUTH_MEAN': 'view_azimuth_mean', 'VALID_OBS': 'valid_obs'}
-period_dict = {'DAY': 'D', 'TENDAYS': 'T', 'MONTH': 'M', 'QUARTER': 'Q', 'YEAR': 'Y'}
-res_dict = {'R10m': '10','R20m': '20','R60m': '60'}
 
 def log_inputs(tests, reference_path, validate_path):
     if not os.path.isdir('./validation_tools/logs'):
