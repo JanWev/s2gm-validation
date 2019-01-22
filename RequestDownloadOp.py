@@ -166,7 +166,7 @@ def main(RANDOMIZE, operators, USERID, DOWNLOAD_FOLDER, TOKEN):
             for prod_id in range(1,num_products+1):
                 data = parameter_writer(prod_id, request_parameters, USERID[0])
                 status_code = product_requester.run(DOWNLOAD_FOLDER, TOKEN, data, prod_id)
-                if status_code == 404:
+                if status_code != 200:
                     print(json.loads(data)['name'] + ' not available')
                     logging.info(json.loads(data)['name'] + ' not available')
                 else:
