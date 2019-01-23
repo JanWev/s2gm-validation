@@ -140,14 +140,14 @@ def run_tests(tests, output, test_metadata, comparable, refl_bands_dict, aux_ban
 
         # print('Started L2.1 tests')
         # # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
-        # test_results['level_2_1'] = level_2.level_2_1(
-        #     test_metadata, comparable, refl_bands_dict, name_sub_string)
-        # print('Finished L2.1 tests')
-        #
-        # print('Start L2.2 tests')
-        # test_results['level_2_2'] = level_2.level_2_2(
-        #     test_metadata, comparable, refl_bands_dict, name_sub_string)
-        # print('Finished L2.2 tests')
+        test_results['level_2_1'] = level_2.level_2_1(
+            test_metadata, comparable, refl_bands_dict, name_sub_string)
+        print('Finished L2.1 tests')
+
+        print('Start L2.2 tests')
+        test_results['level_2_2'] = level_2.level_2_2(
+            test_metadata, comparable, refl_bands_dict, name_sub_string)
+        print('Finished L2.2 tests')
 
         print('Start L2.3 tests')
         # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
