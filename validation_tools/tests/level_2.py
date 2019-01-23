@@ -8,6 +8,8 @@ import glob
 import gdal
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 # import xarray as xr
 import netCDF4
 from collections import Counter
@@ -342,11 +344,13 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
 
     return test_result
 
-def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_results, aux_band_dict, band):
+
+def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_results, aux_band_dict, band, val_res_level_2_3_path,
+                       test_metadata):
     # check SR only no NoData values. Mask NoData
-    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
-    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
-    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
+    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
+    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
     # Todo: define thresholds and plots for differnces
 
     # calc difference statistics
@@ -364,6 +368,51 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_results, aux_b
     val_band_median = np.ma.median(valRasterAr)
     val_band_mean = np.ma.mean(valRasterAr)
     val_band_std = np.ma.std(valRasterAr)
+
+    #Todo: move plotting in seperate function
+    #Todo: optimize plotting of classes
+    # plot ref data histogram
+    sns.set(color_codes=True)
+    sns.set(font_scale=1.5)
+    # sns.set_style("whitegrid")
+    plt.rcParams['figure.figsize'] = (8, 8)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.hist(refRasterAr)
+    ax.set(xlabel='Scene classification classes',
+           ylabel='Frequency',
+           title=test_metadata['order_name'] + '\n Reference data: Distribution of scene classification values')
+    plot_file = val_res_level_2_3_path + '\\' + test_metadata['order_name'] + '_ref_data_scene_classification_hist.png'
+    plt.savefig(plot_file)
+    plt.clf()
+
+    # plot ref data histogram
+    sns.set(color_codes=True)
+    sns.set(font_scale=1.5)
+    # sns.set_style("whitegrid")
+    plt.rcParams['figure.figsize'] = (8, 8)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.hist(valRasterAr)
+    ax.set(xlabel='Scene classification classes',
+           ylabel='Frequency',
+           title=test_metadata['order_name'] + '\n Validation data: Distribution of scene classification values')
+    plot_file = val_res_level_2_3_path + '\\' + test_metadata['order_name'] + '_val_data_scene_classification_hist.png'
+    plt.savefig(plot_file)
+    plt.clf()
+
+    #Todo: make this plots nicer (title placement)
+    df = pd.DataFrame({'ref': refRasterAr, 'val': valRasterAr})
+    # fig, ax = plt.subplots(figsize=(10, 10))
+    # ax.jointplot(x="ref", y="val", data=df)
+    # ax.set(xlabel='Reference dataset',
+    #        ylabel='Validation dataset',
+    #        title=test_metadata['order_name'] + '\n Scatterplot of reference against validation data')
+    h = sns.jointplot(x="ref", y="val", data=df)
+    h.set_axis_labels('Reference dataset', 'Validation dataset', fontsize=12)
+    h.fig.subplots_adjust(top=0.9)
+    h.fig.suptitle(test_metadata['order_name'] + '\n Scatterplot of reference against validation data', fontsize=12)
+    plot_file = val_res_level_2_3_path + '\\' + test_metadata['order_name'] + '_data_scene_classification_scatter_plot.png'
+    plt.savefig(plot_file)
+    plt.clf()
 
     if dif_band_mean == dif_band_median and dif_band_std == .0:
         issue = 'Constant shift in scene classification'
@@ -396,10 +445,15 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_results, aux_b
         }
     return lev2_3_results, test_sum
 
-def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
+def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string, val_res_path):
     """
     Level 2 test no. 3: Distribution of scene classification
     """
+
+    val_res_level_2_3_path = val_res_path + '\\level_2_3_results'
+    if not os.path.isdir(val_res_level_2_3_path):
+        os.makedirs(val_res_level_2_3_path)
+
     test_result = {
         'test_id': 'level_2_3',
         'test_name': 'Distribution of scene classification',
@@ -449,7 +503,8 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
                             valRasterAr = valRaster.ReadAsArray()
                             refRasterAr = refRaster.ReadAsArray()
                             lev2_3_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                          lev2_3_results,aux_band_dict, band)
+                                                                          lev2_3_results,aux_band_dict, band,
+                                                                          val_res_level_2_3_path, test_metadata)
                 affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
 
             else:
@@ -479,7 +534,8 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string):
                             valRasterAr = np.ma.filled(valData)
                             refRasterAr = np.ma.filled(refData)
                             lev2_3_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                          lev2_3_results,aux_band_dict, band)
+                                                                          lev2_3_results,aux_band_dict, band,
+                                                                          val_res_level_2_3_path, test_metadata)
                 affected_bands = level_2_1_evaluation(lev2_3_results, test_metadata['bands'])
 
             if test_sum == 0:
