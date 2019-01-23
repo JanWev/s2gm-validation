@@ -103,9 +103,14 @@ def prepare_tests(tests, validate_path, reference_path = None):
     return test_metadata, comparable
 
 
-def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
+def run_tests(tests, output, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
     test_results = {}
+
+    val_res_path = output + '\\validation_results'
+    if not os.path.isdir(val_res_path):
+        os.makedirs(val_res_path)
+
 
     #run the different validation tests
 
@@ -133,21 +138,21 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
         logging.info('running test L2 for {}'.format(test_metadata))
 
-        print('Started L2.1 tests')
-        # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
-        test_results['level_2_1'] = level_2.level_2_1(
-            test_metadata, comparable, refl_bands_dict, name_sub_string)
-        print('Finished L2.1 tests')
-
-        print('Start L2.2 tests')
-        test_results['level_2_2'] = level_2.level_2_2(
-            test_metadata, comparable, refl_bands_dict, name_sub_string)
-        print('Finished L2.2 tests')
+        # print('Started L2.1 tests')
+        # # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
+        # test_results['level_2_1'] = level_2.level_2_1(
+        #     test_metadata, comparable, refl_bands_dict, name_sub_string)
+        # print('Finished L2.1 tests')
+        #
+        # print('Start L2.2 tests')
+        # test_results['level_2_2'] = level_2.level_2_2(
+        #     test_metadata, comparable, refl_bands_dict, name_sub_string)
+        # print('Finished L2.2 tests')
 
         print('Start L2.3 tests')
         # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
         test_results['level_2_3'] = level_2.level_2_3(
-            test_metadata, comparable, aux_band_dict, name_sub_string)
+            test_metadata, comparable, aux_band_dict, name_sub_string, val_res_path)
         print('Finished L2.3 tests')
 
     if 'L3' in tests:
@@ -186,6 +191,14 @@ if __name__ == "__main__":
         metavar="path",
         help='Path to the directory of the data to be validated'
     )
+    CLI.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        required=True,
+        metavar="path",
+        help='Path to the validation results directory'
+    )
     args = CLI.parse_args()
 
     # check integrity of data to be validated
@@ -196,7 +209,7 @@ if __name__ == "__main__":
         print('Preparing of test failed: {}'.format(ex))
         sys.exit(1)
 
-    test_results = run_tests(args.tests, test_metadata, comparable, refl_bands_dict, aux_band_dict)
+    test_results = run_tests(args.tests, args.output, test_metadata, comparable, refl_bands_dict, aux_band_dict)
 
 
     # TODO: create better validation report
