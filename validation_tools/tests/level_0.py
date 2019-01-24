@@ -174,10 +174,10 @@ def level_0_3(test_metadata):
     }
     try:
         #go through directory and open all raster files (.jp2, .tiff, .nc)
-        product_path = test_metadata['validate_path']
-        for file in os.listdir(product_path):
-            path = product_path + '/' + file
-            if os.path.isdir(path) == True:
+        product_path = Path(test_metadata['validate_path'])
+        for subdir in product_path.iterdir():
+            path = str(product_path / subdir)
+            if subdir.is_dir():
                 for file in os.listdir(path):
                     image_file = (path + '/' + file)
                     subdatasets_dict = {}
