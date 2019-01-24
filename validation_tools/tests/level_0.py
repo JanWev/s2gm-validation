@@ -7,10 +7,8 @@ from validation_tools.utilities import validation_metadata
 from pathlib import Path
 import json
 from urllib.request import urlopen, Request
-from osgeo import gdal
-import logging
-
-import gdal
+from osgeo import gdal, osr
+import os
 
 __author__ = 'florian girtler - girtler@geoville.com, rafael reder - reder@geoville.com'
 
@@ -164,3 +162,80 @@ def level_0_1(test_metadata):
 
     return test_result
 
+'''
+Level 0 testing no. 3: Gets raster data from TIFF, JP2 or NC files within the defined validation folder. The following parameters are returned within the test_
+result dictionary: file format,data type (for every band if more then one band is available), pixel size, nodata value, origin (only for TIFF and JP2)
+'''
+def level_0_3(test_metadata):
+
+    test_result = {
+        'test_id': 'level_0_3',
+        'test_name': 'Raster inspection',
+    }
+    try:
+        product_path = test_metadata['validate_path']
+        for file in os.listdir(product_path):
+            path = product_path + '/' + file
+            if os.path.isdir(path) == True:
+                for file in os.listdir(path):
+                    image_file = (path + '/' + file)
+                    subdatasets_dict = {}
+                    if image_file.endswith('nc'):
+                        img = gdal.Open(image_file)
+                        info = gdal.Info(img, format='json')
+                        file_format = info['metadata']['']['netcdf_version']
+                        pixel_size = info['metadata']['']['spatial_resolution']
+                        subdatasets = info['metadata']['SUBDATASETS']
+                        for key in subdatasets:
+                            subdatasets_dict[key] = subdatasets[key]
+                            i = 0
+                            for keys in info['metadata']['']:
+                                if keys.startswith('B') and i < 1:
+                                    i = i + 1
+                                    band = keys[0:3]
+                                    nodatavalue = info['metadata']['']['%s__FillValue' % band]
+                                    projection = info['metadata']['']['%s_coordinates' % band]
+                        int_test_result = {
+                            'subdatasets': subdatasets_dict,
+                            'pixel_size': pixel_size,
+                            'file_format': file_format,
+                            'nodatavalue': nodatavalue,
+                            'projection': projection,
+                            'image_path': file,
+                        }
+                        test_result['FILE: ' + file] = int_test_result
+                    elif image_file.endswith('jp2') or image_file.endswith('tiff'):
+                        img = gdal.Open(image_file)
+                        info = gdal.Info(img, format='json')
+                        gt = img.GetGeoTransform()
+                        CellSize = (gt[1], gt[5])
+                        origin = (gt[0], gt[3])
+                        band = img.GetRasterBand(1)
+                        nodata = band.GetNoDataValue()
+                        datatype = info['bands'][0]['type']
+                        file_format = info['driverShortName']
+
+                        prj = img.GetProjection()
+                        srs = osr.SpatialReference(wkt=prj)
+                        if srs.IsProjected:
+                            projection = (srs.GetAttrValue('projcs'))
+                        else:
+                            projection = (srs.GetAttrValue('geogcs'))
+                        int_test_result = {
+                            'File_format': file_format,
+                            'Pixel_size': CellSize,
+                            'NODATA_value': nodata,
+                            'Data_type': datatype,
+                            'Projection': projection,
+                            'image_path': file,
+                            'origin': origin
+                        }
+                        test_result['FILE: ' + file] = int_test_result
+
+    except Exception as ex:
+        test_result['result'] = {
+            'finished': False,
+            'passed': False,
+            'error': ex,
+        }
+    return test_result
