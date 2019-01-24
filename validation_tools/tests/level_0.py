@@ -173,6 +173,7 @@ def level_0_3(test_metadata):
         'test_name': 'Raster inspection',
     }
     try:
+        #go through directory and open all raster files (.jp2, .tiff, .nc)
         product_path = test_metadata['validate_path']
         for file in os.listdir(product_path):
             path = product_path + '/' + file
