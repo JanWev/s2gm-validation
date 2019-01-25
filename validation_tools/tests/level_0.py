@@ -240,3 +240,55 @@ def level_0_3(test_metadata):
             'error': ex,
         }
     return test_result
+
+
+'''
+Level 0 test no.4: compares if all necessary information are available in the JSON file
+'''
+
+def level_0_4(test_metadata):
+
+    test_result = {
+        'test_id': 'level_0_4',
+        'test_name': 'Compare JSON with reference JSON file',
+    }
+    try:
+        product_path = Path(test_metadata['validate_path'])
+        #reference_path = Path(test_metadata['reference_path'])
+        reference_path = ('T:/Processing/2721_S2GM/02_Interim_Products/mosaics/32TPT_20m_Day_S2B_new/S2GM_D20_20180713_20180713_32TPT_QAtest_S2B_20m_new_STD_v1.0.4_33888/32TPT_QAtest_S2B_20m_new/metadata_D20_20180713_32TPT_QAtest_S2B_20m_new.json')
+        for subdir in product_path.iterdir():
+            path = str(product_path / subdir)
+            if subdir.is_dir():
+                for file in os.listdir(path):
+                    val_file_path = (path + '/' + file)
+                    if file.endswith('json'):
+                        test_result['file_name'] = file
+                        validation_file = open(val_file_path)
+                        reference_file = open(str(reference_path))
+                        json_reference = json.load(reference_file)
+                        json_validation = json.load(validation_file)
+
+                        missing_keys = []
+
+                        for key in json_reference.keys():
+                            value = json_reference[key]
+                            if key not in json_validation:
+                                missing_keys.append(key)
+
+                        if not missing_keys:
+                            test_result['Check with reference JSON passed:'] = True
+                        else:
+                            test_result['DIFFERENCE from reference JSON'] = missing_keys
+                    else:
+                        pass
+        json_av = 'Check with reference JSON passed:'
+        if json_av not in test_result:
+            test_result['Error:'] = 'No JSON available'
+    except Exception as ex:
+        test_result['result'] = {
+            'finished': False,
+            'passed': False,
+            'error': ex,
+        }
+    return test_result
+
