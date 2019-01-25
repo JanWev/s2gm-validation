@@ -3,7 +3,7 @@
 """ Purpose: Make L0 tests.
 """
 
-#from validation_tools.utilities import validation_metadata
+from validation_tools.utilities import validation_metadata
 from pathlib import Path
 import json
 from urllib.request import urlopen, Request
