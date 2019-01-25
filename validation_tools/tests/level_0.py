@@ -254,8 +254,7 @@ def level_0_4(test_metadata):
     }
     try:
         product_path = Path(test_metadata['validate_path'])
-        #reference_path = Path(test_metadata['reference_path'])
-        reference_path = ('T:/Processing/2721_S2GM/02_Interim_Products/mosaics/32TPT_20m_Day_S2B_new/S2GM_D20_20180713_20180713_32TPT_QAtest_S2B_20m_new_STD_v1.0.4_33888/32TPT_QAtest_S2B_20m_new/metadata_D20_20180713_32TPT_QAtest_S2B_20m_new.json')
+        reference_path = Path(test_metadata['reference_path'])
         for subdir in product_path.iterdir():
             path = str(product_path / subdir)
             if subdir.is_dir():
