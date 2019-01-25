@@ -3,7 +3,7 @@
 """ Purpose: Make L0 tests.
 """
 
-from validation_tools.utilities import validation_metadata
+#from validation_tools.utilities import validation_metadata
 from pathlib import Path
 import json
 from urllib.request import urlopen, Request
@@ -164,20 +164,23 @@ def level_0_1(test_metadata):
 
 '''
 Level 0 testing no. 3: Gets raster data from TIFF, JP2 or NC files within the defined validation folder. The following parameters are returned within the test_
-result dictionary: file format,data type (for every band if more then one band is available), pixel size, nodata value, origin (only for TIFF and JP2)
+result dictionary: file format,data type (for every band if more then one band is available), pixel size, nodata value, origin (only for TIFF and JP2). Compares
+with validation JSON
 '''
-def level_0_3(test_metadata):
-
-    test_result = {
+test_result = {
         'test_id': 'level_0_3',
-        'test_name': 'Raster inspection',
+        'test_name': 'Raster_inspection',
     }
+
+def level_0_3(test_metadata):
     try:
-        #go through directory and open all raster files (.jp2, .tiff, .nc)
         product_path = Path(test_metadata['validate_path'])
+        with open(str(Path(product_path / 'validation.json')), 'r') as validation_file:
+            json_data = json.load(validation_file)
         for subdir in product_path.iterdir():
             path = str(product_path / subdir)
             if subdir.is_dir():
+                file_list = []
                 for file in os.listdir(path):
                     image_file = (path + '/' + file)
                     subdatasets_dict = {}
@@ -202,20 +205,30 @@ def level_0_3(test_metadata):
                             'file_format': file_format,
                             'nodatavalue': nodatavalue,
                             'projection': projection,
-                            'image_path': file,
                         }
+                        for element in subdatasets_dict:
+                            file_list.append(subdatasets_dict[element])
                         test_result['FILE: ' + file] = int_test_result
+                        file_list.append(file)
+                        if projection == 'lat lon' and json_data['projection'] == 'WGS84':
+                            test_result['coordinate_system_correct'] = True
+                        else:
+                            test_result['coordinate_system_correct'] = False
+                        if pixel_size == json_data['resolution'][1:]:
+                            test_result['resolution as ordered'] = True
+                        else:
+                            test_result['resolution as ordered'] = False
+
                     elif image_file.endswith('jp2') or image_file.endswith('tiff'):
                         img = gdal.Open(image_file)
                         info = gdal.Info(img, format='json')
                         gt = img.GetGeoTransform()
-                        CellSize = (gt[1], gt[5])
+                        pixel_size = (gt[1], gt[5])
                         origin = (gt[0], gt[3])
                         band = img.GetRasterBand(1)
                         nodata = band.GetNoDataValue()
                         datatype = info['bands'][0]['type']
                         file_format = info['driverShortName']
-
                         prj = img.GetProjection()
                         srs = osr.SpatialReference(wkt=prj)
                         if srs.IsProjected:
@@ -224,14 +237,35 @@ def level_0_3(test_metadata):
                             projection = (srs.GetAttrValue('geogcs'))
                         int_test_result = {
                             'File_format': file_format,
-                            'Pixel_size': CellSize,
+                            'Pixel_size': pixel_size,
                             'NODATA_value': nodata,
                             'Data_type': datatype,
                             'Projection': projection,
-                            'image_path': file,
                             'origin': origin
                         }
                         test_result['FILE: ' + file] = int_test_result
+                        file_list.append(file)
+                        if projection[9:12] == 'UTM' and json_data['projection'] == 'UTM':
+                            test_result['coordinate_system_correct'] = True
+                        else:
+                            test_result['coordinate_system_correct'] = False
+                        if int(pixel_size[0]) == int(json_data['resolution'][1:3]):
+                            test_result['resolution as ordered'] = True
+                        else:
+                            test_result['resolution as ordered'] = False
+            else:
+                pass
+        band_list = []
+        for ord_band in json_data['bands']:
+            for av_band in file_list:
+                if ord_band in av_band or ord_band.lower() in av_band:
+                   band_list.append(av_band)
+        if len(band_list) == len(json_data['bands']):
+            test_result['Ordered bands/subdatasets present:'] = True
+        elif len(band_list)/2 == len(json_data['bands']):
+            test_result['Ordered bands/subdatasets present:'] = True
+        else:
+            test_result['Ordered bands/subdatasets present:'] = False
 
     except Exception as ex:
         test_result['result'] = {
@@ -270,7 +304,6 @@ def level_0_4(test_metadata):
                         missing_keys = []
 
                         for key in json_reference.keys():
-                            value = json_reference[key]
                             if key not in json_validation:
                                 missing_keys.append(key)
 
@@ -290,4 +323,3 @@ def level_0_4(test_metadata):
             'error': ex,
         }
     return test_result
-
