@@ -149,7 +149,7 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
             test_metadata, comparable, refl_bands_dict, name_sub_string, val_res_path)
         print('Finished L2.2 tests')
 
-        print('Start L2.3 tests')
+        print('Started L2.3 tests')
         # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
         test_results['level_2_3'] = level_2.level_2_3(
             test_metadata, comparable, aux_band_dict, name_sub_string, val_res_path)
