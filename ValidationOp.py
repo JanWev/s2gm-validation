@@ -144,9 +144,9 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
             test_metadata, comparable, refl_bands_dict, name_sub_string)
         print('Finished L2.1 tests')
 
-        print('Start L2.2 tests')
+        print('Started L2.2 tests')
         test_results['level_2_2'] = level_2.level_2_2(
-            test_metadata, comparable, refl_bands_dict, name_sub_string)
+            test_metadata, comparable, refl_bands_dict, name_sub_string, val_res_path)
         print('Finished L2.2 tests')
 
         print('Start L2.3 tests')
