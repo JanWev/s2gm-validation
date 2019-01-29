@@ -331,8 +331,3 @@ def level_0_4(test_metadata):
             'error': ex,
         }
     return test_result
-
-test_metadata = {}
-test_metadata['validate_path'] = 'T:/Processing/2721_S2GM/TDS/0115_1430/S2GM_D60_20180415_20180415_S2GM_valreq_20190115T155053_rand04_T30UVC_STD_v1.0.4_34974'
-raster_check = level_0_2(test_metadata)
-print(raster_check)
