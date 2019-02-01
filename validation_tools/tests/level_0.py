@@ -68,7 +68,7 @@ def level_0_2(test_metadata):
         test_result['result'] = {
             'finished': False,
             'passed': False,
-            'error': ex,
+            'error': str(ex),
         }
 
     return test_result
@@ -165,7 +165,7 @@ def level_0_1(test_metadata):
         test_result['result'] = {
             'finished': False,
             'passed': False,
-            'error': ex,
+            'error': str(ex),
         }
 
     return test_result
@@ -181,7 +181,14 @@ test_result = {
     }
 
 def level_0_3(test_metadata):
+
+    test_result = {
+        'test_id': 'level_0_3',
+        'test_name': 'Raster_inspection',
+    }
+
     try:
+        file_list = []
         product_path = Path(test_metadata['validate_path'])
         with open(str(Path(product_path / 'validation.json')), 'r') as validation_file:
             json_data = json.load(validation_file)
@@ -239,10 +246,10 @@ def level_0_3(test_metadata):
                         file_format = info['driverShortName']
                         prj = img.GetProjection()
                         srs = osr.SpatialReference(wkt=prj)
-                        if srs.IsProjected:
-                            projection = (srs.GetAttrValue('projcs'))
+                        if srs.GetAttrValue('projcs') == None:
+                            projection = srs.GetAttrValue('geogcs')
                         else:
-                            projection = (srs.GetAttrValue('geogcs'))
+                            projection = srs.GetAttrValue('projcs')
                         int_test_result = {
                             'File_format': file_format,
                             'Pixel_size': pixel_size,
@@ -255,14 +262,17 @@ def level_0_3(test_metadata):
                         file_list.append(file)
                         if projection[9:12] == 'UTM' and json_data['projection'] == 'UTM':
                             test_result['coordinate_system_correct'] = True
+                        elif projection == 'WGS 84' and json_data['projection'] == 'WGS84':
+                            test_result['coordinate_system_correct'] = True
                         else:
                             test_result['coordinate_system_correct'] = False
                         if int(pixel_size[0]) == int(json_data['resolution'][1:3]):
                             test_result['resolution as ordered'] = True
                         else:
                             test_result['resolution as ordered'] = False
-            else:
-                pass
+                    else:
+                        pass
+
         band_list = []
         for ord_band in json_data['bands']:
             for av_band in file_list:
@@ -273,19 +283,22 @@ def level_0_3(test_metadata):
         elif len(band_list)/2 == len(json_data['bands']):
             test_result['Ordered bands/subdatasets present:'] = True
         else:
-            test_result['Ordered bands/subdatasets present:'] = False
+            if not file_list:
+                test_result['error'] = 'No image files in folder available'
+            else:
+                test_result['Ordered bands/subdatasets present:'] = False
 
     except Exception as ex:
         test_result['result'] = {
             'finished': False,
             'passed': False,
-            'error': ex,
+            'error': str(ex),
         }
     return test_result
 
 
 '''
-Level 0 test no.4: compares if all necessary information are available in the JSON file
+Level 0 test no.4: tests completeness of the JSON file
 '''
 
 def level_0_4(test_metadata):
@@ -324,10 +337,11 @@ def level_0_4(test_metadata):
         json_av = 'Check with reference JSON passed:'
         if json_av not in test_result:
             test_result['Error:'] = 'No JSON available'
+
     except Exception as ex:
         test_result['result'] = {
             'finished': False,
             'passed': False,
-            'error': ex,
+            'error': str(ex),
         }
     return test_result
