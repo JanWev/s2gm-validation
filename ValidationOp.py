@@ -156,7 +156,15 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         print('Finished L2.3 tests')
 
     if 'L3' in tests:
+        # create name substring
+        name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
+                          res_dict[test_metadata['resolution']] + '_' + \
+                          test_metadata['mosaic_start_date'].replace('-', '') + '_'
         logging.info('running test L3 for {}'.format(test_metadata))
+
+        print('Started L3.1 tests')
+        test_results['level_3_1'] = level_3.level_3_1(test_metadata, comparable, name_sub_string)
+        print('Finished L3.1 tests')
 
     return test_results, val_res_path
 
