@@ -42,12 +42,38 @@ def scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file, xli
     plt.clf()
     plt.close()
 
+def plot_refl_histogram(RasterAr, xlabel, ylabel, title, plot_file):
+    RasterArFl = RasterAr.astype(float)
+    RasterArFl.fill_value = np.nan
+    RasterArFlFilled = RasterArFl.filled()
+    RasterArFlFilled = RasterArFlFilled[~np.isnan(RasterArFlFilled)]
+    RasterArFlFilled = RasterArFlFilled[RasterArFlFilled != 0]
+    ax = sns.distplot(RasterArFlFilled)
+    ax.set(xlabel=xlabel,
+           ylabel=ylabel,
+           title=title)
+
+    plt.savefig(plot_file)
+    plt.clf()
+    plt.close()
+    
+def refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file, xlim, ylim):
+    df = pd.DataFrame({'ref': refRasterAr, 'val': valRasterAr})
+    h = sns.jointplot(x="val", y="ref", data=df, ylim=ylim, xlim=xlim, joint_kws=dict(marker='o', s=2))
+    h.set_axis_labels(xlabel, ylabel, fontsize=12)
+    h.fig.subplots_adjust(top=0.9)
+    h.fig.suptitle(title, fontsize=12)
+
+    # plt.setp(marker='o', markersize=0.5)
+    plt.savefig(plot_file)
+    plt.clf()
+    plt.close()
 
 def level_2_1_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_tile_results, band):
     # check SR only no NoData values. Mask NoData
-    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
-    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
-    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
+    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
+    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
     # Todo: define thresholds and plots for differnces
 
     # calc statistics
@@ -234,11 +260,13 @@ def level_2_1(test_metadata, comparable, refl_bands_dict, name_sub_string):
 
     return test_result
 
-def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, band):
+def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, band, val_res_level_2_2_path,
+                       test_metadata, tiled_prod, tile_name):
+    print('Validating band ' + band)
     # check SR only no NoData values. Mask NoData
-    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr)
-    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr)
-    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float)).flatten()
+    valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
+    refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
+    difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
     # Todo: define thresholds and plots for differnces
 
     # calc difference statistics
@@ -246,6 +274,7 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
     test_sum += dif_band_sum
 
     if dif_band_sum != 0:
+        print('Issues found in ' + band + '. Start calculating statistics.')
         dif_band_median = np.ma.median(difRasterAr)
         dif_band_mean = np.ma.mean(difRasterAr)
         dif_band_std = np.ma.std(difRasterAr)
@@ -259,6 +288,46 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
         val_band_median = np.ma.median(valRasterAr)
         val_band_mean = np.ma.mean(valRasterAr)
         val_band_std = np.ma.std(valRasterAr)
+
+        #Todo: optimize plotting into bins
+        # plot ref data histogram
+        xlabel = 'Band ' + band
+        ylabel = 'Frequency'
+        title = test_metadata['order_name'] + '\n Reference data: Distribution of SR values of band ' + band
+        if tiled_prod:
+            plot_ref_file = val_res_level_2_2_path + '\\' + test_metadata[
+                'order_name'] + '_' + tile_name + '_ref_data_band_' + band + '_hist.png'
+        else:
+            plot_ref_file = val_res_level_2_2_path + '\\' + test_metadata[
+                'order_name'] + '_ref_data_band_' + band + '_hist.png'
+        plot_refl_histogram(refRasterAr, xlabel, ylabel, title, plot_ref_file)
+
+        # plot ref data histogram
+        xlabel = 'Band ' + band
+        ylabel = 'Frequency'
+        title = test_metadata['order_name'] + '\n Validation data: Distribution of SR values of band ' + band
+        if tiled_prod:
+            plot_val_file = val_res_level_2_2_path + '\\' + test_metadata[
+                'order_name'] + '_' + tile_name + '_val_data_band_' + band + '_hist.png'
+        else:
+            plot_val_file = val_res_level_2_2_path + '\\' + test_metadata[
+                'order_name'] + '_val_data_band_' + band + '_hist.png'
+        plot_refl_histogram(valRasterAr, xlabel, ylabel, title, plot_val_file)
+
+        #Todo: make this plots nicer (title placement)
+        # scatter plot
+        xlabel = 'Reference dataset'
+        ylabel = 'Validation dataset'
+        title = test_metadata['order_name'] + '\n Scatterplot of reference against validation data band ' + band
+        if tiled_prod:
+            plot_scatter_file = val_res_level_2_2_path + '\\' + test_metadata[
+                'order_name'] + '_' + tile_name +'_band_' + band + 'SR_scatter_plot.png'
+        else:
+            plot_scatter_file = val_res_level_2_2_path + '\\' + test_metadata[
+            'order_name'] + '_band_' + band + 'SR_scatter_plot.png'
+        ylim = (0, 20000)
+        xlim = (0, 20000)
+        refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_scatter_file, ylim, xlim)
 
         if dif_band_mean == dif_band_median and dif_band_std == .0:
             issue = 'Constant shift in SR'
@@ -284,13 +353,18 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
                 'median': str(val_band_median),
                 'mean': str(val_band_mean),
                 'std': str(val_band_std)
+            },
+            'plots': {
+                'ref_histogram': plot_ref_file,
+                'val_histogram': plot_val_file,
+                'scatter_plot': plot_scatter_file
             }
         }
     return lev2_2_tile_results, test_sum
 
 
 
-def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
+def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string, val_res_path):
     """
     Level 2 test no. 2: Distribution of SR values for both products
     """
@@ -298,6 +372,10 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
         'test_id': 'level_2_2',
         'test_name': 'Distribution of SR values for both products',
     }
+
+    val_res_level_2_2_path = val_res_path + '\\lev_2_2_res'
+    if not os.path.isdir(val_res_level_2_2_path):
+        os.makedirs(val_res_level_2_2_path)
 
     if comparable:
         lev2_2_tile_results = {}
@@ -337,6 +415,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
                     refSubPath = refSubPaths[i]
                     if tiled_prod:
                         print('Validating tile: ' + valSubPath.split('\\')[-1])
+                    tile_name = valSubPath.split('\\')[-1]
 
                     #loop over refl bands listed in validation.json
                     for band in test_metadata['bands']:
@@ -359,8 +438,10 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
                             refRaster = refData.GetRasterBand(1)
                             valRasterAr = valRaster.ReadAsArray()
                             refRasterAr = refRaster.ReadAsArray()
-                            lev2_2_tile_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results,
-                                                                band)
+                            lev2_2_tile_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                               lev2_2_tile_results, band,
+                                                                               val_res_level_2_2_path, test_metadata,
+                                                                               tiled_prod, tile_name)
                     affected_bands = level_2_1_evaluation(lev2_2_tile_results, test_metadata['bands'])
                     tile_name = valSubPath.split('\\')[-1]
                     lev2_2_results[tile_name] = {
@@ -389,6 +470,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
                             tiled_prod = True
                     if tiled_prod:
                         print('Validating tile: ' + valSubPath.split('\\')[-1])
+                    tile_name = valSubPath.split('\\')[-1]
 
                     refSubPath = refSubPaths[i]
                     valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
@@ -403,8 +485,10 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string):
                             refData = refNetcdf.variables[band][:,:]
                             valRasterAr = np.ma.filled(valData)
                             refRasterAr = np.ma.filled(refData)
-                            lev2_2_tile_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results,
-                                                                band)
+                            lev2_2_tile_results, test_sum = level_2_2_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                               lev2_2_tile_results, band,
+                                                                               val_res_level_2_2_path, test_metadata,
+                                                                               tiled_prod, tile_name)
                     affected_bands = level_2_1_evaluation(lev2_2_tile_results, test_metadata['bands'])
                     tile_name = valSubPath.split('\\')[-1]
                     lev2_2_results[tile_name] = {
