@@ -165,6 +165,10 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
         print('Started L3.1 tests')
         test_results['level_3_1'] = level_3.level_3_1(test_metadata, comparable, name_sub_string)
         print('Finished L3.1 tests')
+        print('Started L3.2 tests')
+        test_results['level_3_2'] = level_3.level_3_2(test_metadata, comparable, aux_band_dict, name_sub_string,
+                                                      val_res_path)
+        print('Finished L3.2 tests')
 
     return test_results, val_res_path
 
