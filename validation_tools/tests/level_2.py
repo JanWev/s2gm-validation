@@ -446,7 +446,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string, val_r
                     tile_name = valSubPath.split('\\')[-1]
                     lev2_2_results[tile_name] = {
                         'affected_bands': affected_bands,
-                        'level_2_1_details': lev2_2_tile_results
+                        'level_2_2_details': lev2_2_tile_results
                     }
 
             else:
@@ -493,7 +493,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string, val_r
                     tile_name = valSubPath.split('\\')[-1]
                     lev2_2_results[tile_name] = {
                         'affected_bands': affected_bands,
-                        'level_2_1_details': lev2_2_tile_results
+                        'level_2_2_details': lev2_2_tile_results
                     }
 
             if test_sum == 0:
@@ -516,7 +516,7 @@ def level_2_2(test_metadata, comparable, refl_bands_dict, name_sub_string, val_r
                 'error': ex,
             }
     else:
-        print('L2.1 test could not be executed. Products have different request parameters and thus can not be '
+        print('L2.2 test could not be executed. Products have different request parameters and thus can not be '
               'compared')
 
     return test_result
@@ -707,7 +707,7 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string, val_res
                     affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
                     lev2_3_results[tile_name] = {
                         'affected_bands': affected_bands,
-                        'level_2_1_details': lev2_3_tile_results
+                        'level_2_3_details': lev2_3_tile_results
                     }
 
             else:
@@ -754,7 +754,7 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string, val_res
                     affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
                     lev2_3_results[tile_name] = {
                         'affected_bands': affected_bands,
-                        'level_2_1_details': lev2_3_tile_results
+                        'level_2_3_details': lev2_3_tile_results
                     }
 
             if test_sum == 0:
@@ -777,7 +777,7 @@ def level_2_3(test_metadata, comparable, aux_band_dict, name_sub_string, val_res
                 'error': ex,
             }
     else:
-        print('L2.1 test could not be executed. Products have different request parameters and thus can not be '
+        print('L2.3 test could not be executed. Products have different request parameters and thus can not be '
               'compared')
 
     return test_result
