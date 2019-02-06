@@ -105,7 +105,7 @@ def level_0_1(test_metadata):
 
             # go through each subdirectory (tile) of the product and check if there are all required files
             for subdir in product_path.iterdir():
-                if subdir.is_dir():
+                if subdir.is_dir() and not str(subdir).endswith('val_res'):
                     found_required_prefixes = []
                     found_required_files = []
 
