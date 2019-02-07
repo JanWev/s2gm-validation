@@ -45,10 +45,26 @@ validated.
 If the file was not generated, it can be created manually according to
 the example in the README.
 """
+def base_parameter_compare(val_order_data, ref_order_data):
+    equal_base_parameter = ((val_order_data['bands'] == ref_order_data['bands']) and
+                            (val_order_data['compositing_period'] == ref_order_data['compositing_period']) and
+                            (val_order_data['image_format'] == ref_order_data['image_format']) and
+                            (val_order_data['projection'] == ref_order_data['projection']) and
+                            (val_order_data['resolution'] == ref_order_data['resolution'])and
+                            (val_order_data['tile_ids'] == ref_order_data['tile_ids']))
+
+    return equal_base_parameter
+
+
 def prepare_tests(tests, validate_path, reference_path = None):
     log_inputs(tests, validate_path, reference_path)
 
     test_metadata = {
+        'validate_path': validate_path,
+        'reference_path': reference_path,
+    }
+
+    ref_metadata = {
         'validate_path': validate_path,
         'reference_path': reference_path,
     }
@@ -78,13 +94,21 @@ def prepare_tests(tests, validate_path, reference_path = None):
         logging.error('Reading of validation order data from JSON file failed: {}'.format(ex))
         raise Exception('Reading of validation order data from JSON file failed: {}'.format(ex))
 
+    for key, value in ref_order_data.items():
+        ref_metadata[key] = value
+
     # Todo: compare order data of validation and ref dataset
 
     if not len(val_order_data) == len(ref_order_data):
         logging.error('Reference and validation validation.json have different length. One of two files must be corrupt')
         raise Exception('Reference and validation validation.json have different length. One of two files must be corrupt')
     else: #compare the two files
+        equal_base_parameter = base_parameter_compare(val_order_data, ref_order_data)
+
         if val_order_data == ref_order_data:
+            comparable = True
+        elif equal_base_parameter:
+            print('bands equal')
             comparable = True
         else:
             comparable = False
@@ -100,10 +124,10 @@ def prepare_tests(tests, validate_path, reference_path = None):
         # logging.debug('Reference data and validation data have different ')
 
     # TODO: possibly see if all metadata exist for mosaic to validate (and reference if provided): json file @flo: what do you mean? (jan)
-    return test_metadata, comparable
+    return test_metadata, ref_metadata, comparable
 
 
-def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
+def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, aux_band_dict):
 
     test_results = {}
 
@@ -132,42 +156,54 @@ def run_tests(tests, test_metadata, comparable, refl_bands_dict, aux_band_dict):
 
     if 'L2' in tests:
         #create name substring
-        name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
+        val_name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
                           res_dict[test_metadata['resolution']] + '_' + \
                           test_metadata['mosaic_start_date'].replace('-','') + '_'
-
+        ref_name_sub_string = '_' + period_dict[ref_metadata['compositing_period']] + \
+                              res_dict[ref_metadata['resolution']] + '_' + \
+                              ref_metadata['mosaic_start_date'].replace('-', '') + '_'
         logging.info('running test L2 for {}'.format(test_metadata))
 
-        print('Started L2.1 tests')
-        # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
-        test_results['level_2_1'] = level_2.level_2_1(
-            test_metadata, comparable, refl_bands_dict, name_sub_string)
-        print('Finished L2.1 tests')
-
+        # print('Started L2.1 tests')
+        # # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
+        # test_results['level_2_1'] = level_2.level_2_1(
+        #     test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string)
+        # print('Finished L2.1 tests')
+        #
         print('Started L2.2 tests')
         test_results['level_2_2'] = level_2.level_2_2(
-            test_metadata, comparable, refl_bands_dict, name_sub_string, val_res_path)
+            test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string, val_res_path)
         print('Finished L2.2 tests')
-
+        #
         print('Started L2.3 tests')
         # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
         test_results['level_2_3'] = level_2.level_2_3(
-            test_metadata, comparable, aux_band_dict, name_sub_string, val_res_path)
+            test_metadata, ref_metadata, comparable, aux_band_dict, val_name_sub_string, ref_name_sub_string, val_res_path)
         print('Finished L2.3 tests')
+
+        print('Started L2.4 tests')
+        # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
+        test_results['level_2_4'] = level_2.level_2_4(
+            test_metadata, ref_metadata, comparable, aux_band_dict, val_name_sub_string, ref_name_sub_string, val_res_path)
+        print('Finished L2.4 tests')
 
     if 'L3' in tests:
         # create name substring
-        name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
+        val_name_sub_string = '_' + period_dict[test_metadata['compositing_period']] + \
                           res_dict[test_metadata['resolution']] + '_' + \
                           test_metadata['mosaic_start_date'].replace('-', '') + '_'
+        ref_name_sub_string = '_' + period_dict[ref_metadata['compositing_period']] + \
+                              res_dict[ref_metadata['resolution']] + '_' + \
+                              ref_metadata['mosaic_start_date'].replace('-', '') + '_'
         logging.info('running test L3 for {}'.format(test_metadata))
 
         print('Started L3.1 tests')
-        test_results['level_3_1'] = level_3.level_3_1(test_metadata, comparable, name_sub_string)
+        test_results['level_3_1'] = level_3.level_3_1(test_metadata, ref_metadata, comparable, val_name_sub_string,
+                                                      ref_name_sub_string)
         print('Finished L3.1 tests')
         print('Started L3.2 tests')
-        test_results['level_3_2'] = level_3.level_3_2(test_metadata, comparable, aux_band_dict, name_sub_string,
-                                                      val_res_path)
+        test_results['level_3_2'] = level_3.level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict,
+                                                      val_name_sub_string, ref_name_sub_string, val_res_path)
         print('Finished L3.2 tests')
 
     return test_results, val_res_path
@@ -207,13 +243,13 @@ if __name__ == "__main__":
 
     # check integrity of data to be validated
     try:
-        test_metadata, comparable = prepare_tests(args.tests, args.validate, args.reference)
+        test_metadata, ref_metadata, comparable = prepare_tests(args.tests, args.validate, args.reference)
     except Exception as ex:
         logging.error('Preparing of test failed: {}'.format(ex))
         print('Preparing of test failed: {}'.format(ex))
         sys.exit(1)
 
-    test_results, val_res_path = run_tests(args.tests, test_metadata, comparable, refl_bands_dict, aux_band_dict)
+    test_results, val_res_path = run_tests(args.tests, test_metadata, ref_metadata, comparable, refl_bands_dict, aux_band_dict)
 
     # dump resulst to json
     with open(val_res_path + '/validation_report.json', 'w') as outfile:
