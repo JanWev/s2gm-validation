@@ -164,17 +164,17 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
                               ref_metadata['mosaic_start_date'].replace('-', '') + '_'
         logging.info('running test L2 for {}'.format(test_metadata))
 
-        # print('Started L2.1 tests')
-        # # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
-        # test_results['level_2_1'] = level_2.level_2_1(
-        #     test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string)
-        # print('Finished L2.1 tests')
-        #
+        print('Started L2.1 tests')
+        # Todo: Include counts and percentage for changed SR pixels & NoData (How many of all pixels are affected)
+        test_results['level_2_1'] = level_2.level_2_1(
+            test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string)
+        print('Finished L2.1 tests')
+
         print('Started L2.2 tests')
         test_results['level_2_2'] = level_2.level_2_2(
             test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string, val_res_path)
         print('Finished L2.2 tests')
-        #
+
         print('Started L2.3 tests')
         # Todo: Include counts and percentage for changed scene classification pix (How many of all pixels are affected)
         test_results['level_2_3'] = level_2.level_2_3(
