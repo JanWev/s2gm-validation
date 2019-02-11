@@ -67,7 +67,7 @@ def plot_histogram(plotRasterAr, xlabel, ylabel, title, plot_file, cut_zero):
     sns.set(font_scale=1.5)
     plt.rcParams['figure.figsize'] = (8, 8)
     fig, ax = plt.subplots(figsize=(10, 10))
-    max_value = np.max(plotRasterAr)
+    max_value = np.max(plotRasterAr) + 1
     if cut_zero:
         plotRasterAr = np.clip(plotRasterAr, 1, max_value)
     if max_value < 100:
