@@ -10,9 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-# import xarray as xr
 import netCDF4
-from collections import Counter
 
 __author__ = 'jan wevers - jan.wevers@brockmann-consult.de'
 
@@ -64,16 +62,28 @@ def reclass_ref_values(row):
     else:
         return 11
 
-def plot_histogram(plotRasterAr, xlabel, ylabel, title, plot_file):
+def plot_histogram(plotRasterAr, xlabel, ylabel, title, plot_file, cut_zero):
     sns.set(color_codes=True)
     sns.set(font_scale=1.5)
-    # sns.set_style("whitegrid")
     plt.rcParams['figure.figsize'] = (8, 8)
     fig, ax = plt.subplots(figsize=(10, 10))
-    ax.hist(plotRasterAr)
-    ax.set(xlabel=xlabel,
-           ylabel=ylabel,
-           title=title)
+    max_value = np.max(plotRasterAr)
+    if cut_zero:
+        plotRasterAr = np.clip(plotRasterAr, 1, max_value)
+    if max_value < 100:
+        bins = list(range(1, max_value))
+        ax.hist(plotRasterAr, bins=bins)
+        ax.set(xlabel=xlabel,
+               ylabel=ylabel,
+               title=title)
+        ax.xaxis.set_major_locator(plt.MultipleLocator(2))
+        ax.xaxis.set_minor_locator(plt.MultipleLocator(1))
+        plt.tight_layout()
+    else:
+        ax.hist(plotRasterAr)
+        ax.set(xlabel=xlabel,
+               ylabel=ylabel,
+               title=title)
     plt.savefig(plot_file)
     plt.clf()
     plt.close()
@@ -100,7 +110,6 @@ def scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file, gro
         else:
             h = plt.scatter(df_grouped['val'], df_grouped['ref'], c=df_grouped['count'], s=pointsize, cmap="plasma", alpha=0.7,
                             edgecolors='none')
-        # h = sns.lmplot(x='val', y='ref', data=df_grouped, hue='count', fit_reg=False, scatter_kws={'s': 10}, legend=False).set(xlim=xlim, ylim=ylim)
         cbar = plt.colorbar(h, ticks=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
         cbar.ax.set_yticklabels(
             ['< 100', '100-200', '200-500', '500-1K', '1K-2K', '2K-5K', '5K-10K', '10K-20K', '20K-50K', '50K-100K',
@@ -108,9 +117,7 @@ def scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file, gro
         plt.title(title)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        # plt.legend(fontsize=4, ncol=3)
     else:
-        # h = sns.jointplot(x='val', y='ref', data=df, ylim=ylim, xlim=xlim, joint_kws=dict(marker='o', s=10))
         h = sns.jointplot(x='val', y='ref', data=df, ylim=ylim, xlim=xlim)
         h.set_axis_labels(xlabel, ylabel, fontsize=12)
         h.fig.subplots_adjust(top=0.9)
@@ -156,7 +163,6 @@ def refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file
         else:
             h = plt.scatter(df_grouped['val'], df_grouped['ref'], c=df_grouped['count'], s=pointsize, cmap="plasma", alpha=0.7,
                             edgecolors='none')
-        # h = sns.lmplot(x='val', y='ref', data=df_grouped, hue='count', fit_reg=False, scatter_kws={'s': 10}, legend=False).set(xlim=xlim, ylim=ylim)
         cbar = plt.colorbar(h, ticks=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
         cbar.ax.set_yticklabels(
             ['< 10', '10-20', '20-50', '50-100', '100-200', '200-500', '500-1K', '1K-2K', '2K-5K', '5K-10K',
@@ -164,9 +170,7 @@ def refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file
         plt.title(title)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        # plt.legend(fontsize=4, ncol=3)
     else:
-        # h = sns.jointplot(x='val', y='ref', data=df, ylim=ylim, xlim=xlim, joint_kws=dict(marker='o', s=10))
         h = sns.jointplot(x='val', y='ref', data=df, ylim=ylim, xlim=xlim)
         h.set_axis_labels(xlabel, ylabel, fontsize=12)
         h.fig.subplots_adjust(top=0.9)
@@ -175,23 +179,13 @@ def refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file
     plt.savefig(plot_file)
     plt.clf()
     plt.close()
-    # df = pd.DataFrame({'ref': refRasterAr, 'val': valRasterAr})
-    # h = sns.jointplot(x="val", y="ref", data=df, ylim=ylim, xlim=xlim, joint_kws=dict(marker='o', s=2))
-    # h.set_axis_labels(xlabel, ylabel, fontsize=12)
-    # h.fig.subplots_adjust(top=0.9)
-    # h.fig.suptitle(title, fontsize=12)
-    #
-    # # plt.setp(marker='o', markersize=0.5)
-    # plt.savefig(plot_file)
-    # plt.clf()
-    # plt.close()
+
 
 def level_2_1_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_tile_results, band):
     # check SR only no NoData values. Mask NoData
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
     difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
-    # Todo: define thresholds and plots for differnces
 
     # calc statistics
     band_sum = np.ma.sum(difRasterAr)
@@ -327,12 +321,6 @@ def level_2_1(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
                     valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
                     refNetcdfFile = glob.glob(refSubPath + '\*.' + file_ext)[0]
 
-                    #xarray solution currently not working due to false data type (_Unsigned) in products
-                    # valDataset = xr.open_dataset(valNetcdfFile)
-                    # refDataset = xr.open_dataset(refNetcdfFile)
-                    # valdf = valDataset.to_dataframe()
-                    # refdf = refDataset.to_dataframe()
-
                     valNetcdf = netCDF4.Dataset(valNetcdfFile, 'r')
                     refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
 
@@ -355,7 +343,6 @@ def level_2_1(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
             if test_sum == 0:
                 # fill test result
                 test_passed = True
-                # TODO: check if test was passed
             else:
                 test_passed = False
 
@@ -384,7 +371,6 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
     difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
-    # Todo: define thresholds and plots for differnces
 
     # calc difference statistics
     dif_band_sum = np.ma.sum(difRasterAr)
@@ -431,8 +417,6 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
                 'order_name'] + '_val_data_band_' + band + '_hist.png'
         plot_refl_histogram(valRasterAr, xlabel, ylabel, title, plot_val_file)
 
-        #Todo: make this plots nicer (title placement)
-        # scatter plot
         xlabel = 'Reference dataset'
         ylabel = 'Validation dataset'
         title = test_metadata['order_name'] + '\n Scatterplot of reference against validation data band ' + band
@@ -482,7 +466,6 @@ def level_2_2_analysis(valRasterAr, refRasterAr, test_sum, lev2_2_tile_results, 
             }
         }
     return lev2_2_tile_results, test_sum
-
 
 
 def level_2_2(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name_sub_string, ref_name_sub_string, val_res_path):
@@ -620,7 +603,6 @@ def level_2_2(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
             if test_sum == 0:
                 # fill test result
                 test_passed = True
-                # TODO: check if test was passed
             else:
                 test_passed = False
 
@@ -649,7 +631,6 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_tile_results, 
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
     difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
-    # Todo: define thresholds and plots for differnces
 
     # calc difference statistics
     dif_band_sum = np.ma.sum(difRasterAr)
@@ -670,9 +651,7 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_tile_results, 
         val_band_mean = np.ma.mean(valRasterAr)
         val_band_std = np.ma.std(valRasterAr)
 
-        #Todo: move plotting in seperate function
         #Todo: optimize plotting of classes
-        # plot ref data histogram
         xlabel = 'Scene classification classes'
         ylabel = 'Frequency'
         title = test_metadata['order_name'] + '\n Reference data: Distribution of scene classification values'
@@ -682,7 +661,8 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_tile_results, 
         else:
             plot_ref_file = val_res_level_2_3_path + '\\' + test_metadata[
                 'order_name'] + '_ref_data_scene_classification_hist.png'
-        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_ref_file)
+        cut_zero = True
+        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_ref_file, cut_zero)
 
         # plot ref data histogram
         xlabel = 'Scene classification classes'
@@ -694,10 +674,9 @@ def level_2_3_analysis(valRasterAr, refRasterAr, test_sum, lev2_3_tile_results, 
         else:
             plot_val_file = val_res_level_2_3_path + '\\' + test_metadata[
                 'order_name'] + '_val_data_scene_classification_hist.png'
-        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_val_file)
+        cut_zero = True
+        plot_histogram(valRasterAr, xlabel, ylabel, title, plot_val_file, cut_zero)
 
-        #Todo: make this plots nicer (title placement)
-        # scatter plot
         xlabel = 'Reference dataset'
         ylabel = 'Validation dataset'
         title = test_metadata['order_name'] + '\n Scatterplot of reference against validation data'
@@ -884,7 +863,6 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
             if test_sum == 0:
                 # fill test result
                 test_passed = True
-                # TODO: check if test was passed
             else:
                 test_passed = False
 
@@ -913,7 +891,6 @@ def level_2_4_analysis(valRasterAr, refRasterAr, test_sum, lev2_4_tile_results, 
     valRasterAr = np.ma.masked_where(valRasterAr == 65535, valRasterAr).flatten()
     refRasterAr = np.ma.masked_where(refRasterAr == 65535, refRasterAr).flatten()
     difRasterAr = np.absolute(valRasterAr.astype(float) - refRasterAr.astype(float))
-    # Todo: define thresholds and plots for differnces
 
     # calc difference statistics
     dif_band_sum = np.ma.sum(difRasterAr)
@@ -934,9 +911,7 @@ def level_2_4_analysis(valRasterAr, refRasterAr, test_sum, lev2_4_tile_results, 
         val_band_mean = np.ma.mean(valRasterAr)
         val_band_std = np.ma.std(valRasterAr)
 
-        #Todo: move plotting in seperate function
         #Todo: optimize plotting of classes
-        # plot ref data histogram
         xlabel = 'Source Index'
         ylabel = 'Frequency'
         title = test_metadata['order_name'] + '\n Reference data: Distribution of source index values'
@@ -946,22 +921,22 @@ def level_2_4_analysis(valRasterAr, refRasterAr, test_sum, lev2_4_tile_results, 
         else:
             plot_ref_file = val_res_level_2_4_path + '\\' + test_metadata[
                 'order_name'] + '_ref_data_source_index_hist.png'
-        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_ref_file)
+        cut_zero = False
+        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_ref_file, cut_zero)
 
         # plot ref data histogram
         xlabel = 'Source index'
         ylabel = 'Frequency'
-        title = test_metadata['order_name'] + '\n Validation data: Distribution of scene classification values'
+        title = test_metadata['order_name'] + '\n Validation data: Distribution of source index values'
         if tiled_prod:
             plot_val_file = val_res_level_2_4_path + '\\' + test_metadata[
                 'order_name'] + '_' + tile_name + '_val_data_source_index_hist.png'
         else:
             plot_val_file = val_res_level_2_4_path + '\\' + test_metadata[
                 'order_name'] + '_val_data_source_index_hist.png'
-        plot_histogram(refRasterAr, xlabel, ylabel, title, plot_val_file)
+        cut_zero = False
+        plot_histogram(valRasterAr, xlabel, ylabel, title, plot_val_file, cut_zero)
 
-        #Todo: make this plots nicer (title placement)
-        # scatter plot
         xlabel = 'Reference dataset'
         ylabel = 'Validation dataset'
         title = test_metadata['order_name'] + '\n Scatterplot of reference against validation data'
@@ -1148,7 +1123,6 @@ def level_2_4(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
             if test_sum == 0:
                 # fill test result
                 test_passed = True
-                # TODO: check if test was passed
             else:
                 test_passed = False
 
