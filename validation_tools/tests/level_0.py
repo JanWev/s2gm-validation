@@ -78,7 +78,7 @@ def level_0_2(test_metadata):
 Level 0 test no. 1: Checking if all required files are there
 """
 
-def level_0_1(test_metadata):
+def level_0_1(test_metadata, validation_result_path):
 
     test_result = {
         'test_id': 'level_0_1',
@@ -89,6 +89,7 @@ def level_0_1(test_metadata):
         missing_files = []
         unexpected_files = []
         product_path = Path(test_metadata['validate_path'])
+        validation_result_folder = os.path.basename(validation_result_path)
 
         # check if inspire conform xml file is available
         inspire_file = product_path / 'inspire.xml'
@@ -105,7 +106,7 @@ def level_0_1(test_metadata):
 
             # go through each subdirectory (tile) of the product and check if there are all required files
             for subdir in product_path.iterdir():
-                if subdir.is_dir() and not str(subdir).endswith('val_res'):
+                if subdir.is_dir() and not str(subdir).endswith(validation_result_folder):
                     found_required_prefixes = []
                     found_required_files = []
 

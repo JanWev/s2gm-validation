@@ -91,8 +91,8 @@ def prepare_tests(tests, validate_path, reference_path = None):
             ref_order_data = json.load(odf)
 
     except Exception as ex:
-        logging.error('Reading of validation order data from JSON file failed: {}'.format(ex))
-        raise Exception('Reading of validation order data from JSON file failed: {}'.format(ex))
+        logging.error('Reading of reference order data from JSON file failed: {}'.format(ex))
+        raise Exception('Reading of reference order data from JSON file failed: {}'.format(ex))
 
     for key, value in ref_order_data.items():
         ref_metadata[key] = value
@@ -144,7 +144,7 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
         #result = run_L0_test(validate_path)
 
         print('Started L0.1 tests')
-        test_results['level_0_1'] = level_0.level_0_1(test_metadata)
+        test_results['level_0_1'] = level_0.level_0_1(test_metadata, val_res_path)
         print('Finished L0.1 tests')
 
         print('Started L0.2 tests')
