@@ -8,6 +8,7 @@ import glob
 import json
 import gdal
 import netCDF4
+import re
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -184,9 +185,63 @@ def level_3_1(test_metadata, ref_metadata, comparable, val_name_sub_string, ref_
         lev3_1_results = {}
         try:
             if test_metadata['image_format'] == 'NETCDF':
-                #Todo: Implement L3.1 for NetCDF
-                print('L3.1 test for NetCDF not implemented yet')
-                test_sum = 1
+                test_sum = 0
+                file_ext = 'nc'
+                valPath = test_metadata['validate_path']
+                refPath = ref_metadata['reference_path']
+
+                # get subdirs names
+                valSubPaths = [f.path for f in os.scandir(valPath) if f.is_dir()]
+                refSubPaths = [f.path for f in os.scandir(refPath) if f.is_dir()]
+
+                # loop over tiles if any
+                for i in range(len(valSubPaths)):
+                    valSubPath = valSubPaths[i]
+                    tiled_prod = False
+                    if valSubPath.split('\\')[-1] != test_metadata['order_name']:
+                        if len(valSubPath.split('\\')[-1]) > 5:
+                            continue
+                        else:
+                            tiled_prod = True
+                    if tiled_prod:
+                        print('Validating tile: ' + valSubPath.split('\\')[-1])
+
+                    refSubPath = refSubPaths[i]
+                    valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
+                    refNetcdfFile = glob.glob(refSubPath + '\*.' + file_ext)[0]
+                    valNetcdf = netCDF4.Dataset(valNetcdfFile, 'r')
+                    refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
+
+                    valSourceProdString = valNetcdf.getncattr('input_components')
+                    refSourceProdString = refNetcdf.getncattr('input_components')
+
+                    valSourceProdList = re.split(',|=', valSourceProdString)[1::2]
+                    refSourceProdList = re.split(',|=', refSourceProdString)[1::2]
+
+                    valProdDifference = [x for x in valSourceProdList if x not in set(refSourceProdList)]
+                    refProdDifference = [x for x in refSourceProdList if x not in set(valSourceProdList)]
+
+                    if len(valSourceProdList) == len(refSourceProdList) and (
+                            valProdDifference != [] or refProdDifference != []):
+                        lev3_1_tile_results = level_3_1_analysis_1(lev3_1_tile_results, valProdDifference,
+                                                                   refProdDifference)
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev3_1_results[tile_name] = {
+                            'level_3_1_details': lev3_1_tile_results
+                        }
+                        test_sum += 1
+                    elif len(valSourceProdList) == len(refSourceProdList):
+                        test_sum += 0
+                    else:
+                        lev3_1_tile_results = level_3_1_analysis_2(lev3_1_tile_results, refSourceProdList,
+                                                                   valSourceProdList, valProdDifference,
+                                                                   refProdDifference)
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev3_1_results[tile_name] = {
+                            'level_3_1_details': lev3_1_tile_results
+                        }
+                        test_sum += 1
+
             else:
                 valPath = test_metadata['validate_path']
                 refPath = ref_metadata['reference_path']
@@ -470,7 +525,6 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
 
                     #loop over refl bands listed in validation.json
                     if 'MEDOID_MOS' in test_metadata['bands'] and len(test_metadata['bands']) > 1:
-                        print('Medoid band exists')
                         band = 'MEDOID_MOS'
                         remain_band_list = test_metadata['bands']
                         remain_band_list.remove(band)
@@ -520,7 +574,6 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                         print('L3.2 test could not be executed. Product has no MEDOID band')
 
             else:
-                print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
                 refPath = ref_metadata['reference_path']
@@ -550,7 +603,6 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
 
                     # loop over refl bands listed in validation.json
                     if 'MEDOID_MOS' in test_metadata['bands'] and len(test_metadata['bands']) > 1:
-                        print('Medoid band exists')
                         band = 'medoid_mos'
                         band_name = 'MEDOID_MOS'
                         remain_band_list = test_metadata['bands']
