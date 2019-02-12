@@ -131,7 +131,7 @@ def level_0_1(test_metadata, validation_result_path):
             # TODO: possibly check content within the nc file?
             # check if netcdf file is available in each subdir (tile?)
             for subdir in product_path.iterdir():
-                if subdir.is_dir():
+                if subdir.is_dir() and not str(subdir).endswith(validation_result_folder):
                     found_netcdf_files = []
 
                     available_files = [x.name for x in subdir.iterdir() if not x.is_dir()]
