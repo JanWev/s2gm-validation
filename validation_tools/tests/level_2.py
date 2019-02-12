@@ -827,7 +827,6 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                 for i in range(len(valSubPaths)):
                     valSubPath = valSubPaths[i]
                     tiled_prod = False
-                    tile_name = valSubPath.split('\\')[-1]
                     if valSubPath.split('\\')[-1] != test_metadata['order_name']:
                         if len(valSubPath.split('\\')[-1]) > 5:
                             continue
