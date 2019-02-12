@@ -193,12 +193,11 @@ def level_2_1_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_tile_results, 
     test_sum += band_sum
 
     if np.sum(difRasterAr) != 0:
-        test_sum += band_sum
         lev2_1_tile_results[band] = {
             'test_level': 'L2.1',
             'passed': False,
             'summary': 'Test for band ' + band + ' showed differences.',
-            'difference': str(band_sum),
+            'difference': str(band_sum)
         }
     return lev2_1_tile_results, test_sum
 
@@ -296,7 +295,6 @@ def level_2_1(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
                     }
 
             else:
-                print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
                 refPath = test_metadata['reference_path']
@@ -331,9 +329,10 @@ def level_2_1(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
                             refData = refNetcdf.variables[band][:,:]
                             valRasterAr = np.ma.filled(valData)
                             refRasterAr = np.ma.filled(refData)
-                            lev2_1_tile_results = level_2_1_analysis(valRasterAr, refRasterAr, test_sum, lev2_1_tile_results,
-                                                                band)
-                    affected_bands, test_sum = level_2_1_evaluation(lev2_1_tile_results, test_metadata['bands'])
+                            lev2_1_tile_results, prod_test_sum = level_2_1_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                                    lev2_1_tile_results, band)
+                            test_sum += prod_test_sum
+                    affected_bands = level_2_1_evaluation(lev2_1_tile_results, test_metadata['bands'])
                     tile_name = valSubPath.split('\\')[-1]
                     lev2_1_results[tile_name] = {
                         'affected_bands': affected_bands,
@@ -554,7 +553,6 @@ def level_2_2(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
                     }
 
             else:
-                print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
                 refPath = ref_metadata['reference_path']
@@ -783,38 +781,40 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                     tile_name = valSubPath.split('\\')[-1]
 
                     #loop over refl bands listed in validation.json
-                    for band in test_metadata['bands']:
-                        if band == 'SCENE':
-                            if tiled_prod:
-                                valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + valSubPath.split('\\')[
-                                    -1] + '.' + \
-                                          file_ext
-                                refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + refSubPath.split('\\')[
-                                    -1] + '.' + \
-                                          file_ext
-                            else:
-                                valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + test_metadata['order_name'] + '.' + \
-                                          file_ext
-                                refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + ref_metadata['order_name'] + '.' + \
-                                          file_ext
-                            valData = gdal.Open(valBand)
-                            refData = gdal.Open(refBand)
-                            valRaster = valData.GetRasterBand(1)
-                            refRaster = refData.GetRasterBand(1)
-                            valRasterAr = valRaster.ReadAsArray()
-                            refRasterAr = refRaster.ReadAsArray()
-                            lev2_3_tile_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                               lev2_3_tile_results,aux_band_dict, band,
-                                                                               val_res_level_2_3_path, test_metadata,
-                                                                               tiled_prod, tile_name)
-                    affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
-                    lev2_3_results[tile_name] = {
-                        'affected_bands': affected_bands,
-                        'level_2_3_details': lev2_3_tile_results
-                    }
+                    if 'SCENE' in test_metadata['bands']:
+                        band = 'SCENE'
+                        if tiled_prod:
+                            valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + valSubPath.split('\\')[
+                                -1] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + refSubPath.split('\\')[
+                                -1] + '.' + \
+                                      file_ext
+                        else:
+                            valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + ref_metadata['order_name'] + '.' + \
+                                      file_ext
+                        valData = gdal.Open(valBand)
+                        refData = gdal.Open(refBand)
+                        valRaster = valData.GetRasterBand(1)
+                        refRaster = refData.GetRasterBand(1)
+                        valRasterAr = valRaster.ReadAsArray()
+                        refRasterAr = refRaster.ReadAsArray()
+                        lev2_3_tile_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                           lev2_3_tile_results,aux_band_dict, band,
+                                                                           val_res_level_2_3_path, test_metadata,
+                                                                           tiled_prod, tile_name)
+                        affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
+                        lev2_3_results[tile_name] = {
+                            'affected_bands': affected_bands,
+                            'level_2_3_details': lev2_3_tile_results
+                        }
+                    else:
+                        test_sum = 0
+                        print('L2.3 test could not be executed. Product has no SCENE band')
 
             else:
-                print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
                 refPath = ref_metadata['reference_path']
@@ -843,22 +843,34 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                     refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
 
                     # loop over refl bands listed in validation.json
-                    for band in test_metadata['bands']:
-                        if band in ['quality_scene_classification']:
-                            valData = valNetcdf.variables[band][:,:]
-                            refData = refNetcdf.variables[band][:,:]
-                            valRasterAr = np.ma.filled(valData)
-                            refRasterAr = np.ma.filled(refData)
-                            tile_name = valSubPath.split('\\')[-1]
-                            lev2_3_tile_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                               lev2_3_tile_results,aux_band_dict, band,
-                                                                               val_res_level_2_3_path, test_metadata,
-                                                                               tiled_prod, tile_name)
-                    affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
-                    lev2_3_results[tile_name] = {
-                        'affected_bands': affected_bands,
-                        'level_2_3_details': lev2_3_tile_results
-                    }
+                    if 'SCENE' in test_metadata['bands']:
+                        band = 'SCENE'
+                        valData = valNetcdf.variables['quality_scene_classification'][:,:]
+                        refData = refNetcdf.variables['quality_scene_classification'][:,:]
+                        valRasterAr = np.ma.filled(valData)
+                        refRasterAr = np.ma.filled(refData)
+
+                        # flatten array
+                        valRasterAr = valRasterAr.flatten()
+                        refRasterAr = refRasterAr.flatten()
+
+                        # convert to int
+                        valRasterAr = valRasterAr.astype(int)
+                        refRasterAr = refRasterAr.astype(int)
+
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev2_3_tile_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                           lev2_3_tile_results,aux_band_dict, band,
+                                                                           val_res_level_2_3_path, test_metadata,
+                                                                           tiled_prod, tile_name)
+                        affected_bands = level_2_1_evaluation(lev2_3_tile_results, test_metadata['bands'])
+                        lev2_3_results[tile_name] = {
+                            'affected_bands': affected_bands,
+                            'level_2_3_details': lev2_3_tile_results
+                        }
+                    else:
+                        test_sum = 0
+                        print('L2.3 test could not be executed. Product has no SCENE band')
 
             if test_sum == 0:
                 # fill test result
@@ -1042,39 +1054,40 @@ def level_2_4(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                         print('Validating tile: ' + valSubPath.split('\\')[-1])
                     tile_name = valSubPath.split('\\')[-1]
 
-                    #loop over refl bands listed in validation.json
-                    for band in test_metadata['bands']:
-                        if band == 'INDEX':
-                            if tiled_prod:
-                                valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + valSubPath.split('\\')[
-                                    -1] + '.' + \
-                                          file_ext
-                                refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + refSubPath.split('\\')[
-                                    -1] + '.' + \
-                                          file_ext
-                            else:
-                                valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + test_metadata['order_name'] + '.' + \
-                                          file_ext
-                                refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + ref_metadata['order_name'] + '.' + \
-                                          file_ext
-                            valData = gdal.Open(valBand)
-                            refData = gdal.Open(refBand)
-                            valRaster = valData.GetRasterBand(1)
-                            refRaster = refData.GetRasterBand(1)
-                            valRasterAr = valRaster.ReadAsArray()
-                            refRasterAr = refRaster.ReadAsArray()
-                            lev2_4_tile_results, test_sum = level_2_4_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                               lev2_4_tile_results,aux_band_dict, band,
-                                                                               val_res_level_2_4_path, test_metadata,
-                                                                               tiled_prod, tile_name)
-                    affected_bands = level_2_1_evaluation(lev2_4_tile_results, test_metadata['bands'])
-                    lev2_4_results[tile_name] = {
-                        'affected_bands': affected_bands,
-                        'level_2_4_details': lev2_4_tile_results
-                    }
+                    if 'INDEX' in test_metadata['bands']:
+                        band = 'INDEX'
+                        if tiled_prod:
+                            valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + valSubPath.split('\\')[
+                                -1] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + refSubPath.split('\\')[
+                                -1] + '.' + \
+                                      file_ext
+                        else:
+                            valBand = valSubPath + '\\' + aux_band_dict[band] + val_name_sub_string + test_metadata['order_name'] + '.' + \
+                                      file_ext
+                            refBand = refSubPath + '\\' + aux_band_dict[band] + ref_name_sub_string + ref_metadata['order_name'] + '.' + \
+                                      file_ext
+                        valData = gdal.Open(valBand)
+                        refData = gdal.Open(refBand)
+                        valRaster = valData.GetRasterBand(1)
+                        refRaster = refData.GetRasterBand(1)
+                        valRasterAr = valRaster.ReadAsArray()
+                        refRasterAr = refRaster.ReadAsArray()
+                        lev2_4_tile_results, test_sum = level_2_4_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                           lev2_4_tile_results,aux_band_dict, band,
+                                                                           val_res_level_2_4_path, test_metadata,
+                                                                           tiled_prod, tile_name)
+                        affected_bands = level_2_1_evaluation(lev2_4_tile_results, test_metadata['bands'])
+                        lev2_4_results[tile_name] = {
+                            'affected_bands': affected_bands,
+                            'level_2_4_details': lev2_4_tile_results
+                        }
+                    else:
+                        test_sum = 0
+                        print('L2.4 test could not be executed. Product has no INDEX band')
 
             else:
-                print('Started implementation for NetCDF')
                 test_sum = 0
                 valPath = test_metadata['validate_path']
                 refPath = ref_metadata['reference_path']
@@ -1102,23 +1115,26 @@ def level_2_4(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                     valNetcdf = netCDF4.Dataset(valNetcdfFile, 'r')
                     refNetcdf = netCDF4.Dataset(refNetcdfFile, 'r')
 
-                    # loop over refl bands listed in validation.json
-                    for band in test_metadata['bands']:
-                        if band in ['source_index']:
-                            valData = valNetcdf.variables[band][:,:]
-                            refData = refNetcdf.variables[band][:,:]
-                            valRasterAr = np.ma.filled(valData)
-                            refRasterAr = np.ma.filled(refData)
-                            tile_name = valSubPath.split('\\')[-1]
-                            lev2_4_tile_results, test_sum = level_2_4_analysis(valRasterAr, refRasterAr, test_sum,
-                                                                               lev2_4_tile_results,aux_band_dict, band,
-                                                                               val_res_level_2_4_path, test_metadata,
-                                                                               tiled_prod, tile_name)
-                    affected_bands = level_2_1_evaluation(lev2_4_tile_results, test_metadata['bands'])
-                    lev2_4_results[tile_name] = {
-                        'affected_bands': affected_bands,
-                        'level_2_4_details': lev2_4_tile_results
-                    }
+                    if 'INDEX' in test_metadata['bands']:
+                        band = 'INDEX'
+                        valData = valNetcdf.variables['source_index'][:,:]
+                        refData = refNetcdf.variables['source_index'][:,:]
+                        valRasterAr = np.ma.filled(valData)
+                        refRasterAr = np.ma.filled(refData)
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev2_4_tile_results, test_sum = level_2_4_analysis(valRasterAr, refRasterAr, test_sum,
+                                                                           lev2_4_tile_results,aux_band_dict, band,
+                                                                           val_res_level_2_4_path, test_metadata,
+                                                                           tiled_prod, tile_name)
+                        affected_bands = level_2_1_evaluation(lev2_4_tile_results, test_metadata['bands'])
+                        lev2_4_results[tile_name] = {
+                            'affected_bands': affected_bands,
+                            'level_2_4_details': lev2_4_tile_results
+                        }
+
+                    else:
+                        test_sum = 0
+                        print('L2.4 test could not be executed. Product has no INDEX band')
 
             if test_sum == 0:
                 # fill test result
