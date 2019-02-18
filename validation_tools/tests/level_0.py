@@ -15,6 +15,8 @@ __author__ = 'florian girtler - girtler@geoville.com, rafael reder - reder@geovi
 """
 Level 0 test no. 2: Checking the integrity of files
 """
+
+
 def level_0_2(test_metadata):
     test_result = {
         'test_id': 'level_0_2',
@@ -78,7 +80,8 @@ def level_0_2(test_metadata):
 Level 0 test no. 1: Checking if all required files are there
 """
 
-def level_0_1(test_metadata, validation_result_path):
+
+def level_0_1(test_metadata):
 
     test_result = {
         'test_id': 'level_0_1',
@@ -89,7 +92,6 @@ def level_0_1(test_metadata, validation_result_path):
         missing_files = []
         unexpected_files = []
         product_path = Path(test_metadata['validate_path'])
-        validation_result_folder = os.path.basename(validation_result_path)
 
         # check if inspire conform xml file is available
         inspire_file = product_path / 'inspire.xml'
@@ -106,7 +108,7 @@ def level_0_1(test_metadata, validation_result_path):
 
             # go through each subdirectory (tile) of the product and check if there are all required files
             for subdir in product_path.iterdir():
-                if subdir.is_dir() and not str(subdir).endswith(validation_result_folder):
+                if subdir.is_dir():
                     found_required_prefixes = []
                     found_required_files = []
 
@@ -128,10 +130,9 @@ def level_0_1(test_metadata, validation_result_path):
                         unexpected_files.append('{}/{}'.format(subdir.name, u))
 
         else:
-            # TODO: possibly check content within the nc file?
             # check if netcdf file is available in each subdir (tile?)
             for subdir in product_path.iterdir():
-                if subdir.is_dir() and not str(subdir).endswith(validation_result_folder):
+                if subdir.is_dir():
                     found_netcdf_files = []
 
                     available_files = [x.name for x in subdir.iterdir() if not x.is_dir()]
@@ -147,7 +148,6 @@ def level_0_1(test_metadata, validation_result_path):
                     unexpected = set(available_files) - set(found_netcdf_files)
                     for u in unexpected:
                         unexpected_files.append('{}/{}'.format(subdir.name, u))
-
 
         # fill test result
         test_passed = True
@@ -180,6 +180,7 @@ test_result = {
         'test_id': 'level_0_3',
         'test_name': 'Raster_inspection',
     }
+
 
 def level_0_3(test_metadata):
 
@@ -228,12 +229,16 @@ def level_0_3(test_metadata):
                         file_list.append(file)
                         if projection == 'lat lon' and json_data['projection'] == 'WGS84':
                             test_result['coordinate_system_correct'] = True
+                            test_result['test_passed'] = True
                         else:
                             test_result['coordinate_system_correct'] = False
+                            test_result['test_passed'] = False
                         if pixel_size == json_data['resolution'][1:]:
                             test_result['resolution as ordered'] = True
+                            test_result['test_passed'] = True
                         else:
                             test_result['resolution as ordered'] = False
+                            test_result['test_passed'] = False
 
                     elif image_file.endswith('jp2') or image_file.endswith('tiff'):
                         img = gdal.Open(image_file)
@@ -247,7 +252,7 @@ def level_0_3(test_metadata):
                         file_format = info['driverShortName']
                         prj = img.GetProjection()
                         srs = osr.SpatialReference(wkt=prj)
-                        if srs.GetAttrValue('projcs') == None:
+                        if srs.GetAttrValue('projcs') is None:
                             projection = srs.GetAttrValue('geogcs')
                         else:
                             projection = srs.GetAttrValue('projcs')
@@ -263,14 +268,19 @@ def level_0_3(test_metadata):
                         file_list.append(file)
                         if projection[9:12] == 'UTM' and json_data['projection'] == 'UTM':
                             test_result['coordinate_system_correct'] = True
+                            test_result['test_passed'] = False
                         elif projection == 'WGS 84' and json_data['projection'] == 'WGS84':
                             test_result['coordinate_system_correct'] = True
+                            test_result['test_passed'] = True
                         else:
                             test_result['coordinate_system_correct'] = False
+                            test_result['test_passed'] = False
                         if int(pixel_size[0]) == int(json_data['resolution'][1:3]):
                             test_result['resolution as ordered'] = True
+                            test_result['test_passed'] = True
                         else:
                             test_result['resolution as ordered'] = False
+                            test_result['test_passed'] = False
                     else:
                         pass
 
@@ -278,16 +288,21 @@ def level_0_3(test_metadata):
         for ord_band in json_data['bands']:
             for av_band in file_list:
                 if ord_band in av_band or ord_band.lower() in av_band:
-                   band_list.append(av_band)
+                    band_list.append(av_band)
         if len(band_list) == len(json_data['bands']):
             test_result['Ordered bands/subdatasets present:'] = True
+            test_result['test_passed'] = True
         elif len(band_list)/2 == len(json_data['bands']):
             test_result['Ordered bands/subdatasets present:'] = True
+            test_result['test_passed'] = True
         else:
             if not file_list:
                 test_result['error'] = 'No image files in folder available'
+                test_result['test_passed'] = False
             else:
                 test_result['Ordered bands/subdatasets present:'] = False
+                test_result['test_passed'] = False
+        test_result['finished'] = True
 
     except Exception as ex:
         test_result['result'] = {
@@ -301,6 +316,7 @@ def level_0_3(test_metadata):
 '''
 Level 0 test no.4: tests completeness of the JSON file
 '''
+
 
 def level_0_4(test_metadata):
 
