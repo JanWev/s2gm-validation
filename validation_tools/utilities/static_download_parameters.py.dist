@@ -36,7 +36,7 @@ static_band = {'01': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A",
                '03': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}',
                '04': '{"bands":["B02", "B03", "B04", "B08", "B01", "B05", "B8A", "B11", "B06", "B07", "B12", "AOT", "CLOUD", "SNOW", "SCENE", "INDEX", "MEDOID_MOS", "SUN_ZENITH", "SUN_AZIMUTH", "VIEW_ZENITH_MEAN", "VIEW_AZIMUTH_MEAN", "VALID_OBS"]}'}
 static_periods = {'01': 'TENDAYS', '02': 'MONTH', '03': 'YEAR', '04': 'QUARTER'}
-static_dates = {'01': '2017-06-17T00:00:00', '02': '2017-09-03T00:00:00', '03': '2018-03-01T00:00:00', '04': '2018-04-15T00:00:00'}
+static_dates = {'01': '2017-06-11T00:00:00', '02': '2017-09-01T00:00:00', '03': '2018-01-01T00:00:00', '04': '2018-04-01T00:00:00'}
 
 
 random_granule_number = 6 # Allowed minimum = 6
