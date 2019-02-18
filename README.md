@@ -5,9 +5,9 @@ Project to document and maintain all validation methods for S2GM products
 The validation of S2GM products comprises 4 levels from L0 to L3
 
 - L0 - Product integrity
-    - L0_1: Check if all files are present
+    - L0_1: Check if all files are present without opening and validating the subdatasets of the NETCDF files
     - L0_2: Validate xml file against INSPIRE metadata validation service
-    - L0_3: Check raster properties and validate them against the validation.json file (NoData, Projection, Ordered Bands/Subdatasets, Resolution)
+    - L0_3: Check raster properties and validate them against the validation.json file (NoData, Projection, Resolution). Check if all ordered Bands/Subdatasets are present.
     - L0_4: Validate JSON file against reference JSON file.
     
 - L1 - Product plausibility 
