@@ -181,7 +181,6 @@ test_result = {
         'test_name': 'Raster_inspection',
     }
 
-
 def level_0_3(test_metadata):
 
     test_result = {
