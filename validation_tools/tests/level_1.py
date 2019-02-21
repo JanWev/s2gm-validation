@@ -116,7 +116,7 @@ def level_1_0(test_metadata):
 
     return test_result
 
-test_metadata = {}
-test_metadata['validate_path'] = 'T:/Processing/2721_S2GM/TDS/0115_1430/S2GM_T10_20170611_20170621_S2GM_valreq_20190115T155053_stat01_T33TXN-UXP_STD_v1.0.4_34968'
-raster_check = level_1_0(test_metadata)
-print(raster_check)
+#test_metadata = {}
+#test_metadata['validate_path'] = 'T:/Processing/2721_S2GM/TDS/0115_1430/S2GM_T10_20170611_20170621_S2GM_valreq_20190115T155053_stat01_T33TXN-UXP_STD_v1.0.4_34968'
+#raster_check = level_1_0(test_metadata)
+#print(raster_check)
