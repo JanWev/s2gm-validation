@@ -47,13 +47,11 @@ def level_1_0(test_metadata):
                             os.remove(str(product_path) + '/temp.vrt')
                             i = 1
 
-                gdal.BuildVRT(destName=str(product_path) + '/' + tile + '_stack.vrt', srcDSOrSrcDSTab=file_list,
-                              options=gdal.BuildVRTOptions(separate=True, srcNodata=nodata,
-                                                           allowProjectionDifference=True))
                 for file in os.listdir(path):
                     if file.endswith('.nc'):
                         img = gdal.Open(path + '/' + file)
-                        print(file)
+                        info = gdal.Info(img, format='json')
+                        nodatavalue = info['metadata']['']['B02__FillValue'][0:-2]
                         subdatasets = img.GetSubDatasets()
                         for variable in subdatasets:
                             if variable[0].endswith('lat'):
@@ -69,34 +67,48 @@ def level_1_0(test_metadata):
                                 blue_band = variable[0]
                                 blue_band = blue_band.replace('\\', '/')
                                 rgb_list.append(blue_band)
-                                gdal.Translate(destName=path + '/blue.tif', srcDS=blue_band,
-                                               options=gdal.TranslateOptions(noData=65535, format='GTIFF',
-                                                                             outputBounds=[lon_min, lat_max, lon_max,
-                                                                                           lat_min]))
+
                             if variable[0].endswith('B03'):
                                 green_band = variable[0]
                                 green_band = green_band.replace('\\', '/')
                                 rgb_list.insert(0, green_band)
-                                gdal.Translate(destName=path + '/green.tif', srcDS=green_band,
-                                               options=gdal.TranslateOptions(noData=65535, format='GTIFF',
-                                                                             outputBounds=[lon_min, lat_max, lon_max,
-                                                                                           lat_min]))
+
                             if variable[0].endswith('B04'):
                                 red_band = variable[0]
                                 red_band = red_band.replace('\\', '/')
                                 rgb_list.insert(0, red_band)
-                                gdal.Translate(destName=path + '/red.tif', srcDS=red_band,
-                                               options=gdal.TranslateOptions(noData=65535, format='GTIFF',
-                                                                             outputBounds=[lon_min, lat_max, lon_max,
-                                                                                           lat_min]))
 
-                gdal.BuildVRT(destName=path + '/temp.vrt', srcDSOrSrcDSTab=rgb_list,
-                              options=gdal.BuildVRTOptions(separate=True, srcNodata=65535))
-                gdal.Translate(destName=path + '/RGB.tif', srcDS=path + '/temp.vrt',
-                               options=gdal.TranslateOptions(noData=65535,
-                                                             outputBounds=[lon_min, lat_max, lon_max, lat_min]))
+                if i == 1:
+                    gdal.BuildVRT(destName=str(product_path) + '/' + tile + '_stack.vrt', srcDSOrSrcDSTab=file_list,
+                                  options=gdal.BuildVRTOptions(separate=True, srcNodata=nodata,
+                                                               allowProjectionDifference=True))
+                else:
+                    if len(rgb_list) == 3:
+                        gdal.Translate(destName=path + '/blue.tif', srcDS=blue_band,
+                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                     outputBounds=[lon_min, lat_max, lon_max,
+                                                                                   lat_min]))
+                        gdal.Translate(destName=path + '/green.tif', srcDS=green_band,
+                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                     outputBounds=[lon_min, lat_max, lon_max,
+                                                                                   lat_min]))
+                        gdal.Translate(destName=path + '/red.tif', srcDS=red_band,
+                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                     outputBounds=[lon_min, lat_max, lon_max,
+                                                                                   lat_min]))
+                        gdal.BuildVRT(destName=path + '/temp.vrt', srcDSOrSrcDSTab=rgb_list,
+                                      options=gdal.BuildVRTOptions(separate=True, srcNodata=nodatavalue))
+                        gdal.Translate(destName=path + '/RGB.tif', srcDS=path + '/temp.vrt',
+                                       options=gdal.TranslateOptions(noData=nodatavalue,
+                                                                     outputBounds=[lon_min, lat_max, lon_max, lat_min]))
+                    else:
+                        test_result['result'] = {
+                            'finished': False,
+                            'error': 'Not all required bands for RGB available (missing bands)'
+                        }
+                        continue
                 try:
-                    os.remove(path + '/' + 'temp.vrt')
+                    os.remove(path + '/temp.vrt')
                     os.remove(path + '/green.tif')
                     os.remove(path + '/red.tif')
                     os.remove(path + '/blue.tif')
@@ -104,8 +116,9 @@ def level_1_0(test_metadata):
                     pass
 
                 test_result['result'] = {
-                    'finished': True
+                    'finished': True,
                 }
+
 
     except Exception as ex:
         test_result['result'] = {
@@ -116,7 +129,3 @@ def level_1_0(test_metadata):
 
     return test_result
 
-#test_metadata = {}
-#test_metadata['validate_path'] = 'T:/Processing/2721_S2GM/TDS/0115_1430/S2GM_T10_20170611_20170621_S2GM_valreq_20190115T155053_stat01_T33TXN-UXP_STD_v1.0.4_34968'
-#raster_check = level_1_0(test_metadata)
-#print(raster_check)
