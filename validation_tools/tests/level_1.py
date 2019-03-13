@@ -4,7 +4,7 @@ import os
 
 
 """
-Level 1 test no. 0: Creates RGB for visual inspection
+Level 1 test no. 0: Creates RGB tiff and jpg for visual inspection
 """
 def level_1_0(test_metadata):
 
@@ -21,34 +21,51 @@ def level_1_0(test_metadata):
             if subdir.is_dir():
                 tile = os.path.basename(os.path.normpath(str(subdir)))
                 rgb_list = []
-                file_list = []
+                file_dict = {}
+                tag = ''
                 i = 0
                 for file in os.listdir(path):
+                    if file.endswith('tiff'):
+                        tag = 'tif'
+                    if file.endswith('jp2'):
+                        tag = 'jp2'
                     if file.endswith('tiff') or file.endswith('jp2'):
-                        file_list.append(path + '/' + file)
-                        if file.startswith('B02'):
-                            blue_band = path + '/' + file
-                            img = gdal.Open(blue_band)
-                            band = img.GetRasterBand(1)
-                            nodata = band.GetNoDataValue()
-                            rgb_list.insert(0, blue_band)
-                        if file.startswith('B03'):
-                            green_band = path + '/' + file
-                            rgb_list.insert(0, green_band)
-                        if file.startswith('B04'):
-                            red_band = path + '/' + file
-                            rgb_list.insert(0, red_band)
+                        if file.startswith('B'):
+                            file_dict[file[0:3]] = path + '/' + file
+                            try:
+                                blue_band = file_dict['B02']
+                                green_band = file_dict['B03']
+                                red_band = file_dict['B04']
+                                img = gdal.Open(blue_band)
+                                band = img.GetRasterBand(1)
+                                nodata = band.GetNoDataValue()
+                                rgb_list = [red_band, green_band, blue_band]
+                            except:
+                                pass
                         if len(rgb_list) == 3 and i == 0:
                             gdal.BuildVRT(destName=str(product_path) + '/temp.vrt', srcDSOrSrcDSTab=rgb_list,
                                           options=gdal.BuildVRTOptions(separate=True, srcNodata=nodata))
                             gdal.Translate(destName=str(product_path) + '/' + tile + '_RGB.tif',
                                            srcDS=str(product_path) + '/temp.vrt',
                                            options=gdal.TranslateOptions(noData=nodata))
+                            gdal.Translate(destName=str(product_path) + '/' + tile + '_RGB.jpg',
+                                           srcDS=str(product_path) + '/' + tile + '_RGB.tif',
+                                           options=gdal.TranslateOptions(format='JPEG', scaleParams=[[0, 1400]]))
                             os.remove(str(product_path) + '/temp.vrt')
+                            print('RGB for {} created'.format(tile))
                             i = 1
+                if tag == 'tif':
+                    if 'B08' in file_dict and 'B8A' in file_dict:
+                        del file_dict['B8A']
+                    file_list = []
+                    for element in file_dict.values():
+                        file_list.append(element)
+                    gdal.BuildVRT(destName=str(product_path) + '/vrt_stack.vrt', srcDSOrSrcDSTab=file_list,
+                                  options=gdal.BuildVRTOptions(separate=True, srcNodata=nodata))
 
                 for file in os.listdir(path):
                     if file.endswith('.nc'):
+                        tag = 'ns'
                         img = gdal.Open(path + '/' + file)
                         info = gdal.Info(img, format='json')
                         nodatavalue = info['metadata']['']['B02__FillValue'][0:-2]
@@ -78,46 +95,50 @@ def level_1_0(test_metadata):
                                 red_band = red_band.replace('\\', '/')
                                 rgb_list.insert(0, red_band)
 
-                if i == 1:
-                    gdal.BuildVRT(destName=str(product_path) + '/' + tile + '_stack.vrt', srcDSOrSrcDSTab=file_list,
-                                  options=gdal.BuildVRTOptions(separate=True, srcNodata=nodata,
-                                                               allowProjectionDifference=True))
-                else:
-                    if len(rgb_list) == 3:
-                        gdal.Translate(destName=path + '/blue.tif', srcDS=blue_band,
-                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
-                                                                     outputBounds=[lon_min, lat_max, lon_max,
-                                                                                   lat_min]))
-                        gdal.Translate(destName=path + '/green.tif', srcDS=green_band,
-                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
-                                                                     outputBounds=[lon_min, lat_max, lon_max,
-                                                                                   lat_min]))
-                        gdal.Translate(destName=path + '/red.tif', srcDS=red_band,
-                                       options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
-                                                                     outputBounds=[lon_min, lat_max, lon_max,
-                                                                                   lat_min]))
-                        gdal.BuildVRT(destName=path + '/temp.vrt', srcDSOrSrcDSTab=rgb_list,
-                                      options=gdal.BuildVRTOptions(separate=True, srcNodata=nodatavalue))
-                        gdal.Translate(destName=path + '/RGB.tif', srcDS=path + '/temp.vrt',
-                                       options=gdal.TranslateOptions(noData=nodatavalue,
-                                                                     outputBounds=[lon_min, lat_max, lon_max, lat_min]))
-                    else:
-                        test_result['result'] = {
-                            'finished': False,
-                            'error': 'Not all required bands for RGB available (missing bands)'
-                        }
-                        continue
-                try:
-                    os.remove(path + '/temp.vrt')
-                    os.remove(path + '/green.tif')
-                    os.remove(path + '/red.tif')
-                    os.remove(path + '/blue.tif')
-                except:
-                    pass
+                        if len(rgb_list) == 3:
+                            gdal.Translate(destName=path + '/blue.tif', srcDS=blue_band,
+                                           options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                         outputBounds=[lon_min, lat_max, lon_max,
+                                                                                       lat_min],
+                                                                         scaleParams=[[0, 1500]]))
+                            gdal.Translate(destName=path + '/green.tif', srcDS=green_band,
+                                           options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                         outputBounds=[lon_min, lat_max, lon_max,
+                                                                                       lat_min],
+                                                                         scaleParams=[[0, 1500]]))
+                            gdal.Translate(destName=path + '/red.tif', srcDS=red_band,
+                                           options=gdal.TranslateOptions(noData=nodatavalue, format='GTIFF',
+                                                                         outputBounds=[lon_min, lat_max, lon_max,
+                                                                                       lat_min],
+                                                                         scaleParams=[[0, 1500]]))
+                            gdal.BuildVRT(destName=path + '/temp.vrt', srcDSOrSrcDSTab=rgb_list,
+                                          options=gdal.BuildVRTOptions(separate=True, srcNodata=nodatavalue))
+                            gdal.Translate(destName=path + '/RGB.tif', srcDS=path + '/temp.vrt',
+                                           options=gdal.TranslateOptions(noData=nodatavalue,
+                                                                         outputBounds=[lon_min, lat_max, lon_max,
+                                                                                       lat_min],
+                                                                         scaleParams=[[0, 1500]]))
+                            gdal.Translate(destName=path + '/RGB.jpg', srcDS=path + '/RGB.tif',
+                                           options=gdal.TranslateOptions(format='JPEG', noData=nodatavalue,
+                                                                         scaleParams=[[0, 1500]]))
+                        else:
+                            test_result['result'] = {
+                                'finished': False,
+                                'error': 'Not all required bands for RGB available (missing bands)'
+                            }
+                            continue
 
-                test_result['result'] = {
-                    'finished': True,
-                }
+            try:
+                for element in os.listdir(path):
+                    if element.startswith('blue') or element.startswith('red') or element.startswith('green') or \
+                            element.startswith('temp'):
+                        os.remove(path + '/' + element)
+            except:
+                pass
+
+            test_result['result'] = {
+                'finished': True,
+            }
 
 
     except Exception as ex:
@@ -127,5 +148,5 @@ def level_1_0(test_metadata):
             'error': str(ex),
         }
 
+    print('Level 1 check done!')
     return test_result
-
