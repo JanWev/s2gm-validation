@@ -22,7 +22,7 @@ The validation of S2GM products comprises 4 levels from L0 to L3
     - (potential test): Spatial difference for SR for different bands - visual check
 - L3 - Product validation
     - Compare number of input products to mosaicking
-    - Compare applied algorithm (not possible due to missing band)
+    - Compare applied algorithm
     - Compare selected date (same as L2.4 source index)
 
 

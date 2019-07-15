@@ -123,6 +123,16 @@ dependencies:
   - numpy-base=1.15.2=py35h8128ebf_0
   - scipy=1.1.0=py35h4f6bf74_1
   - pip:
+    - cairocffi==1.0.1
+    - cairosvg==2.3.0
+    - cssselect2==0.2.1
+    - defusedxml==0.5.0
+    - html5lib==1.0.1
     - msgpack==0.5.6
+    - pillow==5.4.1
+    - pyphen==0.9.5
+    - tinycss2==0.6.1
+    - weasyprint==44
+    - webencodings==0.5.1
 prefix: C:\Users\jan\Anaconda3\envs\s2gm
 
