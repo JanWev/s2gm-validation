@@ -144,7 +144,7 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
         #result = run_L0_test(validate_path)
 
         print('Started L0.1 tests')
-        test_results['level_0_1'] = level_0.level_0_1(test_metadata, val_res_path)
+        test_results['level_0_1'] = level_0.level_0_1(test_metadata)
         print('Finished L0.1 tests')
 
         print('Started L0.2 tests')
