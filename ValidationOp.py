@@ -153,6 +153,8 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
 
     if 'L1' in tests:
         logging.info('running test L1 for {}'.format(test_metadata))
+        # test_results['level_1_0'] = level_1.level_1_0(test_metadata)
+        test_results['level_1_1'] = level_1.level_1_1(test_metadata, val_res_path)
 
     if 'L2' in tests:
         #create name substring

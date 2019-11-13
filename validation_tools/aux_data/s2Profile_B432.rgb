@@ -1,0 +1,5 @@
+#RGB-Image Profile
+blue=B02 < 0 ? 0 : B02 > 0.25 ? 0.25 : B02
+green=B03 < 0 ? 0 : B03 > 0.3 ? 0.3 : B03
+red=B04 < 0 ? 0 : B04 > 0.35 ? 0.35 :B04
+name=const S2 RGB Profile
