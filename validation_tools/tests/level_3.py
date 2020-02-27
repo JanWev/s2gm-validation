@@ -579,7 +579,7 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                         affected_bands = level_3_2_evaluation(lev3_2_tile_results, test_metadata['bands'])
                         lev3_2_results[tile_name] = {
                             'affected_bands': affected_bands,
-                            'level_2_1_details': lev3_2_tile_results
+                            'level_3_2_details': lev3_2_tile_results
                         }
                     else:
                         test_sum = 0
