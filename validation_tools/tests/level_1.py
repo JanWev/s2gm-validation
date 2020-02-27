@@ -149,7 +149,6 @@ def level_1_0(test_metadata):
             'error': str(ex),
         }
 
-    print('Level 1 check done!')
     return test_result
 
 def level_1_1(test_metadata, val_res_path):
@@ -246,5 +245,4 @@ def level_1_1(test_metadata, val_res_path):
             'error': str(ex),
         }
 
-    print('Level 1 check done!')
     return test_result
