@@ -170,7 +170,7 @@ def level_1_1(test_metadata, val_res_path):
                 tag = ''
                 i = 0
                 for file in os.listdir(path):
-                    if file.endswith('json'):
+                    if file.endswith('json') and file != 'validation_report.json':
                         tag = 'json'
                         current_path, dir = os.path.split(os.path.dirname(__file__))
                         print(current_path)
