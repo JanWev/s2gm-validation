@@ -52,3 +52,14 @@ example. Keep in mind that the text '#optional' is not supposed to be in the JSO
 	"mosaic_end_date": "2018-01-31"     #optional
 }
 ```
+
+## System setup
+
+###Requirements
+
+- An [Anaconda](https://www.anaconda.com/) environment based on the environment.yml file in the project root.
+  - An Anaconda environment can be exported with `conda env export --no-builds > environment.yml`
+  - Creation of the Anaconda environment works with `conda env create --file environment.yml`
+- Install [ESA Snap](https://step.esa.int/main/toolboxes/snap/)
+- Also the S2GM Snap plugin is required, install according to [instructions](https://usermanual.readthedocs.io/en/stable/pages/ProductGuide.html#install-plugin)
+
