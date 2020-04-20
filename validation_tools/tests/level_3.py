@@ -336,7 +336,7 @@ def level_3_1(test_metadata, ref_metadata, comparable, val_name_sub_string, ref_
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L3.1 test could not be executed. Products have different request parameters and thus can not be '
@@ -538,7 +538,7 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                     # loop over refl bands listed in validation.json
                     if 'MEDOID_MOS' in test_metadata['bands'] and len(test_metadata['bands']) > 1:
                         band = 'MEDOID_MOS'
-                        remain_band_list = test_metadata['bands']
+                        remain_band_list = test_metadata['bands'].copy()
                         remain_band_list.remove(band)
                         aux_band = str(remain_band_list[0])
                         if tiled_prod:
@@ -582,8 +582,15 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                             'level_3_2_details': lev3_2_tile_results
                         }
                     else:
-                        test_sum = 0
-                        print('L3.2 test could not be executed. Product has no MEDOID band')
+                        test_sum = 1
+                        lev3_2_tile_results[aux_band_dict['MEDOID_MOS']] = {
+                            'test_level': 'L3.2',
+                            'passed': False,
+                            'issue': 'Product has no MEDOID band'}
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev3_2_results[tile_name] = {
+                            'level_3_2_details': lev3_2_tile_results
+                        }
 
             else:
                 test_sum = 0
@@ -605,7 +612,7 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                         else:
                             tiled_prod = True
                     if tiled_prod:
-                        print('Validating tile: ' + valSubPath.split('\\')[-1])
+                        print('Validating tile: ' + tile_name)
 
                     refSubPath = refSubPaths[i]
                     valNetcdfFile = glob.glob(valSubPath + '\*.' + file_ext)[0]
@@ -617,7 +624,7 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                     if 'MEDOID_MOS' in test_metadata['bands'] and len(test_metadata['bands']) > 1:
                         band = 'medoid_mos'
                         band_name = 'MEDOID_MOS'
-                        remain_band_list = test_metadata['bands']
+                        remain_band_list = test_metadata['bands'].copy()
                         remain_band_list.remove('MEDOID_MOS')
                         aux_band = str(remain_band_list[0])
                         valData = valNetcdf.variables[band][:, :]
@@ -642,10 +649,10 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                         refAuxRasterAr[refAuxRasterAr != 65535] = refAuxRasterAr[refAuxRasterAr != 65535] * 10000
 
                         # convert to int
-                        valRasterAr = valRasterAr.astype(int)
-                        refRasterAr = refRasterAr.astype(int)
-                        valAuxRasterAr = valAuxRasterAr.astype(int)
-                        refAuxRasterAr = refAuxRasterAr.astype(int)
+                        valRasterAr = valRasterAr.astype(np.uint)
+                        refRasterAr = refRasterAr.astype(np.uint)
+                        valAuxRasterAr = valAuxRasterAr.astype(np.uint)
+                        refAuxRasterAr = refAuxRasterAr.astype(np.uint)
 
                         tile_name = valSubPath.split('\\')[-1]
                         lev3_2_tile_results, test_sum = level_3_2_analysis(valRasterAr, refRasterAr, valAuxRasterAr,
@@ -660,8 +667,15 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
                             'level_3_2_details': lev3_2_tile_results
                         }
                     else:
-                        test_sum = 0
-                        print('L3.2 test could not be executed. Product has no MEDOID band')
+                        test_sum = 1
+                        lev3_2_tile_results[aux_band_dict['MEDOID_MOS']] = {
+                            'test_level': 'L3.2',
+                            'passed': False,
+                            'issue': 'Product has no MEDOID band'}
+                        tile_name = valSubPath.split('\\')[-1]
+                        lev3_2_results[tile_name] = {
+                            'level_3_2_details': lev3_2_tile_results
+                        }
 
             if test_sum == 0:
                 # fill test result
@@ -680,7 +694,7 @@ def level_3_2(test_metadata, ref_metadata, comparable, aux_band_dict, refl_bands
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L3.2 test could not be executed. Products have different request parameters and thus can not be '
