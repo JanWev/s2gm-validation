@@ -154,7 +154,7 @@ def refl_scatter_plot(refRasterAr, valRasterAr, xlabel, ylabel, title, plot_file
     df = pd.DataFrame({'ref': refRasterAr, 'val': valRasterAr})
 
     if group:
-        xmax = round((df[['ref', 'val']].max(axis=1).max() * 1.6), -1).astype('int')
+        xmax = round((df[['ref', 'val']].fillna(0).astype(int).max(axis=1).max() * 1.6), -1)
     else:
         xmax = df[['ref', 'val']].max(axis=1).max() * 1.1
 
@@ -367,7 +367,7 @@ def level_2_1(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L2.1 test could not be executed. Products have different request parameters and thus can not be '
@@ -630,7 +630,7 @@ def level_2_2(test_metadata, ref_metadata, comparable, refl_bands_dict, val_name
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L2.2 test could not be executed. Products have different request parameters and thus can not be '
@@ -907,7 +907,7 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L2.3 test could not be executed. Products have different request parameters and thus can not be '
@@ -1175,7 +1175,7 @@ def level_2_4(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
             test_result['status'] = {
                 'finished': False,
                 'passed': False,
-                'error': ex,
+                'error': str(ex),
             }
     else:
         print('L2.4 test could not be executed. Products have different request parameters and thus can not be '
