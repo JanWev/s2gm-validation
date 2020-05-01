@@ -379,7 +379,7 @@ def level_3_2_analysis(valRasterAr, refRasterAr, valAuxRasterAr, refAuxRasterAr,
     refRasterArReclass = refRasterArReclass.flatten()
 
     # calc difference statistics
-    dif_band_sum = np.ma.sum(difRasterAr)
+    dif_band_sum = np.ma.sum(difRasterAr, keepdims=True).filled(0).item(0)
     test_sum += dif_band_sum
 
     if dif_band_sum != 0:
