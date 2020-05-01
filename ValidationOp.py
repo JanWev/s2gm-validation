@@ -154,11 +154,8 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
     if 'L1' in tests:
         logging.info('running test L1 for {}'.format(test_metadata))
         print('Started L1.0 tests')
-        test_results['level_1_0'] = level_1.level_1_0(test_metadata)
+        test_results['level_1_0'] = level_1.level_1_0(test_metadata, val_res_path)
         print('Finished L1.0 tests')
-        print('Started L1.1 tests')
-        test_results['level_1_1'] = level_1.level_1_1(test_metadata, val_res_path)
-        print('Finished L1.1 tests')
 
     if 'L2' in tests:
         #create name substring
@@ -266,3 +263,10 @@ if __name__ == "__main__":
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(test_results)
 
+    # create HTML- and PDF-file
+
+    from validation_tools.utilities import create_html_report as createhtml
+
+    print("Start creating HTML")
+    createhtml.create_html(val_res_path, test_metadata)
+    print("HTML created")
