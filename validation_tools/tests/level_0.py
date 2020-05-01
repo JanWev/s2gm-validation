@@ -42,32 +42,32 @@ def level_0_2(test_metadata):
         json_data = json.loads(response.read().decode('utf-8'))
 
         if 'ResourceReportResource' in json_data['value']:
-            test_result['result'] = {
+            test_result['status'] = {
                 'finished': False,
                 'passed': False,
                 'Error': 'Validation failed ResourceReportResource in JSON'
             }
         elif 'PullBatchReportResource' in json_data['value']:
-            test_result['result'] = {
+            test_result['status'] = {
                 'finished': False,
                 'passed': False,
                 'Error': 'Summary validation report of multiple resources not yet implemented'
             }
         else:
-            test_result['result'] = {
+            test_result['status'] = {
                 'finished': True,
                 'passed': True
             }
 
     except ConnectionResetError:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': 'INSPIRE validator service not available',
             }
 
     except Exception as ex:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': str(ex),
@@ -158,13 +158,13 @@ def level_0_1(test_metadata):
         if len(unexpected_files) > 0:
             test_result['unexpected_files'] = unexpected_files
 
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': True,
             'passed': test_passed
         }
 
     except Exception as ex:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': str(ex),
@@ -306,7 +306,7 @@ def level_0_3(test_metadata):
         test_result['finished'] = True
 
     except Exception as ex:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': str(ex),
@@ -357,7 +357,7 @@ def level_0_4(test_metadata):
             test_result['Error:'] = 'No JSON available'
 
     except Exception as ex:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': str(ex),
