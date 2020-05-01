@@ -95,37 +95,9 @@ width:160px;
 font-size:.9em;
 }
 
-#leftColumn p {
-padding:10px
-}
-
-
-#leftColumn h2 {
-margin:0;
-padding:10px 0 0 10px;
-font-size:1em;
-}
-
-#leftColumn ul {
-margin:0 0 0 0;
-list-style:none;
-}
-
-#leftColumn li {
-margin:4px 0 5px 10px;
-}
-
-#leftColumn li a {
-text-decoration:underline;
-}
-
-#leftColumn li a:hover{
-text-decoration:none;
-}
-
 #centerColumn { 	
-margin:0 0 0 180px;
-padding:0;
+margin:0
+padding:10px;
 background-color:#ffffff;
 }
 
