@@ -127,8 +127,9 @@ def level_1_0(test_metadata, val_res_path):
 
 
                     else:
-                        test_result['result'] = {
+                        test_result['status'] = {
                             'finished': False,
+                            'passed': False,
                             'error': 'Not all required bands for RGB available (missing bands)'
                         }
                         continue
@@ -141,13 +142,14 @@ def level_1_0(test_metadata, val_res_path):
             except:
                 pass
 
-            test_result['result'] = {
+            test_result['status'] = {
                 'finished': True,
+                'passed': True,
             }
 
 
     except Exception as ex:
-        test_result['result'] = {
+        test_result['status'] = {
             'finished': False,
             'passed': False,
             'error': str(ex),
