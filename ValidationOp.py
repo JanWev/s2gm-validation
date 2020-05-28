@@ -148,7 +148,7 @@ def run_tests(tests, test_metadata, ref_metadata, comparable, refl_bands_dict, a
         print('Finished L0.1 tests')
 
         print('Started L0.2 tests')
-        test_results['level_0_2'] = level_0.level_0_2(test_metadata)
+        test_results['level_0_2'] = level_0.level_0_2(test_metadata, val_res_path)
         print('Finished L0.2 tests')
 
     if 'L1' in tests:

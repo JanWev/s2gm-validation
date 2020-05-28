@@ -4,66 +4,61 @@
 """
 
 from validation_tools.utilities import validation_metadata
+import xml.etree.ElementTree as ET
 from pathlib import Path
 import json
-from urllib.request import urlopen, Request
 from osgeo import gdal, osr
 import os
 
 __author__ = 'florian girtler - girtler@geoville.com, rafael reder - reder@geoville.com'
 
 """
-Level 0 test no. 2: Checking the integrity of files
+Level 0 test no. 2: Checking the INSPIRE compliance of xml file
 """
 
-
-def level_0_2(test_metadata):
+def level_0_2(test_metadata, val_res_path):
     test_result = {
         'test_id': 'level_0_2',
-        'test_name': 'Check integrity of files',
+        'test_name': 'Checking the INSPIRE compliance of xml file',
     }
 
     try:
         product_path = Path(test_metadata['validate_path'])
-        inspire_file = str(product_path / 'inspire.xml')
-        metadata = open(inspire_file).read()
-        """validate metadata against INSPIRE metadata validation service"""
-        host = 'http://inspire-geoportal.ec.europa.eu'
-        endpoint = 'GeoportalProxyWebServices/resources/INSPIREResourceTester'
-        url = '{}/{}'.format(host, endpoint)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'text/plain'
-        }
-        request = Request(url, data=metadata.encode("utf-8"), headers=headers)
-        response = urlopen(request)
+        # check if inspire conform xml file is available
+        product_inspire_path = product_path / 'inspire.xml'
+        product_inspire = ET.parse(product_inspire_path).iter()
+        reference_inspire_path = product_path / 'val_res/reference_inspire.xml'
+        reference_inspire = ET.parse(reference_inspire_path).iter()
 
-        json_data = json.loads(response.read().decode('utf-8'))
-
-        if 'ResourceReportResource' in json_data['value']:
+        if not product_inspire_path.is_file():
             test_result['status'] = {
-                'finished': False,
-                'passed': False,
-                'Error': 'Validation failed ResourceReportResource in JSON'
-            }
-        elif 'PullBatchReportResource' in json_data['value']:
-            test_result['status'] = {
-                'finished': False,
-                'passed': False,
-                'Error': 'Summary validation report of multiple resources not yet implemented'
-            }
+                        'finished': False,
+                        'passed': False,
+                        'error': 'INSPIRE file missing',
+                        }
+
+
+
         else:
+            elements_required = [elem.tag.split('}')[-1] for elem in reference_inspire]
+            elements_available = [elem.tag.split('}')[-1] for elem in product_inspire]
+
+            missing_elements = list(set(elements_required) - set(elements_available))
+            unexpected_elements = list(set(elements_available) - set(elements_required))
+
+            # fill test result
+            test_passed = True
+            if len(missing_elements) > 0:
+                test_passed = False
+                test_result['missing_elements'] = missing_elements
+            if len(unexpected_elements) > 0:
+                test_passed = False
+                test_result['unexpected_elements'] = unexpected_elements
+
             test_result['status'] = {
                 'finished': True,
-                'passed': True
-            }
-
-    except ConnectionResetError:
-        test_result['status'] = {
-            'finished': False,
-            'passed': False,
-            'error': 'INSPIRE validator service not available',
+                'passed': test_passed
             }
 
     except Exception as ex:
@@ -156,6 +151,7 @@ def level_0_1(test_metadata):
             test_passed = False
             test_result['missing_files'] = missing_files
         if len(unexpected_files) > 0:
+            test_passed = False
             test_result['unexpected_files'] = unexpected_files
 
         test_result['status'] = {

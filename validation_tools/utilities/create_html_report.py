@@ -85,11 +85,11 @@ def create_L0_1_html(val_order_data, order_list):
 
     else:
         html_L0_1_body = '''
-        The test FINISHED
+        Test L0.1 FINISHED
         '''
         if status['passed'] == True:
             html_L0_1_body2 = '''
-            Test L0.1 FINISHED and PASSED: Integrity confirmed
+             and PASSED: Integrity confirmed
             '''
         else:
             missing = val_order_data['level_0_1']['missing_files']
@@ -98,18 +98,18 @@ def create_L0_1_html(val_order_data, order_list):
             unexpected_string = ' '.join(["<li>" + str(elem) + "</li>" for elem in unexpected])
             if missing != 0 and unexpected !=0:
                 html_L0_1_body2 = '''
-                Test L0.1 FINISHED but not PASSED: Difference found<br />
+                 but not PASSED: Difference found<br />
                 Missing files: <ul>''' + missing_string + '''</ul>
                 Unexpected files: <ul>''' + unexpected_string + '''</ul>
                 '''
             elif missing != 0 and unexpected ==0:
                 html_L0_1_body2 = '''
-                Test L0.1 FINISHED but not PASSED: Difference found<br />
+                 but not PASSED: Difference found<br />
                 Missing files: <ul>''' + missing_string + '''</ul>
                 '''
             elif missing == 0 and unexpected !=0:
                 html_L0_1_body2 = '''
-                Test L0.1 FINISHED but not PASSED: Difference found<br />
+                 but not PASSED: Difference found<br />
                 Unexpected files: <ul>''' + unexpected_string + '''</ul>
                 '''
 
@@ -119,7 +119,7 @@ def create_L0_1_html(val_order_data, order_list):
 
 def create_L0_2_html(val_order_data, order_list):
     html_L0_2_start = '''
-    <h3>L0.2: Check of integrity of files</h3>
+    <h3>L0.2: Checking the INSPIRE compliance of xml file</h3>
     '''
     html_L0_2_end = '''
 
@@ -135,17 +135,33 @@ def create_L0_2_html(val_order_data, order_list):
 
     else:
         html_L0_2_body = '''
-        The test was obviously SUCCESSFUL, but I have not worked on presenting results yet
+        Test L0.2 FINISHED
         '''
         if status['passed'] == True:
             html_L0_2_body2 = '''
-            Test L0.2 FINISHED and PASSED: Integrity confirmed
+             and PASSED: Compliance confirmed
             '''
         else:
-            html_L0_2_body2 = '''
-            Test L0.2 FINISHED but not PASSED: Difference found<br />
-            Error: ''' + val_order_data['level_0_2']['status']['Error'] + '''
-            '''
+            missing = val_order_data['level_0_2']['missing_elements']
+            missing_string = ' '.join(["<li>" + str(elem) + "</li>" for elem in missing])
+            unexpected = val_order_data['level_0_2']['unexpected_elements']
+            unexpected_string = ' '.join(["<li>" + str(elem) + "</li>" for elem in unexpected])
+            if missing != 0 and unexpected != 0:
+                html_L0_2_body2 = '''
+                             but not PASSED: Difference found<br />
+                            Missing elements: <ul>''' + missing_string + '''</ul>
+                            Unexpected elements: <ul>''' + unexpected_string + '''</ul>
+                            '''
+            elif missing != 0 and unexpected == 0:
+                html_L0_2_body2 = '''
+                             but not PASSED: Difference found<br />
+                            Missing elements: <ul>''' + missing_string + '''</ul>
+                            '''
+            elif missing == 0 and unexpected != 0:
+                html_L0_2_body2 = '''
+                             but not PASSED: Difference found<br />
+                            Unexpected elements: <ul>''' + unexpected_string + '''</ul>
+                            '''
 
     html_L0_2 = html_L0_2_start + html_L0_2_body + html_L0_2_body2 + html_L0_2_end
 
@@ -700,6 +716,10 @@ def create_html(vr_folder, metadata):
         if a != 'val_res':
             order_list.append(a)
 
+    # load reference xml file
+    scriptDirectory = os.path.dirname(os.path.dirname(__file__))
+    copyfile(scriptDirectory + '\\aux_data\\reference_inspire.xml', vr_folder + '/reference_inspire.xml')
+
     html_start = '''
     <html>
         <head>
@@ -820,7 +840,6 @@ def create_html(vr_folder, metadata):
     #copyfile('./aux_data/style.css', vr_folder + '/style.css')
     #copyfile('./aux_data/reset.css', vr_folder + '/reset.css')
 
-    scriptDirectory = os.path.dirname(os.path.dirname(__file__))
     #scriptDirectory = os.path.dirname(os.path.realpath(__file__))
     copyfile(scriptDirectory + '\\aux_data\\style.css', vr_folder + '/style.css')
     copyfile(scriptDirectory + '\\aux_data\\reset.css', vr_folder + '/reset.css')
