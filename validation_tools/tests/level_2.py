@@ -831,8 +831,9 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                             'level_2_3_details': lev2_3_tile_results
                         }
                     else:
-                        test_sum = 0
+                        test_sum = 1
                         print('L2.3 test could not be executed. Product has no SCENE band')
+                        lev2_3_results[tile_name] = 'L2.3 test could not be executed. Product has no SCENE band'
 
             else:
                 test_sum = 0
@@ -846,6 +847,7 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                 # loop over tiles if any
                 for i in range(len(valSubPaths)):
                     valSubPath = valSubPaths[i]
+                    tile_name = valSubPath.split('\\')[-1]
                     tiled_prod = False
                     if valSubPath.split('\\')[-1] != test_metadata['order_name']:
                         if len(valSubPath.split('\\')[-1]) > 5:
@@ -877,7 +879,6 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                         valRasterAr = valRasterAr.astype(int)
                         refRasterAr = refRasterAr.astype(int)
 
-                        tile_name = valSubPath.split('\\')[-1]
                         lev2_3_tile_results, test_sum = level_2_3_analysis(valRasterAr, refRasterAr, test_sum,
                                                                            lev2_3_tile_results, aux_band_dict, band,
                                                                            val_res_level_2_3_path, test_metadata,
@@ -888,8 +889,9 @@ def level_2_3(test_metadata, ref_metadata, comparable, aux_band_dict, val_name_s
                             'level_2_3_details': lev2_3_tile_results
                         }
                     else:
-                        test_sum = 0
+                        test_sum = 1
                         print('L2.3 test could not be executed. Product has no SCENE band')
+                        lev2_3_results[tile_name] = 'L2.3 test could not be executed. Product has no SCENE band'
 
             if test_sum == 0:
                 # fill test result
