@@ -176,7 +176,7 @@ def create_L1_0_html(product_folder, val_order_data, order_list, metadata):
     '''
     status = val_order_data['level_1_0']['status']
     if status['finished'] == False:
-        print('Test failed')
+        print('Test L1.0 failed')
         html_L1_0_body = '''
         Test FAILED<br />
         Error: ''' + status['error'] + '''
@@ -373,9 +373,7 @@ def create_L2_3_html(val_order_data, order_list):
     html_L2_3_start = '''
     <h3>L2.3: Distribution of scene classification</h3>
     '''
-    html_L2_3_end = '''
-
-    '''
+    html_L2_3_end = '<br><br>'
     status = val_order_data['level_2_3']['status']
     if status['finished'] == False:
         print('Test L2.3 failed')
@@ -386,63 +384,69 @@ def create_L2_3_html(val_order_data, order_list):
     else:
         body_parts_list = []
         for prod_name in order_list:
-            affected_bands = val_order_data['level_2_3']['results'][prod_name]['affected_bands']
+            try:
+                affected_bands = val_order_data['level_2_3']['results'][prod_name]['affected_bands']
 
-            plot_band_index = []
-            plot_analysis_index = []
-            plot_index = []
-            plot_data = []
+                plot_band_index = []
+                plot_analysis_index = []
+                plot_index = []
+                plot_data = []
 
-            plot_details_dict = val_order_data["level_2_3"]["results"][prod_name]['level_2_3_details']
-            plot_major = list(plot_details_dict.keys())
-            plot_minor = ["plots"]
-            plot_sub = ['scatter_plot', 'ref_histogram', 'val_histogram']
-            for plot_major_key in plot_major:
-                for plot_minor_key in plot_minor:
-                    for plot_sub_key in plot_sub:
-                        plot_band_index.append(plot_major_key)
-                        plot_analysis_index.append(plot_minor_key)
-                        plot_index.append(plot_sub_key)
-                        plot_data.append('''<img src="''' + plot_details_dict[plot_major_key][plot_minor_key][
-                            plot_sub_key] + '''" style="width:300px;height:200px;"></img>''')
+                plot_details_dict = val_order_data["level_2_3"]["results"][prod_name]['level_2_3_details']
+                plot_major = list(plot_details_dict.keys())
+                plot_minor = ["plots"]
+                plot_sub = ['scatter_plot', 'ref_histogram', 'val_histogram']
+                for plot_major_key in plot_major:
+                    for plot_minor_key in plot_minor:
+                        for plot_sub_key in plot_sub:
+                            plot_band_index.append(plot_major_key)
+                            plot_analysis_index.append(plot_minor_key)
+                            plot_index.append(plot_sub_key)
+                            plot_data.append('''<img src="''' + plot_details_dict[plot_major_key][plot_minor_key][
+                                plot_sub_key] + '''" style="width:300px;height:200px;"></img>''')
 
-            plot_index = [np.asanyarray(plot_index), np.asanyarray(plot_analysis_index), np.asanyarray(plot_band_index)]
-            plot_details_df = pd.DataFrame(np.asanyarray(plot_data), index=plot_index)
+                plot_index = [np.asanyarray(plot_index), np.asanyarray(plot_analysis_index), np.asanyarray(plot_band_index)]
+                plot_details_df = pd.DataFrame(np.asanyarray(plot_data), index=plot_index)
 
-            plot_details_df = plot_details_df.unstack(level=0)
-            plot_results_html_table = plot_details_df.to_html(escape=False)
+                plot_details_df = plot_details_df.unstack(level=0)
+                plot_results_html_table = plot_details_df.to_html(escape=False)
 
-            html_L2_3_plot_body_part = '''
-                Results for: ''' + prod_name + '''<br />
-                Number of affected bands: ''' + affected_bands + '''<br />
-                Plots: ''' + plot_results_html_table + '''
-                '''
-
-            band_index = []
-            analysis_index = []
-            stat_index = []
-            data = []
-            details_dict = val_order_data['level_2_3']['results'][prod_name]['level_2_3_details']
-            major = list(details_dict.keys())
-            minor = ['difference_statistics', 'ref_dataset_statistics', 'val_dataset_statistics']
-            sub = ['median', 'mean', 'std']
-            for major_key in major:
-                for minor_key in minor:
-                    for sub_key in sub:
-                        band_index.append(major_key)
-                        analysis_index.append(minor_key)
-                        stat_index.append(sub_key)
-                        data.append(round(float(details_dict[major_key][minor_key][sub_key]), 4))
-
-            index = [np.asanyarray(stat_index), np.asanyarray(analysis_index), np.asanyarray(band_index)]
-            details_df = pd.DataFrame(np.asanyarray(data), index=index)
-            details_df = details_df.unstack(level=0)
-            results_html_table = details_df.to_html()
-
-            html_L2_3_body_part = '''
-                    Numbers: ''' + results_html_table + '''<br />
+                html_L2_3_plot_body_part = '''
+                    Results for: ''' + prod_name + '''<br />
+                    Number of affected bands: ''' + affected_bands + '''<br />
+                    Plots: ''' + plot_results_html_table + '''
                     '''
-            body_parts_list.append(html_L2_3_plot_body_part + html_L2_3_body_part)
+
+                band_index = []
+                analysis_index = []
+                stat_index = []
+                data = []
+                details_dict = val_order_data['level_2_3']['results'][prod_name]['level_2_3_details']
+                major = list(details_dict.keys())
+                minor = ['difference_statistics', 'ref_dataset_statistics', 'val_dataset_statistics']
+                sub = ['median', 'mean', 'std']
+                for major_key in major:
+                    for minor_key in minor:
+                        for sub_key in sub:
+                            band_index.append(major_key)
+                            analysis_index.append(minor_key)
+                            stat_index.append(sub_key)
+                            data.append(round(float(details_dict[major_key][minor_key][sub_key]), 4))
+
+                index = [np.asanyarray(stat_index), np.asanyarray(analysis_index), np.asanyarray(band_index)]
+                details_df = pd.DataFrame(np.asanyarray(data), index=index)
+                details_df = details_df.unstack(level=0)
+                results_html_table = details_df.to_html()
+
+                html_L2_3_body_part = '''
+                        Numbers: ''' + results_html_table + '''<br />
+                        '''
+                body_parts_list.append(html_L2_3_plot_body_part + html_L2_3_body_part)
+
+            except Exception as ex:
+                error = 'Results for {} not available'.format(prod_name)
+                print('Warning: Creating Test L2.3 report for {} caused an issue: {}'.format(prod_name, error))
+                body_parts_list.append(error)
 
         html_L2_3_body_sumparts = ''' '''.join([str(elem) for elem in body_parts_list])
 
@@ -453,7 +457,7 @@ def create_L2_3_html(val_order_data, order_list):
                     '''
         else:
             html_L2_3_body = '''
-                    Test L2.3 FINISHED but not PASSED: Difference found<br />
+                    Test L2.3 FINISHED but not PASSED:<br />
                     ''' + html_L2_3_body_sumparts + '''
                     '''
     html_L2_3 = html_L2_3_start + html_L2_3_body + html_L2_3_end
@@ -697,7 +701,7 @@ def create_L3_2_html(val_order_data, order_list):
 
 
 
-def create_html(vr_folder, metadata):
+def create_html(vr_folder, metadata, test_list):
     vrf = vr_folder + '/validation_report.json'
     lev_2_2_res = vr_folder + '/lev_2_2_res'
     lev_2_3_res = vr_folder + '/lev_2_3_res'
@@ -719,6 +723,11 @@ def create_html(vr_folder, metadata):
     # load reference xml file
     scriptDirectory = os.path.dirname(os.path.dirname(__file__))
     copyfile(scriptDirectory + '\\aux_data\\reference_inspire.xml', vr_folder + '/reference_inspire.xml')
+
+    html_L0 = ''
+    html_L1 = ''
+    html_L2 = ''
+    html_L3 = ''
 
     html_start = '''
     <html>
@@ -750,65 +759,68 @@ def create_html(vr_folder, metadata):
         '''
     html_Lconc = html_Lconc_start + html_Lconc_1 + html_Lconc_end
 
-    html_L0_start = '''
-            <!-- *** L0 Tests *** --->
-            <h2>Level 0: Product integrity</h2>
+    if 'L0' in test_list:
 
-            '''
+        html_L0_start = '''
+                <!-- *** L0 Tests *** --->
+                <h2>Level 0: Product integrity</h2>
+    
+                '''
 
-    html_L0_1 = create_L0_1_html(val_order_data, order_list)
+        html_L0_1 = create_L0_1_html(val_order_data, order_list)
 
-    html_L0_2 = create_L0_2_html(val_order_data, order_list)
+        html_L0_2 = create_L0_2_html(val_order_data, order_list)
 
-    html_L0_end = '''
+        html_L0_end = '''
+    
+        '''
 
-    '''
+        html_L0 = html_L0_start + html_L0_1 + html_L0_2 + html_L0_end
 
-    html_L0 = html_L0_start + html_L0_1 + html_L0_2 + html_L0_end
+    if 'L1' in test_list:
+        html_L1_start = '''
+                <!-- *** L1 Tests *** --->
+                <h2>Level 1: Product plausibility</h2>
+    
+                '''
+        html_L1_0 = create_L1_0_html(product_folder, val_order_data, order_list, metadata)
 
-    html_L1_start = '''
-            <!-- *** L1 Tests *** --->
-            <h2>Level 1: Product plausibility</h2>
+        html_L1_end = '''
+    
+        '''
+        html_L1 = html_L1_start + html_L1_0 + html_L1_end
 
-            '''
-    html_L1_0 = create_L1_0_html(product_folder, val_order_data, order_list, metadata)
+    if 'L2' in test_list:
+        html_L2_start = '''
+                <!-- *** L2 Tests *** --->
+                <h2>Level 2: Product verification</h2>
+                '''
+        html_L2_1 = create_L2_1_html(val_order_data, order_list)
 
-    html_L1_end = '''
+        html_L2_2 = create_L2_2_html(val_order_data, order_list)
 
-    '''
-    html_L1 = html_L1_start + html_L1_0 + html_L1_end
+        html_L2_3 = create_L2_3_html(val_order_data, order_list)
 
+        html_L2_4 = create_L2_4_html(val_order_data, order_list)
 
-    html_L2_start = '''
-            <!-- *** L2 Tests *** --->
-            <h2>Level 2: Product verification</h2>
-            '''
-    html_L2_1 = create_L2_1_html(val_order_data, order_list)
+        html_L2_end = '''
+    
+        '''
+        html_L2 = html_L2_start + html_L2_1 + html_L2_2 + html_L2_3 + html_L2_4 + html_L2_end
 
-    html_L2_2 = create_L2_2_html(val_order_data, order_list)
+    if 'L3' in test_list:
+        html_L3_start = '''
+                <!-- *** L3 Tests *** --->
+                <h2>Level 3: Product validation</h2>
+                '''
+        html_L3_1 = create_L3_1_html(val_order_data, order_list)
 
-    html_L2_3 = create_L2_3_html(val_order_data, order_list)
+        html_L3_2 = create_L3_2_html(val_order_data, order_list)
 
-    html_L2_4 = create_L2_4_html(val_order_data, order_list)
-
-    html_L2_end = '''
-
-    '''
-    html_L2 = html_L2_start + html_L2_1 + html_L2_2 + html_L2_3 + html_L2_4 + html_L2_end
-
-
-    html_L3_start = '''
-            <!-- *** L3 Tests *** --->
-            <h2>Level 3: Product validation</h2>
-            '''
-    html_L3_1 = create_L3_1_html(val_order_data, order_list)
-
-    html_L3_2 = create_L3_2_html(val_order_data, order_list)
-
-    html_L3_end = '''
-
-    '''
-    html_L3 = html_L3_start + html_L3_1 + html_L3_2 + html_L3_end
+        html_L3_end = '''
+    
+        '''
+        html_L3 = html_L3_start + html_L3_1 + html_L3_2 + html_L3_end
 
 
     html_end = '''

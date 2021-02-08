@@ -268,5 +268,5 @@ if __name__ == "__main__":
     from validation_tools.utilities import create_html_report as createhtml
 
     print("Start creating HTML")
-    createhtml.create_html(val_res_path, test_metadata)
+    createhtml.create_html(val_res_path, test_metadata, args.tests)
     print("HTML created")
