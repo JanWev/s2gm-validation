@@ -92,22 +92,29 @@ def create_L0_1_html(val_order_data, order_list):
              and PASSED: Integrity confirmed
             '''
         else:
-            missing = val_order_data['level_0_1']['missing_files']
+            missing = []
+            unexpected = []
+
+            # checking if missing or unexpected files information is available in val_order_data
+            if 'missing_files' in val_order_data['level_0_1']:
+                missing = val_order_data['level_0_1']['missing_files']
+            if 'unexpected_files' in val_order_data['level_0_1']:
+                unexpected = val_order_data['level_0_1']['unexpected_files']
+
             missing_string = ' '.join(["<li>" + str(elem) + "</li>" for elem in missing])
-            unexpected = val_order_data['level_0_1']['unexpected_files']
             unexpected_string = ' '.join(["<li>" + str(elem) + "</li>" for elem in unexpected])
-            if missing != 0 and unexpected !=0:
+            if len(missing) != 0 and len(unexpected) !=0:
                 html_L0_1_body2 = '''
                  but not PASSED: Difference found<br />
                 Missing files: <ul>''' + missing_string + '''</ul>
                 Unexpected files: <ul>''' + unexpected_string + '''</ul>
                 '''
-            elif missing != 0 and unexpected ==0:
+            elif len(missing) != 0 and len(unexpected) == 0:
                 html_L0_1_body2 = '''
                  but not PASSED: Difference found<br />
                 Missing files: <ul>''' + missing_string + '''</ul>
                 '''
-            elif missing == 0 and unexpected !=0:
+            elif len(missing) == 0 and len(unexpected) !=0:
                 html_L0_1_body2 = '''
                  but not PASSED: Difference found<br />
                 Unexpected files: <ul>''' + unexpected_string + '''</ul>

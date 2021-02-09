@@ -128,7 +128,7 @@ def level_0_1(test_metadata):
         else:
             # check if netcdf file is available in each subdir (tile?)
             for subdir in product_path.iterdir():
-                if subdir.is_dir():
+                if subdir.is_dir() and subdir.name != 'val_res':
                     found_netcdf_files = []
 
                     available_files = [x.name for x in subdir.iterdir() if not x.is_dir()]
