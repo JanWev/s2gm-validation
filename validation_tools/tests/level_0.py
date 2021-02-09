@@ -23,26 +23,35 @@ def level_0_2(test_metadata, val_res_path):
     }
 
     try:
-        product_path = Path(test_metadata['validate_path'])
-
         # check if inspire conform xml file is available
-        product_inspire_path = product_path / 'inspire.xml'
-        product_inspire = ET.parse(product_inspire_path).iter()
-        reference_inspire_path = product_path / 'val_res/reference_inspire.xml'
-        reference_inspire = ET.parse(reference_inspire_path).iter()
 
-        if not product_inspire_path.is_file():
+        product_path = test_metadata['validate_path']
+        product_inspire_path = os.path.join(product_path, 'inspire.xml')
+        #TODO: take reference inspire file from s2gm-validation source, check where it is copied from if missing
+        reference_inspire_path = os.path.join(product_path, 'val_res/reference_inspire.xml')
+
+        if not Path(product_inspire_path).is_file():
             test_result['status'] = {
                         'finished': False,
                         'passed': False,
                         'error': 'INSPIRE file missing',
                         }
-
-
-
+        elif not Path(reference_inspire_path).is_file():
+            test_result['status'] = {
+                        'finished': False,
+                        'passed': False,
+                        'error': 'INSPIRE reference file missing',
+                        }
         else:
-            elements_required = [elem.tag.split('}')[-1] for elem in reference_inspire]
-            elements_available = [elem.tag.split('}')[-1] for elem in product_inspire]
+            reference_inspire = ET.parse(reference_inspire_path).iter()
+            product_inspire = ET.parse(product_inspire_path).iter()
+
+            elements_required = []
+            elements_available = []
+            for elem in reference_inspire:
+                elements_required.append(elem.tag.split('}')[-1])
+            for elem in product_inspire:
+                elements_available.append(elem.tag.split('}')[-1])
 
             missing_elements = list(set(elements_required) - set(elements_available))
             unexpected_elements = list(set(elements_available) - set(elements_required))
@@ -89,8 +98,8 @@ def level_0_1(test_metadata):
         product_path = Path(test_metadata['validate_path'])
 
         # check if inspire conform xml file is available
-        inspire_file = product_path / 'inspire.xml'
-        if not inspire_file.is_file():
+        inspire_file = os.path.join(test_metadata['validate_path'], 'inspire.xml')
+        if not Path(inspire_file).is_file():
             missing_files.append(inspire_file)
 
         """
@@ -189,7 +198,7 @@ def level_0_3(test_metadata):
     try:
         file_list = []
         product_path = Path(test_metadata['validate_path'])
-        with open(str(Path(product_path / 'validation.json')), 'r') as validation_file:
+        with open(os.path.join(test_metadata['validate_path'], 'validation.json'), 'r') as validation_file:
             json_data = json.load(validation_file)
         for subdir in product_path.iterdir():
             path = str(product_path / subdir)
@@ -325,7 +334,7 @@ def level_0_4(test_metadata):
         product_path = Path(test_metadata['validate_path'])
         reference_path = Path(test_metadata['reference_path'])
         for subdir in product_path.iterdir():
-            path = str(product_path / subdir)
+            path = os.path.join(test_metadata['validate_path'], subdir)
             if subdir.is_dir():
                 for file in os.listdir(path):
                     val_file_path = (path + '/' + file)
