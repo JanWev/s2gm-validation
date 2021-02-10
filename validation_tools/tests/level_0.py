@@ -27,8 +27,7 @@ def level_0_2(test_metadata, val_res_path):
 
         product_path = test_metadata['validate_path']
         product_inspire_path = os.path.join(product_path, 'inspire.xml')
-        #TODO: take reference inspire file from s2gm-validation source, check where it is copied from if missing
-        reference_inspire_path = os.path.join(product_path, 'val_res/reference_inspire.xml')
+        reference_inspire_path = os.path.join('validation_tools', 'aux_data', 'reference_inspire.xml')
 
         if not Path(product_inspire_path).is_file():
             test_result['status'] = {
