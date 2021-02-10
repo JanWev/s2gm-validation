@@ -19,6 +19,7 @@ def level_1_0(test_metadata, val_res_path):
         product_path = Path(test_metadata['validate_path'])
         for subdir in product_path.iterdir():
             path = str(product_path / subdir)
+            tmp_nc_file = None
             if subdir.is_dir():
                 tile = os.path.basename(os.path.normpath(str(subdir)))
                 rgb_list = []
@@ -32,6 +33,7 @@ def level_1_0(test_metadata, val_res_path):
                         tag = 'jp2'
                     if file.endswith('nc'):
                         tag = 'ns'
+                        tmp_nc_file = file
                     if file.endswith('tiff') or file.endswith('jp2'):
                         if file.startswith('B'):
                             file_dict[file[0:3]] = path + '/' + file
@@ -91,11 +93,10 @@ def level_1_0(test_metadata, val_res_path):
 
                 if tag == 'ns':
                     current_path, dir = os.path.split(os.path.dirname(__file__))
-                    print(current_path)
                     cmd = 'pconvert -f png -H 550 -p "' + current_path + '\\aux_data\\s2Profile_B432.rgb" -o ' + val_res_path + ' ' + str(
-                        subdir) + '\\' + file
+                        subdir) + '\\' + tmp_nc_file
                     print(cmd)
-                    img = gdal.Open(path + '/' + file)
+                    img = gdal.Open(path + '/' + tmp_nc_file)
                     subdatasets = img.GetSubDatasets()
                     for variable in subdatasets:
                         if variable[0].endswith('B02'):

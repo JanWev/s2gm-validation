@@ -189,8 +189,7 @@ def create_L1_0_html(product_folder, val_order_data, order_list, metadata):
         Error: ''' + status['error'] + '''
         '''
     else:
-        # product_path = Path(metadata['validate_path'])
-        product_path = Path("F:\\S2GM_ValidationTests\\NREFSD_LEI_TIFF\\S2GM_M10_20180811_20180831_S2GM_valreq_20200310T171427_stat01_T12LEI_STD_v1.0.4_43750")
+        product_path = Path(metadata['validate_path'])
         for subdir in product_path.iterdir():
             path = str(product_path / subdir)
             if subdir.is_dir():
